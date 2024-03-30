@@ -116,15 +116,17 @@ module programmable_priority_encoder_tb #(
     assign wrong = enc_idx != ref_enc_idx;
 
     // DUT RTL instance
-    priority_encoder #(
+    programmable_priority_encoder #(
         .WIDTH (WIDTH),
         .SPLIT (SPLIT)
-    ) priority_encoder (
+    ) ppe (
         .dec_vld_h (dec_vld  ),
         .dec_vld_l ('0       ),
         .enc_pri   (enc_pri  ),
         .enc_idx_h (enc_idx_h),
         .enc_idx_l (enc_idx_l),
+        .enc_sel_h (),
+        .enc_sel_l (),
         .enc_vld_h (enc_vld_h),
         .enc_vld_l (enc_vld_l)
     );

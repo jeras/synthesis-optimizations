@@ -41,11 +41,11 @@ module programmable_priority_encoder #(
                             3'b10_0: begin enc_idx_h = 1'd1; enc_sel_h = 1'b1; enc_vld_h = 1'd1; end
                             default: begin enc_idx_h = 1'dx; enc_sel_h = 1'bx; enc_vld_h = 1'd0; end
                         endcase
-                                     begin enc_idx_l = 1'd0; enc_sel_l = 1'b0; enc_vld_l = dec_vld_l[0]; end
+                        begin              enc_idx_l = 1'd0; enc_sel_l = 1'b0; enc_vld_l = dec_vld_l[0]; end
                     end
                     1'b1:
                     begin
-                                     begin enc_idx_h = 1'd1; enc_sel_h = 1'b1; enc_vld_h = dec_vld_h[1]; end
+                        begin              enc_idx_h = 1'd1; enc_sel_h = 1'b1; enc_vld_h = dec_vld_h[1]; end
                         unique case ({dec_vld_l[1], dec_vld_h[0], dec_vld_l[0]}) inside
                             3'b?_?1: begin enc_idx_l = 1'd0; enc_sel_l = 1'd0; enc_vld_l = 1'd1; end
                             3'b?_10: begin enc_idx_l = 1'd0; enc_sel_l = 1'd1; enc_vld_l = 1'd1; end
@@ -79,7 +79,7 @@ module programmable_priority_encoder #(
             .WIDTH (WIDTH/SPLIT),
             .SPLIT (SPLIT),
             .IMPLEMENTATION (IMPLEMENTATION)
-        ) encoder_sub [SPLIT-1:0] (
+        ) ppe_sub [SPLIT-1:0] (
             .dec_vld_h (dec_vld_h),
             .dec_vld_l (dec_vld_l),
             .enc_pri   (sub_pri  ),
@@ -96,7 +96,7 @@ module programmable_priority_encoder #(
             .WIDTH (SPLIT),
             .SPLIT (SPLIT),
             .IMPLEMENTATION (IMPLEMENTATION)
-        ) encoder_brn (
+        ) ppe_brn (
             .dec_vld_h (sub_vld_h),
             .dec_vld_l (sub_vld_l),
             .enc_pri   (brn_pri  ),
