@@ -1,4 +1,4 @@
-module encoder_tb #(
+module priority_encoder_tb #(
     // size parameters
     int unsigned WIDTH = 16,
     int unsigned SPLIT = 4
@@ -96,11 +96,11 @@ module encoder_tb #(
     generate
     for (genvar i=0; i<IMPLEMENTATIONS; i++) begin
 
-        priority_encoder #(
+        priority_encoder_tree #(
             .WIDTH (WIDTH),
             .SPLIT (SPLIT),
             .IMPLEMENTATION (i)
-        ) priority_encoder__casez (
+        ) dut (
             .dec_vld (dec_vld),
             .enc_idx (enc_idx[i]),
             .enc_vld (enc_vld[i])
@@ -109,4 +109,4 @@ module encoder_tb #(
     end
     endgenerate
 
-endmodule: encoder_tb
+endmodule: priority_encoder_tb
