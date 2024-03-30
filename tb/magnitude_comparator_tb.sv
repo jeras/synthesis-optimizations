@@ -51,10 +51,26 @@ module magnitude_comparator_tb #(
     // test sequence
     initial
     begin
-        // idle test
+        // zero test
         test = "zero";
         i_a = 'd0;
         i_b = 'd0;
+        #T;
+        check;
+        #T;
+
+        // zero test
+        test = "zero";
+        i_a = 'd1;
+        i_b = 'd0;
+        #T;
+        check;
+        #T;
+
+        // zero test
+        test = "zero";
+        i_a = 'd0;
+        i_b = 'd1;
         #T;
         check;
         #T;
@@ -80,7 +96,7 @@ module magnitude_comparator_tb #(
     end
 
     generate
-    for (genvar i=0; i<IMPLEMENTATIONS; i++) begin
+    for (genvar i=0; i<IMPLEMENTATIONS; i++) begin: imp
 
         // DUT RTL instance
         magnitude_comparator_tree #(
@@ -89,11 +105,11 @@ module magnitude_comparator_tb #(
         ) dut (
             .i_a (i_a),
             .i_b (i_b),
-            .o_a (t_a),
-            .o_b (t_b)
+            .o_a (o_a[i]),
+            .o_b (o_b[i])
         );
 
-    end
+    end: imp
     endgenerate
 
 endmodule: magnitude_comparator_tb

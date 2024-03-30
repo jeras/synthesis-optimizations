@@ -71,7 +71,7 @@ module onehot_encoder_tb #(
     end
 
     generate
-    for (genvar i=0; i<IMPLEMENTATIONS; i++) begin
+    for (genvar i=0; i<IMPLEMENTATIONS; i++) begin: imp
 
         onehot_encoder_tree #(
             .WIDTH (WIDTH),
@@ -83,7 +83,7 @@ module onehot_encoder_tb #(
             .enc_vld (enc_vld[i])
         );
 
-    end
+    end: imp
     endgenerate
 
 endmodule: onehot_encoder_tb
