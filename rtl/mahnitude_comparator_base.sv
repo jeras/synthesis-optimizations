@@ -24,6 +24,6 @@ module magnitude_comparator_base #(
 );
 
     assign o_a = i_a > i_b;
-    assign o_b = i_b > i_a;
+    assign o_b = i_a < i_b;
 
 endmodule: magnitude_comparator_base

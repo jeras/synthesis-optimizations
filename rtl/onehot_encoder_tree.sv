@@ -65,7 +65,7 @@ module onehot_encoder_tree #(
         );
 
     end: leaf
-    // combining SPLIT branch closer to the tree trunk
+    // combining SPLIT sub-branches into a single branch closer to the tree trunk
     else begin: branch
 
         logic [SPLIT-1:0] [WIDTH_LOG-SPLIT_LOG-1:0] sub_idx;

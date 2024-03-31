@@ -64,7 +64,7 @@ module magnitude_comparator_tree #(
         );
 
     end: leaf
-    // combining SPLIT branch closer to the tree trunk
+    // combining SPLIT sub-branches into a single branch closer to the tree trunk
     else begin: branch
 
         // tree signals
