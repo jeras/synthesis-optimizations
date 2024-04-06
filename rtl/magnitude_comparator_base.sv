@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Magnitude comparator base with parametrized implementation options
+// Magnitude comparator, base with parametrized implementation options
 //
 // @author: Iztok Jeras <iztok.jeras@gmail.com>
 //

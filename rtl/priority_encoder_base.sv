@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Priority encoder base with parametrized implementation options
+// Priority encoder, base with parametrized implementation options
 //
 // @author: Iztok Jeras <iztok.jeras@gmail.com>
 //

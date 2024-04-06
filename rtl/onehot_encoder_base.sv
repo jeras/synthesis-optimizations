@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// One-hot encoder base with parametrized implementation options
+// One-hot encoder, base with parametrized implementation options
 //
 // @author: Iztok Jeras <iztok.jeras@gmail.com>
 //
