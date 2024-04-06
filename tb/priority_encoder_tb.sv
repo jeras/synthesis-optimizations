@@ -22,8 +22,8 @@ module priority_encoder_tb #(
     logic [WIDTH_LOG-1:0] ref_enc_idx;
     logic                 ref_enc_vld;
 
-    function  [WIDTH_LOG-1:0] encoder (
-        logic [WIDTH    -1:0] dec_vld
+    function automatic [WIDTH_LOG-1:0] encoder (
+        logic [WIDTH-1:0] dec_vld
     );
         for (int unsigned i=0; i<WIDTH; i++) begin
             if (dec_vld[i] == 1'b1)  return WIDTH_LOG'(i);
