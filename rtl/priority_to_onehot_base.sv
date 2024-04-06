@@ -34,7 +34,7 @@ module priority_to_onehot_base #(
         1:  // loop
             always_comb
             begin: loop
-                automatic logic enc_vld = 1'b0;
+                enc_vld = 1'b0;
                 for (int i=0; i<WIDTH; i++) begin
                     if (enc_vld) begin
                         dec_oht[i] = 1'b0;
