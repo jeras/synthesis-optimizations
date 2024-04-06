@@ -13,38 +13,43 @@ module priority_to_onehot_tb #(
 
     localparam int unsigned IMPLEMENTATIONS = 2;
 
-    // input
-    logic [WIDTH    -1:0] dec_vld;
+    // input priority encoding
+    logic [WIDTH-1:0] dec_vld;
     // priority encoder
-    logic [WIDTH_LOG-1:0] enc_idx [0:IMPLEMENTATIONS-1];
-    logic                 enc_vld [0:IMPLEMENTATIONS-1];
+    logic [WIDTH-1:0] dec_oht [0:IMPLEMENTATIONS-1];  // one-hot encoding
+    logic             enc_vld [0:IMPLEMENTATIONS-1];  // cumulative valid
     // reference encoder
-    logic [WIDTH_LOG-1:0] ref_enc_idx;
-    logic                 ref_enc_vld;
+    logic [WIDTH-1:0] ref_dec_oht;
+    logic             ref_enc_vld;
 
-    function  [WIDTH_LOG-1:0] encoder (
-        logic [WIDTH    -1:0] dec_vld
+    function automatic [WIDTH-1:0] onehot (
+        logic [WIDTH-1:0] valid
     );
-        for (int unsigned i=0; i<WIDTH; i++) begin
-            if (dec_vld[i] == 1'b1)  return WIDTH_LOG'(i);
+        automatic logic carry = 1'b0;
+        for (int i=0; i<WIDTH; i++) begin
+            if (carry) begin
+                onehot[i] = 1'b0;
+            end else begin
+                onehot[i] = valid[i];
+                if (valid[i]) begin
+                    carry = 1'b1;
+                end
+            end
         end
-        return 'x;
-    endfunction: encoder
+    endfunction: onehot
 
-    // reference encoder
+    // reference
     always_comb
     begin
-        ref_enc_idx = encoder(dec_vld);
-        ref_enc_vld =       |(dec_vld);    
+        ref_dec_oht = onehot(dec_vld);
+        ref_enc_vld =      |(dec_vld);    
     end
 
     // output checking task
     task check();
         for (int unsigned i=0; i<IMPLEMENTATIONS; i++) begin
-            assert (enc_vld[i] == ref_enc_vld) else $error("IMPLEMENTATION[%d]:  enc_vld != 1'b%b" , i,            ref_enc_vld);
-            if (enc_vld[i]) begin  // do not check the encoded output, if it is not supposed to be valid
-            assert (enc_idx[i] == ref_enc_idx) else $error("IMPLEMENTATION[%d]:  enc_idx != %d'd%d", i, WIDTH_LOG, ref_enc_idx);
-            end
+            assert (dec_oht[i] == ref_dec_oht) else $error("IMPLEMENTATION[%d]:  dec_oht != %d'b%b", i, WIDTH, ref_dec_oht);
+            assert (enc_vld[i] == ref_enc_vld) else $error("IMPLEMENTATION[%d]:  enc_vld != 1'b%b" , i,        ref_enc_vld);
         end
     endtask: check
 
@@ -102,7 +107,7 @@ module priority_to_onehot_tb #(
             .IMPLEMENTATION (i)
         ) dut (
             .dec_vld (dec_vld),
-            .enc_idx (enc_idx[i]),
+            .dec_oht (dec_oht[i]),
             .enc_vld (enc_vld[i])
         );
 

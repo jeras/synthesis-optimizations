@@ -1,5 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Conversion from a priority to one-hot encoding, implemented as a tree using recursion
+// Conversion from a priority to one-hot,
+// implemented as a tree using recursion
 //
 // @author: Iztok Jeras <iztok.jeras@gmail.com>
 //
@@ -16,9 +17,9 @@ module priority_to_onehot_tree #(
     // implementation (see `priority_to_onehot_base` for details)
     parameter  int unsigned IMPLEMENTATION = 0
 )(
-    input  logic [WIDTH-1:0] enc_pry,  // priority encoding
-    output logic [WIDTH-1:0] enc_oht,  // one-hot encoding
-    output logic             dec_vld   // cumulative valid
+    input  logic [WIDTH-1:0] dec_vld,  // priority encoding
+    output logic [WIDTH-1:0] dec_oht,  // one-hot encoding
+    output logic             enc_vld   // cumulative valid
 );
 
     // SPLIT to the power of logarithm of WIDTH base SPLIT
@@ -39,7 +40,7 @@ module priority_to_onehot_tree #(
         logic [POWER-1:0] tmp_oht;
         
         // zero extend the input vector
-        assign tmp_pry = POWER'(enc_pry);
+        assign tmp_pry = POWER'(dec_vld);
 
         // the synthesis tool is expected to optimize out the logic for constant inputs
         priority_to_onehot_tree #(
@@ -47,13 +48,13 @@ module priority_to_onehot_tree #(
             .SPLIT (SPLIT),
             .IMPLEMENTATION (IMPLEMENTATION)
         ) enc (
-            .enc_pry (tmp_pry),
-            .enc_oht (tmp_oht),
-            .dec_vld (dec_vld)
+            .dec_vld (tmp_pry),
+            .dec_oht (tmp_oht),
+            .enc_vld (enc_vld)
         );
 
         // remove zero extension from output vector
-        assign enc_oht = WIDTH'(tmp_oht);
+        assign dec_oht = WIDTH'(tmp_oht);
 
     end: extend
     // leafs at the end of tree branches
@@ -63,9 +64,9 @@ module priority_to_onehot_tree #(
             .WIDTH (WIDTH),
             .IMPLEMENTATION (IMPLEMENTATION)
         ) encoder (
-            .enc_pry (dec_vld),
-            .enc_oht (enc_idx),
-            .dec_vld (enc_vld)
+            .dec_vld (dec_vld),
+            .dec_oht (dec_oht),
+            .enc_vld (enc_vld)
         );
 
     end: leaf
@@ -82,9 +83,9 @@ module priority_to_onehot_tree #(
             .SPLIT (SPLIT),
             .IMPLEMENTATION (IMPLEMENTATION)
         ) enc_sub [SPLIT-1:0] (
-            .enc_pry (enc_pry),
-            .enc_oht (sub_oht),
-            .dec_vld (sub_vld)
+            .dec_vld (dec_vld),
+            .dec_oht (sub_oht),
+            .enc_vld (sub_vld)
         );
 
         // branch
@@ -92,14 +93,14 @@ module priority_to_onehot_tree #(
             .WIDTH (SPLIT),
             .IMPLEMENTATION (IMPLEMENTATION)
         ) enc_brn (
-            .enc_pry (sub_vld),
-            .enc_oht (brn_oht),
-            .dec_vld (dec_vld)
+            .dec_vld (sub_vld),
+            .dec_oht (brn_oht),
+            .enc_vld (enc_vld)
         );
 
         // multiplex sub-branches into branch
         for (genvar i=0; i<SPLIT; i++) begin: mask
-            assign enc_oht[i*SPLIT+:SPLIT] = brn_oht[i] ? sub_oht[i] : '0;
+            assign dec_oht[i*SPLIT+:SPLIT] = brn_oht[i] ? sub_oht[i] : '0;
         end: mask
 
     end: branch
