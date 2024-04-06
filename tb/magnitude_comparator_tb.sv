@@ -55,12 +55,14 @@ module magnitude_comparator_tb #(
 
     // output checking task
     task check();
+        #T;
         for (int unsigned i=0; i<IMPLEMENTATIONS; i++) begin
             if (check_enable[i]) begin
-                assert (o_a[i] == ref_o_a) else $error("IMPLEMENTATION[%d]:  o_a != 1'b%b", i, ref_o_a);
-                assert (o_b[i] == ref_o_b) else $error("IMPLEMENTATION[%d]:  o_b != 1'b%b", i, ref_o_b);
+                assert (o_a[i] == ref_o_a) else $error("IMPLEMENTATION[%0d]:  o_a != 1'b%b", i, ref_o_a);
+                assert (o_b[i] == ref_o_b) else $error("IMPLEMENTATION[%0d]:  o_b != 1'b%b", i, ref_o_b);
             end
         end
+        #T;
     endtask: check
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -78,27 +80,21 @@ module magnitude_comparator_tb #(
         check_enable = IMPLEMENTATIONS'('1);
         i_a = 'd0;
         i_b = 'd0;
-        #T;
         check;
-        #T;
 
         // test 1
         test_name = "zero";
         check_enable = IMPLEMENTATIONS'('1);
         i_a = 'd1;
         i_b = 'd0;
-        #T;
         check;
-        #T;
 
         // test 2
         test_name = "zero";
         check_enable = IMPLEMENTATIONS'('1);
         i_a = 'd0;
         i_b = 'd1;
-        #T;
         check;
-        #T;
 
 //        for (int unsigned pri=0; pri<WIDTH; pri++) begin: for_pri
 //            enc_pri = WIDTH_LOG'(pri);
@@ -110,9 +106,7 @@ module magnitude_comparator_tb #(
 //                tmp_vld = '0;
 //                tmp_vld[i] = 1'b1;
 //                dec_vld = tmp_vld;
-//                #T;
 //                check;
-//                #T;
 //            end: for_oht
 //
 //        end: for_pri

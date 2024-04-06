@@ -56,6 +56,7 @@ module onehot_encoder_tb #(
 
     // output checking task
     task check();
+        #T;
         for (int unsigned i=0; i<IMPLEMENTATIONS; i++) begin
             if (check_enable[i]) begin
                 assert (enc_vld[i] == ref_enc_vld) else $error("IMPLEMENTATION[%0d]:  enc_vld != 1'b%b"  , i,            ref_enc_vld);
@@ -64,6 +65,7 @@ module onehot_encoder_tb #(
                 end
             end
         end
+        #T;
     endtask: check
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -80,9 +82,7 @@ module onehot_encoder_tb #(
         test_name = "idle";
         check_enable = IMPLEMENTATIONS'('1);
         dec_vld <= '0;
-        #T;
         check;
-        #T;
 
         // one-hot encoder test
         test_name = "one-hot";
@@ -92,9 +92,7 @@ module onehot_encoder_tb #(
             tmp_vld = '0;
             tmp_vld[i] = 1'b1;
             dec_vld <= tmp_vld;
-            #T;
             check;
-            #T;
         end
         $finish;
     end

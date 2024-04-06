@@ -63,12 +63,14 @@ module priority_to_onehot_tb #(
 
     // output checking task
     task check();
+        #T;
         for (int unsigned i=0; i<IMPLEMENTATIONS; i++) begin
             if (check_enable[i]) begin
                 assert (dec_oht[i] == ref_dec_oht) else $error("IMPLEMENTATION[%0d]:  dec_oht != %0d'b%b", i, WIDTH, ref_dec_oht);
                 assert (enc_vld[i] == ref_enc_vld) else $error("IMPLEMENTATION[%0d]:  enc_vld != 1'b%b"  , i,        ref_enc_vld);
             end
         end
+        #T;
     endtask: check
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -85,9 +87,7 @@ module priority_to_onehot_tb #(
         test_name = "idle";
         check_enable = IMPLEMENTATIONS'({1'b1, 1'b1});
         dec_vld <= '0;
-        #T;
         check;
-        #T;
 
         // one-hot encoder test
         test_name = "one-hot";
@@ -97,9 +97,7 @@ module priority_to_onehot_tb #(
             tmp_vld = '0;
             tmp_vld[i] = 1'b1;
             dec_vld <= tmp_vld;
-            #T;
             check;
-            #T;
         end
 
         // priority encoder test (with undefined inputs)
@@ -113,9 +111,7 @@ module priority_to_onehot_tb #(
             end
             tmp_vld[i] = 1'b1;
             dec_vld <= tmp_vld;
-            #T;
             check;
-            #T;
         end
 //        $finish;
 
@@ -124,9 +120,7 @@ module priority_to_onehot_tb #(
         check_enable = IMPLEMENTATIONS'({1'b1, 1'b1});
         for (logic unsigned [WIDTH-1:0] tmp_vld='1; tmp_vld>0; tmp_vld--) begin
             dec_vld <= {<<{tmp_vld}};
-            #T;
             check;
-            #T;
         end
         $finish;
     end
