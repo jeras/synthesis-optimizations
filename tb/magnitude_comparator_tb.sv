@@ -1,3 +1,12 @@
+///////////////////////////////////////////////////////////////////////////////
+// magnitude comparator,
+// testbench
+//
+// @author: Iztok Jeras <iztok.jeras@gmail.com>
+//
+// Licensed under CERN-OHL-P v2 or later
+///////////////////////////////////////////////////////////////////////////////
+
 module magnitude_comparator_tb #(
     // size parameters
     int unsigned WIDTH = 4,
@@ -23,8 +32,9 @@ module magnitude_comparator_tb #(
     logic         ref_o_a;
     logic         ref_o_b;
 
-    logic         wrong;
-    string        test;
+///////////////////////////////////////////////////////////////////////////////
+// reference calculation and checking of DUT outputs against reference
+///////////////////////////////////////////////////////////////////////////////
 
     function [2-1:0][WIDTH_LOG-1:0] grt (
         logic [WIDTH-1:0] a,
@@ -40,35 +50,50 @@ module magnitude_comparator_tb #(
         ref_o_b = grt(i_b, i_a);    
     end
 
+    // check enable depending on test
+    bit [0:IMPLEMENTATIONS-1] check_enable;
+
     // output checking task
     task check();
         for (int unsigned i=0; i<IMPLEMENTATIONS; i++) begin
-            assert (o_a[i] == ref_o_a) else $error("IMPLEMENTATION[%d]:  o_a != 1'b%b", i, ref_o_a);
-            assert (o_b[i] == ref_o_b) else $error("IMPLEMENTATION[%d]:  o_b != 1'b%b", i, ref_o_b);
+            if (check_enable[i]) begin
+                assert (o_a[i] == ref_o_a) else $error("IMPLEMENTATION[%d]:  o_a != 1'b%b", i, ref_o_a);
+                assert (o_b[i] == ref_o_b) else $error("IMPLEMENTATION[%d]:  o_b != 1'b%b", i, ref_o_b);
+            end
         end
     endtask: check
+
+///////////////////////////////////////////////////////////////////////////////
+// test
+///////////////////////////////////////////////////////////////////////////////
+
+    // test name
+    string        test_name;
 
     // test sequence
     initial
     begin
         // zero test
-        test = "zero";
+        test_name = "zero";
+        check_enable = IMPLEMENTATIONS'('1);
         i_a = 'd0;
         i_b = 'd0;
         #T;
         check;
         #T;
 
-        // zero test
-        test = "zero";
+        // test 1
+        test_name = "zero";
+        check_enable = IMPLEMENTATIONS'('1);
         i_a = 'd1;
         i_b = 'd0;
         #T;
         check;
         #T;
 
-        // zero test
-        test = "zero";
+        // test 2
+        test_name = "zero";
+        check_enable = IMPLEMENTATIONS'('1);
         i_a = 'd0;
         i_b = 'd1;
         #T;
@@ -94,6 +119,10 @@ module magnitude_comparator_tb #(
 
         $finish;
     end
+
+///////////////////////////////////////////////////////////////////////////////
+// DUT instance array (for each implementation)
+///////////////////////////////////////////////////////////////////////////////
 
     generate
     for (genvar i=0; i<IMPLEMENTATIONS; i++) begin: imp
