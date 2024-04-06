@@ -6,7 +6,7 @@
 // Licensed under CERN-OHL-P v2 or later
 ///////////////////////////////////////////////////////////////////////////////
 
-module magnitude_comparator_base #(
+module equivalence_comparator_base #(
     // size parameters
     parameter  int unsigned WIDTH = 32
 )(
@@ -17,4 +17,4 @@ module magnitude_comparator_base #(
 
     assign eq = i_a == i_b;
 
-endmodule: magnitude_comparator_base
+endmodule: equivalence_comparator_base
