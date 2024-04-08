@@ -41,89 +41,84 @@ module priority_encoder_base #(
                 enc_vld = |dec_vld;
             end
         default:  // non loop
-        begin
-            case (WIDTH)
-                2:  // 2-bit input vector
-                case (IMPLEMENTATION)
-                    1:  // casez (this is compatible with old Verilog)
-                    always_comb
-                    casez (dec_vld)
-                        2'b?1  : enc_idx = 1'd0;
-                        2'b10  : enc_idx = 1'd1;
-                        default: enc_idx = 1'd0;
-                    endcase
-                    2:  // unique   if
-                    always_comb
-                    unique   if (dec_vld ==? 2'b?1) enc_idx = 1'd0;
-                    else     if (dec_vld ==? 2'b10) enc_idx = 1'd1;
-                    else                            enc_idx = 1'dx;
-                    3:  // priority if
-                    always_comb
-                    priority if (dec_vld ==? 2'b?1) enc_idx = 1'd0;
-                    else     if (dec_vld ==? 2'b1?) enc_idx = 1'd1;
-                    else                            enc_idx = 1'dx;
-                    4:  // unique   case inside
-                    always_comb
-                    unique case (dec_vld) inside
-                        2'b?1  : enc_idx = 1'd0;
-                        2'b10  : enc_idx = 1'd1;
-                        default: enc_idx = 1'dx;
-                    endcase
-                    5:  // priority case inside
-                    always_comb
-                    priority case (dec_vld) inside
-                        2'b?1  : enc_idx = 1'd0;
-                        2'b1?  : enc_idx = 1'd1;
-                        default: enc_idx = 1'dx;
-                    endcase
+            always_comb
+            begin
+                case (WIDTH)
+                    2:  // 2-bit input vector
+                        case (IMPLEMENTATION)
+                            1:  // casez (this is compatible with old Verilog)
+                            casez (dec_vld)
+                                2'b?1  : enc_idx = 1'd0;
+                                2'b10  : enc_idx = 1'd1;
+                                default: enc_idx = 1'd0;
+                            endcase
+                            2:  // unique   if
+                            unique   if (dec_vld ==? 2'b?1) enc_idx = 1'd0;
+                            else     if (dec_vld ==? 2'b10) enc_idx = 1'd1;
+                            else                            enc_idx = 1'dx;
+                            3:  // priority if
+                            priority if (dec_vld ==? 2'b?1) enc_idx = 1'd0;
+                            else     if (dec_vld ==? 2'b1?) enc_idx = 1'd1;
+                            else                            enc_idx = 1'dx;
+                            4:  // unique   case inside
+                            unique case (dec_vld) inside
+                                2'b?1  : enc_idx = 1'd0;
+                                2'b10  : enc_idx = 1'd1;
+                                default: enc_idx = 1'dx;
+                            endcase
+                            5:  // priority case inside
+                            priority case (dec_vld) inside
+                                2'b?1  : enc_idx = 1'd0;
+                                2'b1?  : enc_idx = 1'd1;
+                                default: enc_idx = 1'dx;
+                            endcase
+                        endcase
+                    4:  // 4-bit input vector
+                        case (IMPLEMENTATION)
+                            1:  // casez (this is compatible with old Verilog)
+                            casez (dec_vld)
+                                4'b???1: enc_idx = 2'd0;
+                                4'b??10: enc_idx = 2'd1;
+                                4'b?100: enc_idx = 2'd2;
+                                4'b1000: enc_idx = 2'd3;
+                                default: enc_idx = 2'dx;
+                            endcase
+                            2:  // unique   if
+                            unique   if (dec_vld ==? 4'b???1) enc_idx = 2'd0;
+                            else     if (dec_vld ==? 4'b??10) enc_idx = 2'd1;
+                            else     if (dec_vld ==? 4'b?100) enc_idx = 2'd2;
+                            else     if (dec_vld ==? 4'b1000) enc_idx = 2'd3;
+                            else                              enc_idx = 2'dx;
+                            3:  // priority if
+                            priority if (dec_vld ==? 4'b???1) enc_idx = 2'd0;
+                            else     if (dec_vld ==? 4'b??1?) enc_idx = 2'd1;
+                            else     if (dec_vld ==? 4'b?1??) enc_idx = 2'd2;
+                            else     if (dec_vld ==? 4'b1???) enc_idx = 2'd3;
+                            else                              enc_idx = 2'dx;
+                            4:  // unique   case inside
+                            unique case (dec_vld) inside
+                                4'b???1: enc_idx = 2'd0;
+                                4'b??10: enc_idx = 2'd1;
+                                4'b?100: enc_idx = 2'd2;
+                                4'b1000: enc_idx = 2'd3;
+                                default: enc_idx = 2'dx;
+                            endcase
+                            5:  // priority case inside
+                            priority case (dec_vld) inside
+                                4'b???1: enc_idx = 2'd0;
+                                4'b??1?: enc_idx = 2'd1;
+                                4'b?1??: enc_idx = 2'd2;
+                                4'b1???: enc_idx = 2'd3;
+                                default: enc_idx = 2'dx;
+                            endcase
+                        endcase
+                    default:  // parameter validation
+                        $fatal("Unsupported WIDTH parameter value.");
                 endcase
-                4:  // 4-bit input vector
-                case (IMPLEMENTATION)
-                    1:  // casez (this is compatible with old Verilog)
-                    always_comb
-                    casez (dec_vld)
-                        4'b???1: enc_idx = 2'd0;
-                        4'b??10: enc_idx = 2'd1;
-                        4'b?100: enc_idx = 2'd2;
-                        4'b1000: enc_idx = 2'd3;
-                        default: enc_idx = 2'dx;
-                    endcase
-                    2:  // unique   if
-                    always_comb
-                    unique   if (dec_vld ==? 4'b???1) enc_idx = 2'd0;
-                    else     if (dec_vld ==? 4'b??10) enc_idx = 2'd1;
-                    else     if (dec_vld ==? 4'b?100) enc_idx = 2'd2;
-                    else     if (dec_vld ==? 4'b1000) enc_idx = 2'd3;
-                    else                              enc_idx = 2'dx;
-                    3:  // priority if
-                    always_comb
-                    priority if (dec_vld ==? 4'b???1) enc_idx = 2'd0;
-                    else     if (dec_vld ==? 4'b??1?) enc_idx = 2'd1;
-                    else     if (dec_vld ==? 4'b?1??) enc_idx = 2'd2;
-                    else     if (dec_vld ==? 4'b1???) enc_idx = 2'd3;
-                    else                              enc_idx = 2'dx;
-                    4:  // unique   case inside
-                    always_comb
-                    unique case (dec_vld) inside
-                        4'b???1: enc_idx = 2'd0;
-                        4'b??10: enc_idx = 2'd1;
-                        4'b?100: enc_idx = 2'd2;
-                        4'b1000: enc_idx = 2'd3;
-                        default: enc_idx = 2'dx;
-                    endcase
-                    5:  // priority case inside
-                    always_comb
-                    priority case (dec_vld) inside
-                        4'b???1: enc_idx = 2'd0;
-                        4'b??1?: enc_idx = 2'd1;
-                        4'b?1??: enc_idx = 2'd2;
-                        4'b1???: enc_idx = 2'd3;
-                        default: enc_idx = 2'dx;
-                    endcase
-                endcase
-            endcase
-            assign enc_vld = |dec_vld;
-        end
+                enc_vld = |dec_vld;
+            end
+        default:  // parameter validation
+            $fatal("Unsupported IMPLEMENTATION parameter value.");
     endcase
     endgenerate
 

@@ -20,7 +20,7 @@ module onehot_encoder_tb #(
     // timing constant
     localparam time T = 10ns;
 
-    localparam int unsigned IMPLEMENTATIONS = 5;
+    localparam int unsigned IMPLEMENTATIONS = 2;
 
     // input
     logic [WIDTH    -1:0] dec_vld;

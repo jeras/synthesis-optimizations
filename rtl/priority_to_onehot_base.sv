@@ -55,6 +55,8 @@ module priority_to_onehot_base #(
                 dec_oht = dec_vld & ~carry_chain[WIDTH-1:0];
                 enc_vld = carry_chain[WIDTH];
             end: vector
+        default:  // parameter validation
+            $fatal("Unsupported IMPLEMENTATION parameter value.");
     endcase
     endgenerate
 
