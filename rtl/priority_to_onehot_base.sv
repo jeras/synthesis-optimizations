@@ -16,6 +16,7 @@ module priority_to_onehot_base #(
     parameter  int unsigned IMPLEMENTATION = 0
     // 0 - adder
     // 1 - loop
+    // 2 - vector
 )(
     input  logic [WIDTH-1:0] dec_vld,  // priority valid
     output logic [WIDTH-1:0] dec_oht,  // one-hot valid
@@ -27,7 +28,7 @@ module priority_to_onehot_base #(
         0:  // adder
             always_comb
             begin: adder
-                logic [WIDTH-1:0] neg_pry;
+                automatic logic [WIDTH-1:0] neg_pry;
                 {enc_vld, neg_pry} = -dec_vld;
                 dec_oht = dec_vld & neg_pry;
             end: adder
@@ -46,6 +47,14 @@ module priority_to_onehot_base #(
                     end
                 end
             end: loop
+        2:  // vector (vectorization of the loop code)
+            always_comb
+            begin: vector
+                automatic logic [WIDTH-0:0] carry_chain;
+                carry_chain = {dec_vld, 1'b0} | carry_chain;
+                dec_oht = dec_vld & ~carry_chain[WIDTH-1:0];
+                enc_vld = carry_chain[WIDTH];
+            end: vector
     endcase
     endgenerate
 

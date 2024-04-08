@@ -93,16 +93,50 @@ https://www.researchgate.net/publication/266262724_Pipelined_Compressor_Tree_Opt
 
 ### Arbiter
 
+TODO: arbiter with combinational loop.
+related OpenSTA options:
+-  set_logic_dc, set_logic_one, set_logic_zero
+- conditional set_case_analysis, sta_cond_default_arcs_enabled, sta_dynamic_loop_breaking
+- report issue: unset_data_check
+
+https://www.edaboard.com/threads/moved-combinational-loop-synthesis.372034/
+ones-complement adder
+
+https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Case-Analysis
+
+https://yosyshq.readthedocs.io/projects/yosys/en/latest/cmd/scc.html
+https://stackoverflow.com/questions/44828776/yosys-logic-loop-falsely-detected
+
+
+
 ## References
 
-- [Priority encoder](https://en.wikipedia.org/wiki/Priority_encoder)
-- [Binary Golay code](https://en.wikipedia.org/wiki/Binary_Golay_code)
-- [Hamming code](https://en.wikipedia.org/wiki/Hamming_code#Hamming_codes_with_additional_parity_(SECDED))
+### CPU
 
-- http://www-graphics.stanford.edu/~seander/bithacks.html
-- https://www.beyond-circuits.com/wordpress/2009/01/recursive-modules/
 - https://books.google.si/books/about/Hacker_s_Delight.html?id=VicPJYM0I5QC
-- https://www.edaboard.com/threads/verilog-bit-mask-to-index-converter.274344/
-- http://fpgacpu.ca/fpga/index.html
-- https://pages.hmc.edu/harris/cmosvlsi/4e/lect/lect18.pdf
+- http://www-graphics.stanford.edu/~seander/bithacks.html
 - https://github.com/riscv/riscv-bitmanip/releases/download/v0.93/bitmanip-0.93.pdf
+
+### Digital design
+
+- http://fpgacpu.ca/fpga/index.html
+
+### One-hot encoder/decoder
+
+- https://en.wikipedia.org/wiki/One-hot
+- https://en.wikipedia.org/wiki/Binary_decoder
+- https://en.wikipedia.org/wiki/Encoder_(digital)
+- https://www.edaboard.com/threads/priority-encoder-for-one-hot-to-binary.366915/
+
+### Priority encoder
+
+- [Priority encoder](https://en.wikipedia.org/wiki/Priority_encoder)
+- https://www.edaboard.com/threads/verilog-bit-mask-to-index-converter.274344/
+- https://www.beyond-circuits.com/wordpress/2009/01/recursive-modules/
+
+### ECC
+
+- [Hamming code](https://en.wikipedia.org/wiki/Hamming_code#Hamming_codes_with_additional_parity_(SECDED))
+- [Binary Golay code](https://en.wikipedia.org/wiki/Binary_Golay_code)
+
+- https://pages.hmc.edu/harris/cmosvlsi/4e/lect/lect18.pdf
