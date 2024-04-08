@@ -27,11 +27,12 @@ module onehot_encoder_base #(
         0:  // loop
             always_comb
             begin
+                enc_idx = '0;
                 for (int unsigned i=0; i<WIDTH; i++) begin
                     // the OR operator prevents synthesis of a priority encoder
                     if (dec_vld[i])  enc_idx = enc_idx | i[WIDTH_LOG-1:0];
                 end
-                assign enc_vld = |dec_vld;
+                enc_vld = |dec_vld;
             end
         1:  // table
         begin
@@ -48,7 +49,7 @@ module onehot_encoder_base #(
             endfunction: log2_mask_f
 
             // table constant
-            localparam log2_mask_t LOG2_MASK = log2_mask_f();
+            localparam log2_mask_t LOG2_MASK = log2_mask_f;
 
             // logarithm
             function automatic logic [WIDTH_LOG-1:0] log2_f (

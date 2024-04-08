@@ -59,10 +59,8 @@ module onehot_encoder_tb #(
         #T;
         for (int unsigned i=0; i<IMPLEMENTATIONS; i++) begin
             if (check_enable[i]) begin
-                assert (enc_vld[i] == ref_enc_vld) else $error("IMPLEMENTATION[%0d]:  enc_vld != 1'b%b"  , i,            ref_enc_vld);
-                if (enc_vld[i]) begin  // do not check the encoded output, if it is not supposed to be valid
-                assert (enc_idx[i] == ref_enc_idx) else $error("IMPLEMENTATION[%0d]:  enc_idx != %0d'd%d", i, WIDTH_LOG, ref_enc_idx);
-                end
+                assert (enc_vld[i] ==  ref_enc_vld) else $error("IMPLEMENTATION[%0d]:  enc_vld != 1'b%b"  , i,            ref_enc_vld);
+                assert (enc_idx[i] ==? ref_enc_idx) else $error("IMPLEMENTATION[%0d]:  enc_idx != %0d'd%d", i, WIDTH_LOG, ref_enc_idx);
             end
         end
         #T;

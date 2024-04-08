@@ -31,13 +31,14 @@ module priority_encoder_base #(
         0:  // loop
             always_comb
             begin
+                enc_idx = 'x;
                 for (int unsigned i=0; i<WIDTH; i++) begin
                     if (dec_vld[i]) begin
                         enc_idx = i[WIDTH_LOG-1:0];
                         break;  // the break makes sure the first active input is indexed
                     end
                 end
-                assign enc_vld = |dec_vld;
+                enc_vld = |dec_vld;
             end
         default:  // non loop
         begin

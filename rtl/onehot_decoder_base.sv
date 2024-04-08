@@ -34,25 +34,22 @@ module onehot_decoder_base #(
         1:  // table
         begin
             // table unpacked array type
-            typedef bit [WIDTH_LOG-1:0] pow2_mask_t [WIDTH-1:0];
+            typedef bit [WIDTH-1:0] pow2_maskpow2_mask_t [WIDTH_LOG-1:0];
 
             // table function definition
             function automatic pow2_mask_t pow2_mask_f();
-                for (int unsigned i=0; i<WIDTH; i++) begin
-                    for (int unsigned j=0; j<WIDTH_LOG; j++) begin
-                        pow2_mask_f[i][j] = i[j];
+                for (int unsigned i=0; i<WIDTH_LOG; i++) begin
+                    for (int unsigned j=0; j<WIDTH; j++) begin
+                        pow2_mask_f[i][j] = j[i];
                     end
                 end
             endfunction: pow2_mask_f
 
             // table constant
-            localparam pow2_mask_t POW2_MASK = pow2_mask_f();
+            localparam pow2_mask_t POW2_MASK = pow2_mask_f;
 
             // power
-            always_comb
-            for (int unsigned i=0; i<WIDTH; i++) begin
-                dec_vld[i] = (value == POW2_MASK[i]);
-            end
+            assign dec_vld = POW2_MASK[enc_idx];
         2:  // shift
             assign dec_vld = 1'b1 << enc_idx;
         end
