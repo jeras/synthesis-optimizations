@@ -16,43 +16,50 @@ module onehot_decoder_base #(
     parameter  int unsigned IMPLEMENTATION = 0
     // 0 - loop
     // 1 - table
-    // 2 - shift
+    // 2 - power
+    // 3 - shift
 )(
     input  logic [WIDTH_LOG-1:0] enc_idx,
     output logic [WIDTH    -1:0] dec_vld
 );
 
     // table unpacked array type
-    typedef bit [WIDTH-1:0] pow2_mask_t [WIDTH_LOG-1:0];
+    typedef bit [WIDTH_LOG-1:0] pow2_mask_t [WIDTH-1:0];
 
     // table function definition
-    function automatic pow2_mask_t pow2_mask_f();
-        for (int unsigned i=0; i<WIDTH_LOG; i++) begin
-            for (int unsigned j=0; j<WIDTH; j++) begin
-                pow2_mask_f[i][j] = j[i];
+    function automatic pow2_mask_t tbl_f();
+        for (int unsigned i=0; i<WIDTH; i++) begin
+            for (int unsigned j=0; j<WIDTH_LOG; j++) begin
+                tbl_f[i][j] = i[j];
             end
         end
-    endfunction: pow2_mask_f
+    endfunction: tbl_f
 
     // table constant
-    localparam pow2_mask_t POW2_MASK = pow2_mask_f;
+    localparam pow2_mask_t TBL = tbl_f;
 
     generate
     case (IMPLEMENTATION)
-        0:  // loop
+        0:  // table
+            begin
+                for (int unsigned i=0; i<WIDTH; i++) begin
+                    dec_vld[i] = (TBL[WIDTH_LOG-1:0] == enc_idx);
+                end
+            end
+        1:  // loop
             always_comb
             begin
                 for (int unsigned i=0; i<WIDTH; i++) begin
-                    dec_vld[i] = (i == enc_idx);
+                    dec_vld[i] = (i[WIDTH_LOG-1:0] == enc_idx);
                 end
             end
-        1:  // table
+        3:  // power
             begin
-                assign dec_vld = POW2_MASK[enc_idx];  // power
+                assign dec_vld = 2 ** enc_idx;
             end
-        2:  // shift
+        3:  // shift
             begin
-                assign dec_vld = 1'b1 << enc_idx;  // 2**enc_idx
+                assign dec_vld = 1'b1 << enc_idx;
             end
         default:  // parameter validation
             $fatal("Unsupported IMPLEMENTATION parameter value.");

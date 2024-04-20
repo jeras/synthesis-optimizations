@@ -72,6 +72,8 @@ module priority_encoder_base #(
                                 2'b1?  : enc_idx = 1'd1;
                                 default: enc_idx = 1'dx;
                             endcase
+                            default:  // parameter validation
+                                $fatal("Unsupported IMPLEMENTATION parameter value.");
                         endcase
                     4:  // 4-bit input vector
                         case (IMPLEMENTATION)
@@ -111,14 +113,14 @@ module priority_encoder_base #(
                                 4'b1???: enc_idx = 2'd3;
                                 default: enc_idx = 2'dx;
                             endcase
+                            default:  // parameter validation
+                                $fatal("Unsupported IMPLEMENTATION parameter value.");
                         endcase
                     default:  // parameter validation
                         $fatal("Unsupported WIDTH parameter value.");
                 endcase
                 enc_vld = |dec_vld;
             end
-        default:  // parameter validation
-            $fatal("Unsupported IMPLEMENTATION parameter value.");
     endcase
     endgenerate
 

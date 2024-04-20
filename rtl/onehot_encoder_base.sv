@@ -14,8 +14,8 @@ module onehot_encoder_base #(
     localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
     // implementation
     parameter  int unsigned IMPLEMENTATION = 0
-    // 0 - loop
-    // 1 - table
+    // 0 - table
+    // 1 - loop
 )(
     input  logic [WIDTH    -1:0] dec_vld,
     output logic [WIDTH_LOG-1:0] enc_idx,
@@ -48,6 +48,12 @@ module onehot_encoder_base #(
 
     generate
     case (IMPLEMENTATION)
+        1:  // table
+            always_comb
+            begin
+                enc_idx = log2_f(dec_vld);  // logarithm
+                enc_vld = |dec_vld;
+            end
         0:  // loop
             always_comb
             begin
@@ -56,12 +62,6 @@ module onehot_encoder_base #(
                     // the OR operator prevents synthesis of a priority encoder
                     if (dec_vld[i])  enc_idx = enc_idx | i[WIDTH_LOG-1:0];
                 end
-                enc_vld = |dec_vld;
-            end
-        1:  // table
-            always_comb
-            begin
-                enc_idx = log2_f(dec_vld);  // logarithm
                 enc_vld = |dec_vld;
             end
         default:  // parameter validation
