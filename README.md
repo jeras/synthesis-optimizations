@@ -4,10 +4,10 @@ A quick link table for those who are looking for something specific instead of r
 
 | SystemVerilog | VHDL | Description (link to documentation) |
 |---------------|------|-------------------------------------|
+| [`cmp_eql.sv`](rtl/cmp_eql.sv) | [`cmp_eql.vhd`](rtl/cmp_eql.vhd) | [Equality comparator]() |
 | [`bin2oht.sv`](rtl/bin2oht.sv) | [`bin2oht.vhd`](rtl/bin2oht.vhd) | [binary to one-hot conversion (decoder)]() |
 | [`oht2bin.sv`](rtl/oht2bin.sv) | [`oht2bin.vhd`](rtl/oht2bin.vhd) | [one-hot to binary conversion (simple encoder)]() |
-| [`.sv`](rtl/.sv) | [`.vhd`](rtl/.vhd) | []() |
-| [`.sv`](rtl/.sv) | [`.vhd`](rtl/.vhd) | []() |
+| [`oht2thr.sv`](rtl/oht2thr.sv) | [`oht2thr.vhd`](rtl/oht2thr.vhd) | []() |
 | [`.sv`](rtl/.sv) | [`.vhd`](rtl/.vhd) | []() |
 | [`.sv`](rtl/.sv) | [`.vhd`](rtl/.vhd) | []() |
 | [`.sv`](rtl/.sv) | [`.vhd`](rtl/.vhd) | []() |
@@ -44,6 +44,7 @@ the following coding techniques:
 Specific mapping of the RTL onto ASIC standard libraries and FPGA architectures during synthesis,
 is discussed only in the context of how different coding styles and parameters
 affect inference of dedicated structures:
+
 - adders (fast carry chain),
 - LUT (asynchronous read ROM).
 
@@ -98,20 +99,20 @@ SystemVerilog is also used instead of mathematical notation,
 since it is easier to interpret in the given context (RTL library).
 
 The same number can be represented by different encodings.
-The binary encoding is compact, it requires `$clog2(N)` bits to represent numbers in the range `0:N-1`.
-One-hot, thermometer and priority encodings are verbose, they require `N` bits for the same range.
+The binary encoding is compact, it requires `$clog2(WIDTH)` bits to represent numbers in the range `0:WIDTH-1`.
+One-hot, thermometer and priority encodings are verbose, they require `WIDTH` bits for the same range.
 
-The following table shows the decimal number `a=3` coded in different formats,
-all sized to allow the representation of numbers in the range `0:N-1` where `N=8`.
-In binary, the number is represented with a `$clog2(N)=3` long vector,
-while other encodings use a `N=8` long vector.
+The following table shows the decimal number `i=3` coded in different formats,
+all sized to allow the representation of numbers in the range `0:WIDTH-1` where `WIDTH=8`.
+In binary, the number is represented with a `$clog2(WIDTH)=3` long vector,
+while other encodings use a `WIDTH=8` long vector.
 
 | encoding     | example literal | comment |
 |--------------|-----------------|---------|
 | `bin[3-1:0]` | `3'b011`/`3'd3` |         |
-| `oht[8-1:0]` | `8'b00001000`   | the `a`-th bit is set `oth[a]=1'b1` the others are cleared |
-| `thr[8-1:0]` | `8'b11111000`   | the `a`-th bit is set `oth[a]=1'b1` the bits below are cleared and bits above are set |
-| `pry[8-1:0]` | `8'bXXXX1000`   | the `a`-th bit is set `oth[a]=1'b1` the bits below are cleared are undefined (can have any value) |
+| `oht[8-1:0]` | `8'b00001000`   | the `i`-th bit is set `oth[i]=1'b1` the others are cleared |
+| `thr[8-1:0]` | `8'b11111000`   | the `i`-th bit is set `oth[i]=1'b1` the bits below are cleared and bits above are set |
+| `pry[8-1:0]` | `8'bXXXX1000`   | the `i`-th bit is set `oth[i]=1'b1` the bits below are cleared are undefined (can have any value) |
 
 The one-hot and thermometer encodings are a subset of the priority encoding.
 
@@ -126,19 +127,214 @@ This order is also the most common in modern research papers and implementations
 For use cases where the opposite priority order is desired (not common in modern designs),
 the user can reorder the input/output vectors, but handling the binary encoding would take more effort.
 
-TODO: unpacked array range order.
+TODO: think through the best unpacked array range order, for memories it is usually ascending.
 
 The diagrams also try to match the same orientation and order as bit vectors.
 
+### Linear versus tree structure
+
+One of the aims of this document is to showcase the difference
+between implementing a combinational logic problem as
+a linear structure (carry chain) or tree structure (hierarchy).
+
+Logic blocks will be drawn horizontally, the way adders are usually drawn.
+The blocks are a rectangle `WIDHT` wide and either `WIDTH_LOG=$clog2(WIDTH)` or `1` deep,
+depending on the reduction operation performed by the block.
+
+Just for this chapter, the signals connected to the block will be named as:
+
+- perpendicular (`per_i/o`) vector of `WIDTH` bits and
+- lateral (`lat_i/o`) vector of `WIDTH_LOG` bits or scalar.
+
+![Block with logarithmic reduction.](doc/block_reduction_log.svg)
+
+![Block with reduction to scalar.](doc/block_reduction_one.svg)
+
+Basic building blocks are simple and only handle short vectors.
+ASIC examples would be 2/3/4-input AND/OR gates, ...
+FPGA examples would be LUT4/5/6 and CLBs.
+
+The following two chapters provide a general overview of the two structures,
+explaining some advantages and disadvantages.
+
+| property          | linear   | tree          |
+|-------------------|----------|---------------|
+| logic area        | O(WIDTH) | O(WIDTH)      |
+| routing length    | O(1)     | O(WIDTH)      |
+| propagation delay | O(WIDTH) | O(log(WIDTH)) |
+| power consumption | TBD      | TBD           |
+
+#### Linear structure
+
+A **linear structure** can also be called a **chain** or a **cascade**.
+
+A linear structure is a concatenation of simple building blocks.
+A partial result propagates through the structure,
+in this document the preferred direction is from right (LSB) to left (MSB).
+The final output of the linear structure is the partial result of the last block in the chain.
+
+![Linear structure.](doc/structure_linear.svg)
+
+The logic area is equal to `WIDTH` copies of some basic building block.
+The routing is local and short.
+
+The asymptotical propagation delay has a linear O(WIDTH) dependency on problem size.
+The lateral signal `lat` propagates from block to block (as in an ripple carry adder).
+This means output vector `per_o` delay increases from index `0` to `WIDTH-1`.
+The propagation delay is the sum of (`_i` to `ctl_o`) delays of all building blocks.
+
+In general the linear delay dependency to data vector width is undesirable,
+but it is not always an issue,
+if a linear structure is combinationaly preceded by another linear structure
+(for example a ripple carry adder),
+than the signals can move along the line in tandem,
+so the delay of the two combined is not the sum of the delay of each,
+but instead the second operation adds just a single element delay to the delay of the first operation.
+See the timing annotated simulations for a better explanation.
+
+#### Tree structure
+
+The problem is subdivided into smaller problems
+which are then organized into a hierarchical tree,
+so that the results from multiple branches are combined
+using the same base building block,
+as it is used to calculate the results from the branches themselves.
+
+This approach requires the design of building blocks where
+the encoding of combined outputs from multiple blocks
+matches the encoding used at the input into each block.
+
+Another restriction is that the tree structure must be regular,
+each node connects to a `SPLIT` number of inputs.
+In case the node performs a reduction to a scalar `SPLIT` can be any integer.
+In case the node performs a reduction to a logarithm of 2,
+only power of 2 `SPLIT` values are possible.
+For now this document only discusses this two reduction options.
+
+The main advantage of tree structures is improved asymptotical propagation delay
+with a logarithmic O(log(WIDTH)) dependency on problem size.
+
+![Tree structure.](doc/structure_tree.svg)
+
 ## Components
 
-### Equivalence comparator
+### Bitwise AND/OR/XOR/NOT operation
 
-TODO: Equivalence/equality
+Verilog/SystemVerilog bitwise operators can be used to implement
+this operations on a pair of vectors `a_i` and `b_i`:
 
-The equivalence comparator compares an input vector `bin` against another input or constant vector `ref`.
-Corresponding bits (vector bits with the same index) are compared individually
-and the results are combined into a single bit (scalar) result `eqi`.
+```SystemVerilog
+// input vector operands
+logic [WIDTH-1:0] a_i;
+logic [WIDTH-1:0] b_i;
+// output vector results
+logic [WIDTH-1:0] and_o;
+logic [WIDTH-1:0] or_o;
+logic [WIDTH-1:0] xor_o;
+
+assign and_o = a_i & b_i;
+assign or_o  = a_i | b_i;
+assign xor_o = a_i ^ b_i;
+```
+
+To negate only selected bits the operand `a_i` is bitwise XOR-ed with the control signal `b_i`.
+The effect on each bit is defined as `xor_o[i] = b_i[i] ? ~a_i[i] : a_i[i];`.
+
+Bitwise negation uses a single input vector `op_i`:
+
+```SystemVerilog
+// input vector operand
+logic [WIDTH-1:0] op_i;
+// output vector result
+logic [WIDTH-1:0] not_o;
+
+assign not_o = ~a_i;
+```
+
+Bitwise vector operations are broken into scalar operations
+on individual bits in the vector.
+They do not form a linear or tree structure,
+there are no long timing paths and all routing is local and short.
+
+### Reduction unary AND/OR/XOR operation
+
+Verilog/SystemVerilog reduction unary operators can be used to implement this operations:
+
+```SystemVerilog
+// input vector operand
+logic [WIDTH-1:0] op_i;
+// output scalar results
+logic and_o;
+logic or_o;
+logic xor_o;
+
+assign and_o = & op_i;
+assign or_o  = | op_i;
+assign xor_o = ^ op_i;
+```
+
+FPGA/ASIC synthesis tools are expected to create a tree of primitives.
+LUTs for FPGA and AND/OR/XOR standard cells for ASIC.
+
+Reduction unary operations can be written explicitly as a linear structure
+using a loop over vector indices.
+
+```SystemVerilog
+always_comb
+begin
+    // initialization
+    and_o = 1'b1;
+    or_o  = 1'b0;
+    xor_o = 1'b0;
+    // loop
+    for (unsigned int i=0; i<WIDTH-1; i++) begin
+        and_o &= op_i[i];
+        or_o  |= op_i[i];
+        xor_o ^= op_i[i];
+    end
+end
+```
+
+The same can be done without a loop, using vectors:
+
+```SystemVerilog
+always_comb
+begin
+    // temporary vectors
+    logic [WIDTH:0] and_t;
+    logic [WIDTH:0] or_t ;
+    logic [WIDTH:0] xor_t;
+    // vectorized loop, initialization is prepended to operand at LSB
+    and_t &= {op_i, 1'b1};
+    or_t  |= {op_i, 1'b0};
+    xor_t ^= {op_i, 1'b0};
+    // results are extracted from temporary vector MSB
+    and_o = and_t[WIDTH];
+    or_o  = or_t [WIDTH];
+    xor_o = xor_t[WIDTH];
+end
+```
+
+Some simulation/synthesis tools might have issues with this code.
+Since the same vector is used on both sides of a combinational assignment,
+tools might see this as a false combinational loop.
+
+It is not obvious whether synthesis tools would interpret the linear RTL
+as a linear structure and implement it as such,
+or they would just optimize the code into a tree.
+
+### Equality comparator
+
+The equality comparator compares an input vector `bin` against another input or constant vector `ref`.
+Input vectors are first compared bitwise and the resulting vector is reduced to a scalar result `eql`.
+
+```SystemVerilog
+// binary and reference input vectors
+logic [WIDTH:0] bin;
+logic [WIDTH:0] ref;
+// result scalar
+logic eql
+```
 
 In an ASIC, the comparison is done with one of the following:
 
@@ -146,37 +342,114 @@ In an ASIC, the comparison is done with one of the following:
    creates a vector with bits set where there is a difference,
    this vector is reduced using _unary OR operator_ `|` into a scalar
    indicating there was a difference,
-   which is further negated with `~` to get equivalence `eqi`.
+   which is further negated with `~` to get equality `eql`.
 
    ```SystemVerilog
-   eqi = ~|(bin ^ ref);
+   eql = ~|(bin ^ ref);
    ```
+
 2. Using _bitwise binary exclusive NOR operator_ `~^` on `bin`, `ref`
    creates a vector with bits set where there is a match,
    this vector is reduced using _unary AND operator_ `|` into a scalar
-   indicating all bits are equal `eqi`.
+   indicating all bits are equal `eql`.
 
    ```SystemVerilog
-   eqi = &(bin ~^ ref);
+   eql = &(bin ~^ ref);
    ```
 
 In practice (ASIC and FPGA) it is best to use the _equality operator_ `==`,
 and let the synthesis tool create the optimal implementation.
 
 ```SystemVerilog
-eqi = (bin == ref);
+eql = (bin == ref);
 ```
 
 If the reference vector `ref` is a constant, the XOR/XNOR operations
 are reduced into a passthrough or negator.
 
+If the reference vector is `0` (all bits are zero).
+
+```SystemVerilog
+eql = (bin == '0);
+eql = ~(|bin);
+```
+
+If the reference vector is `-1` (all bits are one).
+
+```SystemVerilog
+eql = (bin == '1);
+eql = &bin;
+```
+
+Synthesis tools would implement the above code with a tree structure.
+
+In ASIC a tree of AND/OR/XOR logic cells
+with two or more inputs will be used to construct the tree.
+
+In a FPGA, if the `bin`/`ref` input width is the same or less than the number of LUT inputs,
+the operation will consume a single LUT.
+(`bin[4-1:0]` fits into LUT4, `bin[6-1:0]` fits into LUT6, ...),
+if the `bin` input width is larger a tree of multiple LUTs will be used.
+
+It is possible to implement the equality comparator using explicitly linear code
+described in the _Reduction unary AND/OR/XOR operation_ section.
+
+```SystemVerilog
+always_comb
+begin
+    // initialization
+    eql = 1'b1;
+    // loop
+    for (unsigned int i=0; i<WIDTH-1; i++) begin
+        eql &= bin[i] ~^ ref[i];
+    end
+end
+```
+
+The same can be done without a loop, using vectors:
+
+```SystemVerilog
+always_comb
+begin
+    // temporary vector
+    logic [WIDTH:0] tmp;
+    // vectorized loop, initialization is prepended to operand at LSB
+    tmp &= {bin ~^ ref, 1'b0};
+    // results are extracted from temporary vector MSB
+    eq = tmp[WIDTH];
+end
+```
+
+The equal to zero comparator can also be written using arithmetic addition/subtraction.
+The two's complement of a nonzero unsigned integer is negative.
+So a number is equal to zero if its two's complement is not negative.
+
+```SystemVerilog
+logic [WIDTH:0] tmp;
+tmp = -bin;
+eql = ~tmp[WIDTH];
+```
+
+The arithmetic negation is achieved by bitwise negating the binary input vector,
+and adding 1 to is, this can be done using a half adder chain.
+
+```SystemVerilog
+logic [WIDTH:0] tmp;
+tmp = (~bin) + 1;
+eql = ~tmp[WIDTH];
+```
+
 ### Address decoder (power of 2 aligned and sized ranges)
 
 An address decoder 
 
+TODO
+
 ### Binary to one-hot conversion
 
-Tabular solution for `N=8` (`$clog2(N)=3`) uses a constant table with one entry for each binary value.
+A common name for this is just _decoder_.
+
+A tabular solution for `WIDTH=8` (`WIDTH_LOG=$clog2(WIDTH)=3`) uses a constant table with one entry for each binary value.
 The `i`-th bit of `oth` output is set if the `bin` input matches the `i`-th element of the table.
 The RTL library implementation contains a table generator.
 
@@ -201,17 +474,12 @@ end
 The implementation is an equality comparator for each `oht` output bit.
 This is how a decoder is usually implemented in an ASIC.
 
-In a FPGA, if the `bin` input width is the same or less than the number of LUT inputs,
-each `oht` output bit will consume a single LUT
-(`bin[4-1:0]` fits into LUT4, `bin[6-1:0]` fits into LUT6, ...),
-if the `bin` input width is larger multiple LUTs will be used.
-
 The same approach can be implemented in a single loop,
 creating table entries (`i[3-1:0]`) within the loop.
 
 ```SystemVerilog
-for (int unsigned i=0; i<8; i++) begin
-    oht[i] = (bin == i[3-1:0]) ? 1'b1 : 1'b0;
+for (int unsigned i=0; i<WIDTH; i++) begin
+    oht[i] = (bin == i[WIDTH_LOG-1:0]) ? 1'b1 : 1'b0;
 end
 ```
 
@@ -231,21 +499,49 @@ Most synthesis tools will implement both alternative solutions the same as the t
 
 ### One-hot to binary conversion
 
-Tabular solution for `N=8` uses a constant table with one entry for each binary value.
+Tabular solution for `WIDTH=8` uses a constant table with one entry for each binary value index.
 The library implementation contains a table generator.
+The `j`-th column in the table (from right to left)
+is binary representation of the number `j`.
+The `i`-th bit of `bin` is the AND reduction of the `oht` vector
+bitwise OR-ed with the `i`-th row in the table.
 
 ```SystemVerilog
 // table
-localparam [N-1:0] PWR [3-1:0] = '{
+localparam [8-1:0] TBL [3-1:0] = '{
     8'b01010101,
     8'b11001100,
     8'b11110000
 };
 // conversion
-oht = PWR(bin);
+for (int unsigned i=0; i<3; i++) begin
+    bit[i] = |(oht & TBL[i]);
+end
 ```
 
+The transposed table is my attempt to convey the idea
+of using logarithm of 2, the opposite operation to power of 2.
+HDL languages Verilog/SystemVerilog and VHDL do not provide a synthesizable logarithm operator.
+A similar approach is often used to implement this conversion in software.
 
+An explicitly linear implementation of the operation can be written with slightly more compact code.
+
+```SystemVerilog
+always_comb
+begin
+    bin = '0;
+    for (int unsigned i=0; i<WIDTH; i++) begin
+        // the OR operator prevents synthesis of a priority encoder
+        if (dec_vld[i])  enc_idx = enc_idx | i[WIDTH_LOG-1:0];
+    end
+    enc_vld = |dec_vld;
+end
+```
+
+In case this would provide some kind of advantage (shared logic),
+the operation could also be implemented using `WIDTH_LOG` adders.
+
+### One-hot to thermometer conversion
 
 ### Multiplexer
 
@@ -312,7 +608,52 @@ https://docs.amd.com/r/en-US/ug949-vivado-design-methodology/Case-Analysis
 https://yosyshq.readthedocs.io/projects/yosys/en/latest/cmd/scc.html
 https://stackoverflow.com/questions/44828776/yosys-logic-loop-falsely-detected
 
+## Plans
 
+### Combined arbiter and multiplexer implementations
+
+This implementations provide significant timing and power consumption advantages.
+The multiplexer select signals are generated at each tree node,
+thus arriving early (better propagation delay),
+the distribution reduces fan-out thus improving timing and power,
+Since the select signals are derived from local arbitration,
+they toggle less (no toggling caused by combining with other nodes),
+and thus provide significant power reduction.
+
+The simple priority arbiter can be modified almost trivially.
+
+For a round robin arbiter I have a reference implementation (actually just a book documenting it, not the actual code),
+but I think I should be able to further improve and generalize it.
+
+I observed the AXI multiplexer from the Pulp Platform and think I can do better.
+Their current implementation is using the established approach
+with a pair of priority arbiters and thermometer encoding mask for one of them.
+This approach is not compatible with combining multiplexers.
+They might provide me with researches willing to test my implementations
+on professional ASIC tools.
+
+### FPGA synthesis
+
+Synthesis of linear and tree structures on popular families of FPGA devices from major vendors.
+
+A synthesis script would go through different implementations of each component with a range of WIDTH values.
+
+The scripts would create tables and graphs for each component and implementation
+providing the measured logic consumption and propagation delays.
+I also wish to provide vector diagrams (pdf, svg) of each implementation,
+to be able to check whether the desired structure (linear versus tree is achieved),
+I would also like to see if the fast carry chain logic is inferred when it is expected to provide an advantage.
+
+### ASIC synthesis
+
+Similar to FPGA synthesis, using open source ASIC PDK and standard cell libraries (Sky130, ...)
+with the addition of P&R and static/dynamic power measurements using OpenSTA.
+The dynamic power measurements would be done using VCD files from timing annotated simulation.
+
+I would also like to see whether an adder followed by a linear zero comparator
+provides better timing compared to a tree implementation.
+For this I would show the waveforms from timing annotated simulation,
+overlayed waveforms from simulation with multiple random or exhaustive input values.
 
 ## References
 
