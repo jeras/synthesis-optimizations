@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// one-hot encoder,
+// binary to one-hot conversion (one-hot decoder),
 // testbench
 //
 // @author: Iztok Jeras <iztok.jeras@gmail.com>
@@ -7,7 +7,7 @@
 // Licensed under CERN-OHL-P v2 or later
 ///////////////////////////////////////////////////////////////////////////////
 
-module onehot_encoder_tb #(
+module bin2oht_tb #(
     // size parameters
     int unsigned WIDTH = 16,
     int unsigned SPLIT = 4
@@ -20,48 +20,40 @@ module onehot_encoder_tb #(
     // timing constant
     localparam time T = 10ns;
 
-    localparam int unsigned IMPLEMENTATIONS = 2;
+    localparam int unsigned IMPLEMENTATIONS = 4;
 
-    // input
-    logic [WIDTH    -1:0] dec_vld;
-    // one-hot encoder
-    logic [WIDTH_LOG-1:0] enc_idx [0:IMPLEMENTATIONS-1];
-    logic                 enc_vld [0:IMPLEMENTATIONS-1];  // cumulative valid
-    // reference encoder
-    logic [WIDTH_LOG-1:0] ref_enc_idx;
-    logic                 ref_enc_vld;
+    // valid and binary inputs
+    logic                 vld;
+    logic [WIDTH_LOG-1:0] bin;
+    // one-hot output
+    logic [WIDTH    -1:0] oht [0:IMPLEMENTATIONS-1];
+    // reference signals
+    logic [WIDTH    -1:0] ref_oht;
 
 ///////////////////////////////////////////////////////////////////////////////
 // reference calculation and checking of DUT outputs against reference
 ///////////////////////////////////////////////////////////////////////////////
 
-    function automatic [WIDTH_LOG-1:0] encoder (
-        logic [WIDTH-1:0] dec_vld
+    function automatic [WIDTH-1:0] ref_bin2oht (
+        logic                 vld,
+        logic [WIDTH_LOG-1:0] bin
     );
         for (int unsigned i=0; i<WIDTH; i++) begin
-            if (dec_vld[i] == 1'b1)  return WIDTH_LOG'(i);
+            ref_bin2oht[i] = vld ? (bin == i[WIDTH_LOG-1:0]) : 1'b0;
         end
-        return 'x;
-    endfunction: encoder
+    endfunction: ref_bin2oht
 
-    // reference encoder
+    // reference ref_bin2oht
     always_comb
     begin
-        ref_enc_idx = encoder(dec_vld);
-        ref_enc_vld =       |(dec_vld);    
+        ref_oht = ref_bin2oht(vld, bin);
     end
-
-    // check enable depending on test
-    bit [0:IMPLEMENTATIONS-1] check_enable;
 
     // output checking task
     task check();
         #T;
         for (int unsigned i=0; i<IMPLEMENTATIONS; i++) begin
-            if (check_enable[i]) begin
-                assert (enc_vld[i] ==  ref_enc_vld) else $error("IMPLEMENTATION[%0d]:  enc_vld != 1'b%b"  , i,            ref_enc_vld);
-                assert (enc_idx[i] ==? ref_enc_idx) else $error("IMPLEMENTATION[%0d]:  enc_idx != %0d'd%d", i, WIDTH_LOG, ref_enc_idx);
-            end
+            assert (oht[i] ==  ref_oht) else $error("IMPLEMENTATION[%0d]:  oht != %0d'b%b", i, WIDTH, ref_oht);
         end
         #T;
     endtask: check
@@ -78,18 +70,15 @@ module onehot_encoder_tb #(
     begin
         // idle test
         test_name = "idle";
-        check_enable = IMPLEMENTATIONS'('1);
-        dec_vld <= '0;
+        vld <= 1'b0;
+        bin <= 'x;
         check;
 
-        // one-hot encoder test
+        // test all binary combinations
         test_name = "one-hot";
-        check_enable = IMPLEMENTATIONS'('1);
+        vld <= 1'b1;
         for (int unsigned i=0; i<WIDTH; i++) begin
-            logic [WIDTH-1:0] tmp_vld;
-            tmp_vld = '0;
-            tmp_vld[i] = 1'b1;
-            dec_vld <= tmp_vld;
+            bin = i[WIDTH_LOG-1:0];
             check;
         end
         $finish;
@@ -103,17 +92,17 @@ module onehot_encoder_tb #(
     for (genvar i=0; i<IMPLEMENTATIONS; i++) begin: imp
 
         // DUT RTL instance
-        onehot_encoder_tree #(
+        bin2oht #(
             .WIDTH (WIDTH),
             .SPLIT (SPLIT),
             .IMPLEMENTATION (i)
         ) dut (
-            .dec_vld (dec_vld),
-            .enc_idx (enc_idx[i]),
-            .enc_vld (enc_vld[i])
+            .vld (vld),
+            .bin (bin),
+            .oht (oht[i])
         );
 
     end: imp
     endgenerate
 
-endmodule: onehot_encoder_tb
+endmodule: bin2oht_tb

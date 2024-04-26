@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// one-hot encoder,
+// one-hot ref_oht2bin,
 // testbench
 //
 // @author: Iztok Jeras <iztok.jeras@gmail.com>
@@ -7,7 +7,7 @@
 // Licensed under CERN-OHL-P v2 or later
 ///////////////////////////////////////////////////////////////////////////////
 
-module onehot_encoder_tb #(
+module oht2bin_tb #(
     // size parameters
     int unsigned WIDTH = 16,
     int unsigned SPLIT = 4
@@ -22,33 +22,34 @@ module onehot_encoder_tb #(
 
     localparam int unsigned IMPLEMENTATIONS = 2;
 
-    // input
-    logic [WIDTH    -1:0] dec_vld;
-    // one-hot encoder
-    logic [WIDTH_LOG-1:0] enc_idx [0:IMPLEMENTATIONS-1];
-    logic                 enc_vld [0:IMPLEMENTATIONS-1];  // cumulative valid
-    // reference encoder
-    logic [WIDTH_LOG-1:0] ref_enc_idx;
-    logic                 ref_enc_vld;
+    // one-hot input
+    logic [WIDTH    -1:0] oht;
+    // binary and valid outputs
+    logic [WIDTH_LOG-1:0] bin [0:IMPLEMENTATIONS-1];
+    logic                 vld [0:IMPLEMENTATIONS-1];
+    // reference signals
+    logic [WIDTH_LOG-1:0] ref_bin;
+    logic                 ref_vld;
 
 ///////////////////////////////////////////////////////////////////////////////
 // reference calculation and checking of DUT outputs against reference
 ///////////////////////////////////////////////////////////////////////////////
 
-    function automatic [WIDTH_LOG-1:0] encoder (
-        logic [WIDTH-1:0] dec_vld
+    // reference function
+    function automatic [WIDTH_LOG-1:0] ref_oht2bin (
+        logic [WIDTH-1:0] oht
     );
         for (int unsigned i=0; i<WIDTH; i++) begin
-            if (dec_vld[i] == 1'b1)  return WIDTH_LOG'(i);
+            if (oht[i] == 1'b1)  return WIDTH_LOG'(i);
         end
         return 'x;
-    endfunction: encoder
+    endfunction: ref_oht2bin
 
-    // reference encoder
+    // reference assignment
     always_comb
     begin
-        ref_enc_idx = encoder(dec_vld);
-        ref_enc_vld =       |(dec_vld);    
+        ref_bin = ref_oht2bin(oht);
+        ref_vld =           |(oht);    
     end
 
     // check enable depending on test
@@ -59,8 +60,8 @@ module onehot_encoder_tb #(
         #T;
         for (int unsigned i=0; i<IMPLEMENTATIONS; i++) begin
             if (check_enable[i]) begin
-                assert (enc_vld[i] ==  ref_enc_vld) else $error("IMPLEMENTATION[%0d]:  enc_vld != 1'b%b"  , i,            ref_enc_vld);
-                assert (enc_idx[i] ==? ref_enc_idx) else $error("IMPLEMENTATION[%0d]:  enc_idx != %0d'd%d", i, WIDTH_LOG, ref_enc_idx);
+                assert (vld[i] ==  ref_vld) else $error("IMPLEMENTATION[%0d]:  vld != 1'b%b"  , i,            ref_vld);
+                assert (bin[i] ==? ref_bin) else $error("IMPLEMENTATION[%0d]:  bin != %0d'd%d", i, WIDTH_LOG, ref_bin);
             end
         end
         #T;
@@ -79,17 +80,17 @@ module onehot_encoder_tb #(
         // idle test
         test_name = "idle";
         check_enable = IMPLEMENTATIONS'('1);
-        dec_vld <= '0;
+        oht <= '0;
         check;
 
-        // one-hot encoder test
+        // one-hot ref_oht2bin test
         test_name = "one-hot";
         check_enable = IMPLEMENTATIONS'('1);
         for (int unsigned i=0; i<WIDTH; i++) begin
             logic [WIDTH-1:0] tmp_vld;
             tmp_vld = '0;
             tmp_vld[i] = 1'b1;
-            dec_vld <= tmp_vld;
+            oht <= tmp_vld;
             check;
         end
         $finish;
@@ -103,17 +104,17 @@ module onehot_encoder_tb #(
     for (genvar i=0; i<IMPLEMENTATIONS; i++) begin: imp
 
         // DUT RTL instance
-        onehot_encoder_tree #(
+        oht2bin #(
             .WIDTH (WIDTH),
             .SPLIT (SPLIT),
             .IMPLEMENTATION (i)
         ) dut (
-            .dec_vld (dec_vld),
-            .enc_idx (enc_idx[i]),
-            .enc_vld (enc_vld[i])
+            .oht (oht),
+            .bin (bin[i]),
+            .vld (vld[i])
         );
 
     end: imp
     endgenerate
 
-endmodule: onehot_encoder_tb
+endmodule: oht2bin_tb

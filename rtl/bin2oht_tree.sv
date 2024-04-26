@@ -17,8 +17,9 @@ module bin2oht_tree #(
     // implementation (see `bin2oht_base` for details)
     parameter  int unsigned IMPLEMENTATION = 0
 )(
-    input  logic [WIDTH_LOG-1:0] bin,
-    output logic [WIDTH    -1:0] oht
+    input  logic                 vld,  // valid
+    input  logic [WIDTH_LOG-1:0] bin,  // binary
+    output logic [WIDTH    -1:0] oht   // one-hot
 );
 
     // SPLIT to the power of logarithm of WIDTH base SPLIT
@@ -33,16 +34,31 @@ module bin2oht_tree #(
             .WIDTH (WIDTH),
             .IMPLEMENTATION (IMPLEMENTATION)
         ) decoder (
-            .oht (oht),
-            .bin (bin)
+            .vld (vld),
+            .bin (bin),
+            .oht (oht)
         );
 
     end: leaf
     // combining SPLIT sub-branches into a single branch closer to the tree trunk
     else begin: branch
 
-        logic [SPLIT-1:0] [WIDTH_LOG-SPLIT_LOG-1:0] sub_idx;
-        logic                       [SPLIT_LOG-1:0] brn_idx;
+        logic           [SPLIT    -1:0] oht_brn;
+        logic           [SPLIT_LOG-1:0] bin_brn;
+        logic [WIDTH_LOG-SPLIT_LOG-1:0] bin_sub;
+
+        // multiplex sub-branches into branch
+        assign {bin_brn, bin_sub} = bin;
+
+        // branch
+        bin2oht_base #(
+            .WIDTH (SPLIT),
+            .IMPLEMENTATION (IMPLEMENTATION)
+        ) enc_brn (
+            .vld (vld),
+            .bin (bin_brn),
+            .oht (oht_brn)
+        );
 
         // sub-branches
         bin2oht_tree #(
@@ -50,21 +66,10 @@ module bin2oht_tree #(
             .SPLIT (SPLIT),
             .IMPLEMENTATION (IMPLEMENTATION)
         ) enc_sub [SPLIT-1:0] (
-            .oht (oht),
-            .bin (sub_idx),
+            .vld (oht_brn),
+            .bin (bin_sub),
+            .oht (oht)
         );
-
-        // branch
-        bin2oht_base #(
-            .WIDTH (SPLIT),
-            .IMPLEMENTATION (IMPLEMENTATION)
-        ) enc_brn (
-            .oht (sub_vld),
-            .bin (brn_idx),
-        );
-
-        // multiplex sub-branches into branch
-        assign bin = {brn_idx, sub_idx[brn_idx]};
 
     end: branch
     endgenerate

@@ -19,8 +19,9 @@ module bin2oht_base #(
     // 2 - power
     // 3 - shift
 )(
-    input  logic [WIDTH_LOG-1:0] bin,
-    output logic [WIDTH    -1:0] oht
+    input  logic                 vld,  // valid
+    input  logic [WIDTH_LOG-1:0] bin,  // binary
+    output logic [WIDTH    -1:0] oht   // one-hot
 );
 
     // table unpacked array type
@@ -41,26 +42,19 @@ module bin2oht_base #(
     generate
     case (IMPLEMENTATION)
         0:  // table
-            begin
-                for (int unsigned i=0; i<WIDTH; i++) begin
-                    oht[i] = (TBL[WIDTH_LOG-1:0] == bin);
-                end
+            always_comb
+            for (int unsigned i=0; i<WIDTH; i++) begin
+                oht[i] = (TBL[i] == bin) ? vld : 1'b0;
             end
         1:  // loop
             always_comb
-            begin
-                for (int unsigned i=0; i<WIDTH; i++) begin
-                    oht[i] = (i[WIDTH_LOG-1:0] == bin);
-                end
+            for (int unsigned i=0; i<WIDTH; i++) begin
+                oht[i] = (i[WIDTH_LOG-1:0] == bin) ? vld : 1'b0;
             end
-        3:  // power
-            begin
-                assign oht = 2 ** bin;
-            end
+        2:  // power
+            assign oht = vld ? 2 ** bin : '0;
         3:  // shift
-            begin
-                assign oht = 1'b1 << bin;
-            end
+            assign oht = vld << bin;
         default:  // parameter validation
             $fatal("Unsupported IMPLEMENTATION parameter value.");
     endcase

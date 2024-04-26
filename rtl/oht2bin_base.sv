@@ -48,13 +48,13 @@ module onehot_encoder_base #(
 
     generate
     case (IMPLEMENTATION)
-        1:  // table
+        0:  // table
             always_comb
             begin
                 enc_idx = log2_f(dec_vld);  // logarithm
                 enc_vld = |dec_vld;
             end
-        0:  // loop
+        1:  // loop
             always_comb
             begin
                 enc_idx = '0;

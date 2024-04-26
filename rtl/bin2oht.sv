@@ -7,7 +7,7 @@
 // Licensed under CERN-OHL-P v2 or later
 ///////////////////////////////////////////////////////////////////////////////
 
-module bin2oht_tree #(
+module bin2oht #(
     // size parameters
     parameter  int unsigned WIDTH = 32,
     parameter  int unsigned SPLIT = 2,
@@ -17,8 +17,9 @@ module bin2oht_tree #(
     // implementation (see `bin2oht_base` for details)
     parameter  int unsigned IMPLEMENTATION = 0
 )(
-    input  logic [WIDTH_LOG-1:0] bin,
-    output logic [WIDTH    -1:0] oht
+    input  logic                 vld,  // valid
+    input  logic [WIDTH_LOG-1:0] bin,  // binary
+    output logic [WIDTH    -1:0] oht   // one-hot
 );
 
     // SPLIT to the power of logarithm of WIDTH base SPLIT
@@ -35,21 +36,35 @@ module bin2oht_tree #(
     // if WIDTH is not a power of SPLIT
     else if (WIDTH != POWER) begin: extend
 
-        logic [POWER-1:0] tmp_vld;
+        logic [POWER-1:0] oht_tmp;
         
-        // zero extend the input vector
-        assign tmp_vld = POWER'(oht);
-
-        // the synthesis tool is expected to optimize out the logic for constant inputs
         bin2oht_tree #(
             .WIDTH (POWER),
             .SPLIT (SPLIT),
             .IMPLEMENTATION (IMPLEMENTATION)
         ) enc (
+            .vld (vld),
             .bin (bin),
-            .oht (tmp_vld)
+            .oht (oht_tmp)
         );
 
-    end: extend
+        // crop the input vector
+        assign oht = WIDTH'(oht_tmp);
 
-endmodule: bin2oht_tree
+    end: extend
+    else begin: exact
+
+        bin2oht_tree #(
+            .WIDTH (POWER),
+            .SPLIT (SPLIT),
+            .IMPLEMENTATION (IMPLEMENTATION)
+        ) enc (
+            .vld (vld),
+            .bin (bin),
+            .oht (oht)
+        );
+
+    end: exact
+    endgenerate
+
+endmodule: bin2oht
