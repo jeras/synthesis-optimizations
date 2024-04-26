@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// one-hot decoder,
+// binary to one-hot conversion (one-hot decoder),
 // base with parametrized implementation options
 //
 // @author: Iztok Jeras <iztok.jeras@gmail.com>
@@ -7,7 +7,7 @@
 // Licensed under CERN-OHL-P v2 or later
 ///////////////////////////////////////////////////////////////////////////////
 
-module onehot_decoder_base #(
+module bin2oht_base #(
     // size parameters
     parameter  int unsigned WIDTH = 32,
     // size local parameters
@@ -19,8 +19,8 @@ module onehot_decoder_base #(
     // 2 - power
     // 3 - shift
 )(
-    input  logic [WIDTH_LOG-1:0] enc_idx,
-    output logic [WIDTH    -1:0] dec_vld
+    input  logic [WIDTH_LOG-1:0] bin,
+    output logic [WIDTH    -1:0] oht
 );
 
     // table unpacked array type
@@ -43,27 +43,27 @@ module onehot_decoder_base #(
         0:  // table
             begin
                 for (int unsigned i=0; i<WIDTH; i++) begin
-                    dec_vld[i] = (TBL[WIDTH_LOG-1:0] == enc_idx);
+                    oht[i] = (TBL[WIDTH_LOG-1:0] == bin);
                 end
             end
         1:  // loop
             always_comb
             begin
                 for (int unsigned i=0; i<WIDTH; i++) begin
-                    dec_vld[i] = (i[WIDTH_LOG-1:0] == enc_idx);
+                    oht[i] = (i[WIDTH_LOG-1:0] == bin);
                 end
             end
         3:  // power
             begin
-                assign dec_vld = 2 ** enc_idx;
+                assign oht = 2 ** bin;
             end
         3:  // shift
             begin
-                assign dec_vld = 1'b1 << enc_idx;
+                assign oht = 1'b1 << bin;
             end
         default:  // parameter validation
             $fatal("Unsupported IMPLEMENTATION parameter value.");
     endcase
     endgenerate
 
-endmodule: onehot_decoder_base
+endmodule: bin2oht_base

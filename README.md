@@ -474,8 +474,13 @@ end
 The implementation is an equality comparator for each `oht` output bit.
 This is how a decoder is usually implemented in an ASIC.
 
+In a FPGA, if the `bin` input width is the same or less than the number of LUT inputs,
+each `oht` output bit will consume a single LUT
+(`bin[4-1:0]` fits into LUT4, `bin[6-1:0]` fits into LUT6, ...),
+if the `bin` input width is larger multiple LUTs will be used.
+
 The same approach can be implemented in a single loop,
-creating table entries (`i[3-1:0]`) within the loop.
+creating table entries (`i[WIDTH_LOG-1:0]`) within the loop.
 
 ```SystemVerilog
 for (int unsigned i=0; i<WIDTH; i++) begin
