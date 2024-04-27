@@ -1,25 +1,25 @@
 ///////////////////////////////////////////////////////////////////////////////
-// one-hot encoder
-// implemented as a tree using recursion
+// one-hot to binary conversion (one-hot encoder)
+// generic version with padding
 //
 // @author: Iztok Jeras <iztok.jeras@gmail.com>
 //
 // Licensed under CERN-OHL-P v2 or later
 ///////////////////////////////////////////////////////////////////////////////
 
-module onehot_encoder_tree #(
+module oht2bin #(
     // size parameters
     parameter  int unsigned WIDTH = 32,
     parameter  int unsigned SPLIT = 2,
     // size local parameters
     localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
     localparam int unsigned SPLIT_LOG = $clog2(SPLIT),
-    // implementation (see `onehot_encoder_base` for details)
+    // implementation (see `oht2bin_base` for details)
     parameter  int unsigned IMPLEMENTATION = 0
 )(
-    input  logic [WIDTH    -1:0] dec_vld,
-    output logic [WIDTH_LOG-1:0] enc_idx,
-    output logic                 enc_vld
+    input  logic [WIDTH    -1:0] oht,  // one-hot
+    output logic [WIDTH_LOG-1:0] bin,  // binary
+    output logic                 vld   // valid
 );
 
     // SPLIT to the power of logarithm of WIDTH base SPLIT
@@ -36,68 +36,36 @@ module onehot_encoder_tree #(
     // if WIDTH is not a power of SPLIT
     else if (WIDTH != POWER) begin: extend
 
-        logic [POWER-1:0] tmp_vld;
+        logic [POWER-1:0] oht_tmp;
         
         // zero extend the input vector
-        assign tmp_vld = POWER'(dec_vld);
+        assign oht_tmp = POWER'(oht);
 
         // the synthesis tool is expected to optimize out the logic for constant inputs
-        onehot_encoder_tree #(
+        oht2bin_tree #(
             .WIDTH (POWER),
             .SPLIT (SPLIT),
             .IMPLEMENTATION (IMPLEMENTATION)
         ) enc (
-            .dec_vld (tmp_vld),
-            .enc_idx (enc_idx),
-            .enc_vld (enc_vld)
+            .oht (oht_tmp),
+            .bin (bin),
+            .vld (vld)
         );
 
     end: extend
-    // leafs at the end of tree branches
-    else if (WIDTH == SPLIT) begin: leaf
+    // width is a power of split
+    else begin: exact
 
-        onehot_encoder_base #(
+        oht2bin_tree #(
             .WIDTH (WIDTH),
             .IMPLEMENTATION (IMPLEMENTATION)
         ) encoder (
-            .dec_vld (dec_vld),
-            .enc_idx (enc_idx),
-            .enc_vld (enc_vld)
+            .oht (oht),
+            .bin (bin),
+            .vld (vld)
         );
 
-    end: leaf
-    // combining SPLIT sub-branches into a single branch closer to the tree trunk
-    else begin: branch
-
-        logic [SPLIT-1:0] [WIDTH_LOG-SPLIT_LOG-1:0] sub_idx;
-        logic [SPLIT-1:0]                           sub_vld;
-        logic                       [SPLIT_LOG-1:0] brn_idx;
-
-        // sub-branches
-        onehot_encoder_tree #(
-            .WIDTH (WIDTH/SPLIT),
-            .SPLIT (SPLIT),
-            .IMPLEMENTATION (IMPLEMENTATION)
-        ) enc_sub [SPLIT-1:0] (
-            .dec_vld (dec_vld),
-            .enc_idx (sub_idx),
-            .enc_vld (sub_vld)
-        );
-
-        // branch
-        onehot_encoder_base #(
-            .WIDTH (SPLIT),
-            .IMPLEMENTATION (IMPLEMENTATION)
-        ) enc_brn (
-            .dec_vld (sub_vld),
-            .enc_idx (brn_idx),
-            .enc_vld (enc_vld)
-        );
-
-        // multiplex sub-branches into branch
-        assign enc_idx = {brn_idx, sub_idx[brn_idx]};
-
-    end: branch
+    end: exact
     endgenerate
 
-endmodule: onehot_encoder_tree
+endmodule: oht2bin

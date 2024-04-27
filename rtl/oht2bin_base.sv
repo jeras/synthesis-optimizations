@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// one-hot encoder,
+// one-hot to binary conversion (one-hot encoder)
 // base with parametrized implementation options
 //
 // @author: Iztok Jeras <iztok.jeras@gmail.com>
@@ -7,7 +7,7 @@
 // Licensed under CERN-OHL-P v2 or later
 ///////////////////////////////////////////////////////////////////////////////
 
-module onehot_encoder_base #(
+module oht2bin_base #(
     // size parameters
     parameter  int unsigned WIDTH = 32,
     // size local parameters
@@ -15,11 +15,12 @@ module onehot_encoder_base #(
     // implementation
     parameter  int unsigned IMPLEMENTATION = 0
     // 0 - table
-    // 1 - loop
+    // 1 - loop all
+    // 2 - loop ones
 )(
-    input  logic [WIDTH    -1:0] dec_vld,
-    output logic [WIDTH_LOG-1:0] enc_idx,
-    output logic                 enc_vld
+    input  logic [WIDTH    -1:0] oht,  // one-hot
+    output logic [WIDTH_LOG-1:0] bin,  // binary
+    output logic                 vld   // valid
 );
 
     // table unpacked array type
@@ -51,22 +52,31 @@ module onehot_encoder_base #(
         0:  // table
             always_comb
             begin
-                enc_idx = log2_f(dec_vld);  // logarithm
-                enc_vld = |dec_vld;
+                bin = log2_f(oht);  // logarithm
+                vld =       |oht;
             end
-        1:  // loop
+        1:  // loop all
             always_comb
             begin
-                enc_idx = '0;
+                bin = '0;
+                for (int unsigned i=0; i<WIDTH; i++) begin
+                    bin |= oht[i] ? i[WIDTH_LOG-1:0] : '0;
+                end
+                vld = |oht;
+            end
+        2:  // loop ones
+            always_comb
+            begin
+                bin = '0;
                 for (int unsigned i=0; i<WIDTH; i++) begin
                     // the OR operator prevents synthesis of a priority encoder
-                    if (dec_vld[i])  enc_idx = enc_idx | i[WIDTH_LOG-1:0];
+                    if (oht[i])  bin = bin | i[WIDTH_LOG-1:0];
                 end
-                enc_vld = |dec_vld;
+                vld = |oht;
             end
         default:  // parameter validation
             $fatal("Unsupported IMPLEMENTATION parameter value.");
     endcase
     endgenerate
 
-endmodule: onehot_encoder_base
+endmodule: oht2bin_base

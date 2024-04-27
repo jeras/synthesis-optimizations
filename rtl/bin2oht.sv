@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 // binary to one-hot conversion (one-hot decoder),
-// generic version with padding
+// generic version with cropping
 //
 // @author: Iztok Jeras <iztok.jeras@gmail.com>
 //
@@ -52,6 +52,7 @@ module bin2oht #(
         assign oht = WIDTH'(oht_tmp);
 
     end: extend
+    // width is a power of split
     else begin: exact
 
         bin2oht_tree #(

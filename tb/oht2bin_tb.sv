@@ -20,7 +20,7 @@ module oht2bin_tb #(
     // timing constant
     localparam time T = 10ns;
 
-    localparam int unsigned IMPLEMENTATIONS = 2;
+    localparam int unsigned IMPLEMENTATIONS = 3;
 
     // one-hot input
     logic [WIDTH    -1:0] oht;
