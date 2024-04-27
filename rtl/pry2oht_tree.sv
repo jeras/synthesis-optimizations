@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// one-hot to binary conversion (one-hot encoder)
+// priority (rightmost) to one-hot conversion,
 // implemented as a tree using recursion
 //
 // @author: Iztok Jeras <iztok.jeras@gmail.com>
@@ -7,31 +7,31 @@
 // Licensed under CERN-OHL-P v2 or later
 ///////////////////////////////////////////////////////////////////////////////
 
-module oht2bin_tree #(
+module pry2oht_tree #(
     // size parameters
     parameter  int unsigned WIDTH = 32,
     parameter  int unsigned SPLIT = 2,
     // size local parameters
     localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
     localparam int unsigned SPLIT_LOG = $clog2(SPLIT),
-    // implementation (see `oht2bin_base` for details)
+    // implementation (see `pry2oht_base` for details)
     parameter  int unsigned IMPLEMENTATION = 0
 )(
-    input  logic [WIDTH    -1:0] oht,  // one-hot
-    output logic [WIDTH_LOG-1:0] bin,  // binary
-    output logic                 vld   // valid
+    input  logic [WIDTH-1:0] pry,  // priority
+    output logic [WIDTH-1:0] oht,  // one-hot
+    output logic             vld   // valid
 );
 
     generate
     // leafs at the end of tree branches
     if (WIDTH == SPLIT) begin: leaf
 
-        oht2bin_base #(
+        pry2oht_base #(
             .WIDTH (WIDTH),
             .IMPLEMENTATION (IMPLEMENTATION)
         ) encoder (
+            .pry (pry),
             .oht (oht),
-            .bin (bin),
             .vld (vld)
         );
 
@@ -39,35 +39,37 @@ module oht2bin_tree #(
     // combining SPLIT sub-branches into a single branch closer to the tree trunk
     else begin: branch
 
-        logic [SPLIT-1:0] [WIDTH_LOG-SPLIT_LOG-1:0] bin_sub;  // binary from sub-branches
-        logic [SPLIT-1:0]                           vld_sub;  // valid  from sub-branches
-        logic                       [SPLIT_LOG-1:0] bin_brn;  // binary from     branch
+        logic [SPLIT-1:0] [WIDTH/SPLIT-1:0] oht_sub;  // one-hot from sub-branches
+        logic [SPLIT-1:0]                   vld_sub;  // valid   from sub-branches
+        logic [SPLIT-1:0]                   oht_brn;  // one-hot from     branch
 
         // sub-branches
-        oht2bin_tree #(
+        pry2oht_tree #(
             .WIDTH (WIDTH/SPLIT),
             .SPLIT (SPLIT),
             .IMPLEMENTATION (IMPLEMENTATION)
         ) enc_sub [SPLIT-1:0] (
-            .oht (oht),
-            .bin (bin_sub),
+            .pry (pry),
+            .oht (oht_sub),
             .vld (vld_sub)
         );
 
         // branch
-        oht2bin_base #(
+        pry2oht_base #(
             .WIDTH (SPLIT),
             .IMPLEMENTATION (IMPLEMENTATION)
         ) enc_brn (
-            .oht (vld_sub),
-            .bin (bin_brn),
+            .pry (vld_sub),
+            .oht (oht_brn),
             .vld (vld)
         );
 
         // multiplex sub-branches into branch
-        assign bin = {bin_brn, bin_sub[bin_brn]};
+        for (genvar i=0; i<SPLIT; i++) begin: mask
+            assign oht[i*SPLIT+:SPLIT] = oht_brn[i] ? oht_sub[i] : '0;
+        end: mask
 
     end: branch
     endgenerate
 
-endmodule: oht2bin_tree
+endmodule: pry2oht_tree

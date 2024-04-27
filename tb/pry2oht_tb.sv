@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// conversion from a priority to one-hot,
+// priority (rightmost) to one-hot conversion,
 // testbench
 //
 // @author: Iztok Jeras <iztok.jeras@gmail.com>
@@ -7,7 +7,7 @@
 // Licensed under CERN-OHL-P v2 or later
 ///////////////////////////////////////////////////////////////////////////////
 
-module priority_to_onehot_tb #(
+module pry2oht_tb #(
     // size parameters
     int unsigned WIDTH = 16,
     int unsigned SPLIT = 4
@@ -22,40 +22,40 @@ module priority_to_onehot_tb #(
 
     localparam int unsigned IMPLEMENTATIONS = 2;
 
-    // input priority encoding
-    logic [WIDTH-1:0] dec_vld;
-    // priority encoder
-    logic [WIDTH-1:0] dec_oht [0:IMPLEMENTATIONS-1];  // one-hot encoding
-    logic             enc_vld [0:IMPLEMENTATIONS-1];  // cumulative valid
-    // reference encoder
-    logic [WIDTH-1:0] ref_dec_oht;
-    logic             ref_enc_vld;
+    // priority input
+    logic [WIDTH-1:0] pry;
+    // one-hot and valid outputs
+    logic [WIDTH-1:0] oht [0:IMPLEMENTATIONS-1];  // one-hot
+    logic             vld [0:IMPLEMENTATIONS-1];  // valid
+    // reference signals
+    logic [WIDTH-1:0] ref_oht;
+    logic             ref_vld;
 
 ///////////////////////////////////////////////////////////////////////////////
 // reference calculation and checking of DUT outputs against reference
 ///////////////////////////////////////////////////////////////////////////////
 
-    function automatic [WIDTH-1:0] onehot (
+    function automatic [WIDTH-1:0] ref_pry2oht (
         logic [WIDTH-1:0] valid
     );
         automatic logic carry = 1'b0;
         for (int i=0; i<WIDTH; i++) begin
             if (carry) begin
-                onehot[i] = 1'b0;
+                ref_pry2oht[i] = 1'b0;
             end else begin
-                onehot[i] = valid[i];
+                ref_pry2oht[i] = valid[i];
                 if (valid[i]) begin
                     carry = 1'b1;
                 end
             end
         end
-    endfunction: onehot
+    endfunction: ref_pry2oht
 
     // reference
     always_comb
     begin
-        ref_dec_oht = onehot(dec_vld);
-        ref_enc_vld =      |(dec_vld);    
+        ref_oht = ref_pry2oht(pry);
+        ref_vld =           |(pry);    
     end
 
     // check enable depending on test
@@ -66,8 +66,8 @@ module priority_to_onehot_tb #(
         #T;
         for (int unsigned i=0; i<IMPLEMENTATIONS; i++) begin
             if (check_enable[i]) begin
-                assert (dec_oht[i] == ref_dec_oht) else $error("IMPLEMENTATION[%0d]:  dec_oht != %0d'b%b", i, WIDTH, ref_dec_oht);
-                assert (enc_vld[i] == ref_enc_vld) else $error("IMPLEMENTATION[%0d]:  enc_vld != 1'b%b"  , i,        ref_enc_vld);
+                assert (oht[i] == ref_oht) else $error("IMPLEMENTATION[%0d]:  oht != %0d'b%b", i, WIDTH, ref_oht);
+                assert (vld[i] == ref_vld) else $error("IMPLEMENTATION[%0d]:  vld != 1'b%b"  , i,        ref_vld);
             end
         end
         #T;
@@ -86,7 +86,7 @@ module priority_to_onehot_tb #(
         // idle test
         test_name = "idle";
         check_enable = IMPLEMENTATIONS'({1'b1, 1'b1});
-        dec_vld <= '0;
+        pry <= '0;
         check;
 
         // one-hot encoder test
@@ -96,7 +96,7 @@ module priority_to_onehot_tb #(
             logic [WIDTH-1:0] tmp_vld;
             tmp_vld = '0;
             tmp_vld[i] = 1'b1;
-            dec_vld <= tmp_vld;
+            pry <= tmp_vld;
             check;
         end
 
@@ -110,7 +110,7 @@ module priority_to_onehot_tb #(
                 tmp_vld[j] = 1'b0;
             end
             tmp_vld[i] = 1'b1;
-            dec_vld <= tmp_vld;
+            pry <= tmp_vld;
             check;
         end
 //        $finish;
@@ -119,7 +119,7 @@ module priority_to_onehot_tb #(
         test_name = "exhaustive";
         check_enable = IMPLEMENTATIONS'({1'b1, 1'b1});
         for (logic unsigned [WIDTH-1:0] tmp_vld='1; tmp_vld>0; tmp_vld--) begin
-            dec_vld <= {<<{tmp_vld}};
+            pry <= {<<{tmp_vld}};
             check;
         end
         $finish;
@@ -133,17 +133,17 @@ module priority_to_onehot_tb #(
     for (genvar i=0; i<IMPLEMENTATIONS; i++) begin: imp
 
         // DUT RTL instance
-        priority_to_onehot_tree #(
+        pry2oht_tree #(
             .WIDTH (WIDTH),
             .SPLIT (SPLIT),
             .IMPLEMENTATION (i)
         ) dut (
-            .dec_vld (dec_vld),
-            .dec_oht (dec_oht[i]),
-            .enc_vld (enc_vld[i])
+            .pry (pry),
+            .oht (oht[i]),
+            .vld (vld[i])
         );
 
     end: imp
     endgenerate
 
-endmodule: priority_to_onehot_tb
+endmodule: pry2oht_tb

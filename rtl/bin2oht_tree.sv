@@ -22,10 +22,6 @@ module bin2oht_tree #(
     output logic [WIDTH    -1:0] oht   // one-hot
 );
 
-    // SPLIT to the power of logarithm of WIDTH base SPLIT
-    localparam int unsigned POWER_LOG = WIDTH_LOG/SPLIT_LOG;
-    localparam int unsigned POWER     = SPLIT**POWER_LOG;
-
     generate
     // leafs at the end of tree branches
     if (WIDTH == SPLIT) begin: leaf
