@@ -42,7 +42,7 @@ module bin2oht #(
             .WIDTH (POWER),
             .SPLIT (SPLIT),
             .IMPLEMENTATION (IMPLEMENTATION)
-        ) enc (
+        ) bin2oht (
             .vld (vld),
             .bin (bin),
             .oht (oht_tmp)
@@ -59,7 +59,7 @@ module bin2oht #(
             .WIDTH (POWER),
             .SPLIT (SPLIT),
             .IMPLEMENTATION (IMPLEMENTATION)
-        ) enc (
+        ) bin2oht (
             .vld (vld),
             .bin (bin),
             .oht (oht)

@@ -47,7 +47,7 @@ module pry2oht_tree #(
             .WIDTH (POWER),
             .SPLIT (SPLIT),
             .IMPLEMENTATION (IMPLEMENTATION)
-        ) enc (
+        ) pry2oht (
             .pry (pry_tmp),
             .oht (oht_tmp),
             .vld (vld)
@@ -64,7 +64,7 @@ module pry2oht_tree #(
             .WIDTH (POWER),
             .SPLIT (SPLIT),
             .IMPLEMENTATION (IMPLEMENTATION)
-        ) enc (
+        ) pry2oht (
             .pry (pry),
             .oht (oht),
             .vld (vld)

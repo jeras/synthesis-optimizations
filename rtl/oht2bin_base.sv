@@ -58,16 +58,16 @@ module oht2bin_base #(
         1:  // loop all
             always_comb
             begin
-                bin = '0;
+                bin = WIDTH_LOG'('0);
                 for (int unsigned i=0; i<WIDTH; i++) begin
-                    bin |= oht[i] ? i[WIDTH_LOG-1:0] : '0;
+                    bin |= oht[i] ? i[WIDTH_LOG-1:0] : WIDTH_LOG'('0);
                 end
                 vld = |oht;
             end
         2:  // loop ones
             always_comb
             begin
-                bin = '0;
+                bin = WIDTH_LOG'('0);
                 for (int unsigned i=0; i<WIDTH; i++) begin
                     // the OR operator prevents synthesis of a priority encoder
                     if (oht[i])  bin = bin | i[WIDTH_LOG-1:0];

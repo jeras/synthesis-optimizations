@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// priority (rightmost) to one-hot conversion,
+// magnitude comparator (unsigned),
 // implemented as a tree using recursion
 //
 // @author: Iztok Jeras <iztok.jeras@gmail.com>
@@ -7,69 +7,69 @@
 // Licensed under CERN-OHL-P v2 or later
 ///////////////////////////////////////////////////////////////////////////////
 
-module pry2oht_tree #(
+module mag_cmp_tree #(
     // size parameters
     parameter  int unsigned WIDTH = 32,
     parameter  int unsigned SPLIT = 2,
     // size local parameters
     localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
     localparam int unsigned SPLIT_LOG = $clog2(SPLIT),
-    // implementation (see `pry2oht_base` for details)
+    // implementation (see `mag_cmp_base` for details)
     parameter  int unsigned IMPLEMENTATION = 0
 )(
-    input  logic [WIDTH-1:0] pry,  // priority
-    output logic [WIDTH-1:0] oht,  // one-hot
-    output logic             vld   // valid
+    input  logic [WIDTH-1:0] val,  // value
+    input  logic [WIDTH-1:0] rfr,  // reference
+    output logic             grt,  // greater than
+    output logic             lst   // less    than
 );
 
     generate
     // leafs at the end of tree branches
     if (WIDTH == SPLIT) begin: leaf
 
-        pry2oht_base #(
+        // leaf
+        mag_cmp_base #(
             .WIDTH (WIDTH),
             .IMPLEMENTATION (IMPLEMENTATION)
-        ) pry2oht (
-            .pry (pry),
-            .oht (oht),
-            .vld (vld)
+        ) mag_cmp (
+            .val (val),
+            .rfr (rfr),
+            .grt (grt),
+            .lst (lst)
         );
 
     end: leaf
     // combining SPLIT sub-branches into a single branch closer to the tree trunk
     else begin: branch
 
-        logic [SPLIT-1:0] [WIDTH/SPLIT-1:0] oht_sub;  // one-hot from sub-branches
-        logic [SPLIT-1:0]                   vld_sub;  // valid   from sub-branches
-        logic [SPLIT-1:0]                   oht_brn;  // one-hot from     branch
+        // tree signals
+        logic [WIDTH/SPLIT-1:0] grt_val;  // greater than used as value
+        logic [WIDTH/SPLIT-1:0] lst_rfr;  // less    than used as reference
 
         // sub-branches
-        pry2oht_tree #(
+        mag_cmp_tree #(
             .WIDTH (WIDTH/SPLIT),
             .SPLIT (SPLIT),
             .IMPLEMENTATION (IMPLEMENTATION)
-        ) pry2oht_sub [SPLIT-1:0] (
-            .pry (pry),
-            .oht (oht_sub),
-            .vld (vld_sub)
+        ) mag_cmp_sub [SPLIT-1:0] (
+            .val (val),
+            .rfr (rfr),
+            .grt (grt_val),
+            .lst (lst_rfr)
         );
 
         // branch
-        pry2oht_base #(
+        mag_cmp_base #(
             .WIDTH (SPLIT),
             .IMPLEMENTATION (IMPLEMENTATION)
-        ) pry2oht_brn (
-            .pry (vld_sub),
-            .oht (oht_brn),
-            .vld (vld)
+        ) mag_cmp_brn (
+            .val (grt_val),
+            .rfr (lst_rfr),
+            .grt (grt),
+            .lst (lst)
         );
-
-        // multiplex sub-branches into branch
-        for (genvar i=0; i<SPLIT; i++) begin: mask
-            assign oht[i*SPLIT+:SPLIT] = oht_brn[i] ? oht_sub[i] : '0;
-        end: mask
 
     end: branch
     endgenerate
 
-endmodule: pry2oht_tree
+endmodule: mag_cmp_tree

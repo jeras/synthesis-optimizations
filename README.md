@@ -205,14 +205,17 @@ the encoding of combined outputs from multiple blocks
 matches the encoding used at the input into each block.
 
 Another restriction is that the tree structure must be regular,
-each node connects to a `SPLIT` number of inputs.
-In case the node performs a reduction to a scalar `SPLIT` can be any integer.
+each node connects to a `SPLIT` number of sub-nodes.
+`SPLIT` can be any integer in case the node performs a reduction to a scalar
+and it can have other inputs/outputs of the same `WIDTH`.
 In case the node performs a reduction to a logarithm of 2,
 only power of 2 `SPLIT` values are possible.
 For now this document only discusses this two reduction options.
 
 The main advantage of tree structures is improved asymptotical propagation delay
 with a logarithmic O(log(WIDTH)) dependency on problem size.
+
+In this document tree structures are mainly implemented using **recursion**.
 
 ![Tree structure.](doc/structure_tree.svg)
 
@@ -323,6 +326,8 @@ It is not obvious whether synthesis tools would interpret the linear RTL
 as a linear structure and implement it as such,
 or they would just optimize the code into a tree.
 
+TODO: Yosys does have an option for the conversion from chain to tree.
+
 ### Equality comparator
 
 The equality comparator compares an input vector `bin` against another input or constant vector `ref`.
@@ -354,7 +359,7 @@ In an ASIC, the comparison is done with one of the following:
    indicating all bits are equal `eql`.
 
    ```SystemVerilog
-   eql = &(bin ~^ ref);
+   
    ```
 
 In practice (ASIC and FPGA) it is best to use the _equality operator_ `==`,
@@ -385,6 +390,7 @@ Synthesis tools would implement the above code with a tree structure.
 
 In ASIC a tree of AND/OR/XOR logic cells
 with two or more inputs will be used to construct the tree.
+TODO: add link to yosys option regarding reduction.
 
 In a FPGA, if the `bin`/`ref` input width is the same or less than the number of LUT inputs,
 the operation will consume a single LUT.
@@ -494,7 +500,7 @@ Alternative approaches use a power operator:
 oht = 2**bin;
 ```
 
-or an equivalent shift operator:
+Or an equivalent shift operator:
 
 ```SystemVerilog
 oht = 8'd1 << bin;
@@ -527,7 +533,8 @@ end
 The transposed table is my attempt to convey the idea
 of using logarithm of 2, the opposite operation to power of 2.
 HDL languages Verilog/SystemVerilog and VHDL do not provide a synthesizable logarithm operator.
-A similar approach is often used to implement this conversion in software.
+A similar approach is often used to implement this conversion in software,
+on RISC-V the `WIDTH` would be `XLEN` (GPR register width, 32-bit on RV32 and 64-bit on RV64).
 
 An explicitly linear implementation of the operation can be written with slightly more compact code.
 
@@ -536,10 +543,8 @@ always_comb
 begin
     bin = '0;
     for (int unsigned i=0; i<WIDTH; i++) begin
-        // the OR operator prevents synthesis of a priority encoder
-        if (dec_vld[i])  enc_idx = enc_idx | i[WIDTH_LOG-1:0];
+        bin |= oht[i] ? i[WIDTH_LOG-1:0] : WIDTH_LOG'('0);
     end
-    enc_vld = |dec_vld;
 end
 ```
 
@@ -553,8 +558,6 @@ the operation could also be implemented using `WIDTH_LOG` adders.
 ### Barrel/funnel shifter
 
 https://pages.hmc.edu/harris/cmosvlsi/4e/lect/lect18.pdf
-
-### Priority encoder
 
 ### Priority to one-hot conversion
 
@@ -571,10 +574,10 @@ This operation is explicitly using addition.
 
 A for loop formula would be (I did not run it, so it might be wrong):
 ```SystemVerilog
-function [XLEN-1:0] onehot (
-  input [XLEN-1:0] x
+function [WIDTH-1:0] onehot (
+  input [WIDTH-1:0] x
 );
-  for (int i=XLEN; i>0; i++) begin
+  for (int i=WIDTH; i>0; i++) begin
   end
 endfunction: onehot
 ```
@@ -587,6 +590,10 @@ TODO:
 
 - test -x and observe schematic
 - test adder and mux primitives
+
+### Priority to binary conversion
+
+priority encoder
 
 ### Magnitude comparator
 

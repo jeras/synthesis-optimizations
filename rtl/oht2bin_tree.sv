@@ -29,7 +29,7 @@ module oht2bin_tree #(
         oht2bin_base #(
             .WIDTH (WIDTH),
             .IMPLEMENTATION (IMPLEMENTATION)
-        ) encoder (
+        ) oht2bin (
             .oht (oht),
             .bin (bin),
             .vld (vld)
@@ -48,7 +48,7 @@ module oht2bin_tree #(
             .WIDTH (WIDTH/SPLIT),
             .SPLIT (SPLIT),
             .IMPLEMENTATION (IMPLEMENTATION)
-        ) enc_sub [SPLIT-1:0] (
+        ) oht2bin_sub [SPLIT-1:0] (
             .oht (oht),
             .bin (bin_sub),
             .vld (vld_sub)
@@ -58,7 +58,7 @@ module oht2bin_tree #(
         oht2bin_base #(
             .WIDTH (SPLIT),
             .IMPLEMENTATION (IMPLEMENTATION)
-        ) enc_brn (
+        ) oht2bin_brn (
             .oht (vld_sub),
             .bin (bin_brn),
             .vld (vld)

@@ -1,12 +1,13 @@
 ///////////////////////////////////////////////////////////////////////////////
-// Magnitude comparator, base with parametrized implementation options
+// magnitude comparator (unsigned),
+// base with parametrized implementation options
 //
 // @author: Iztok Jeras <iztok.jeras@gmail.com>
 //
 // Licensed under CERN-OHL-P v2 or later
 ///////////////////////////////////////////////////////////////////////////////
 
-module magnitude_comparator_base #(
+module mag_cmp_base #(
     // size parameters
     parameter  int unsigned WIDTH = 32,
     // implementation
@@ -17,13 +18,13 @@ module magnitude_comparator_base #(
     // 3 - unique   case inside
     // 4 - priority case inside
 )(
-    input  logic [WIDTH-1:0] i_a,
-    input  logic [WIDTH-1:0] i_b,
-    output logic             o_a,
-    output logic             o_b
+    input  logic [WIDTH-1:0] val,  // value
+    input  logic [WIDTH-1:0] rfr,  // reference
+    output logic             grt,  // greater than
+    output logic             lst   // less    than
 );
 
-    assign o_a = i_a > i_b;
-    assign o_b = i_a < i_b;
+    assign grt = val > rfr;
+    assign lst = val < rfr;
 
-endmodule: magnitude_comparator_base
+endmodule: mag_cmp_base

@@ -29,7 +29,7 @@ module bin2oht_tree #(
         bin2oht_base #(
             .WIDTH (WIDTH),
             .IMPLEMENTATION (IMPLEMENTATION)
-        ) decoder (
+        ) bin2oht (
             .vld (vld),
             .bin (bin),
             .oht (oht)
@@ -50,7 +50,7 @@ module bin2oht_tree #(
         bin2oht_base #(
             .WIDTH (SPLIT),
             .IMPLEMENTATION (IMPLEMENTATION)
-        ) enc_brn (
+        ) bin2oht_brn (
             .vld (vld),
             .bin (bin_brn),
             .oht (oht_brn)
@@ -61,7 +61,7 @@ module bin2oht_tree #(
             .WIDTH (WIDTH/SPLIT),
             .SPLIT (SPLIT),
             .IMPLEMENTATION (IMPLEMENTATION)
-        ) enc_sub [SPLIT-1:0] (
+        ) bin2oht_sub [SPLIT-1:0] (
             .vld (oht_brn),
             .bin (bin_sub),
             .oht (oht)

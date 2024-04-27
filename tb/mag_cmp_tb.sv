@@ -7,7 +7,7 @@
 // Licensed under CERN-OHL-P v2 or later
 ///////////////////////////////////////////////////////////////////////////////
 
-module magnitude_comparator_tb #(
+module mag_cmp_tb #(
     // size parameters
     int unsigned WIDTH = 4,
     int unsigned SPLIT = 2
@@ -22,32 +22,25 @@ module magnitude_comparator_tb #(
 
     localparam int unsigned IMPLEMENTATIONS = 1;
 
-    // inputs
-    logic [WIDTH-1:0] i_a;
-    logic [WIDTH-1:0] i_b;
-    // outputs
-    logic             o_a[0:IMPLEMENTATIONS-1];
-    logic             o_b[0:IMPLEMENTATIONS-1];
-    // reference comparator
-    logic         ref_o_a;
-    logic         ref_o_b;
+    // value and reference inputs
+    logic [WIDTH-1:0] val;
+    logic [WIDTH-1:0] rfr;
+    // greater and less than outputs
+    logic             grt[0:IMPLEMENTATIONS-1];
+    logic             lst[0:IMPLEMENTATIONS-1];
+    // reference signals
+    logic         ref_grt;
+    logic         ref_lst;
 
 ///////////////////////////////////////////////////////////////////////////////
 // reference calculation and checking of DUT outputs against reference
 ///////////////////////////////////////////////////////////////////////////////
 
-    function [2-1:0][WIDTH_LOG-1:0] grt (
-        logic [WIDTH-1:0] a,
-        logic [WIDTH-1:0] b
-    );
-        return a > b;
-    endfunction: grt
-
     // reference encoder
     always_comb
     begin
-        ref_o_a = grt(i_a, i_b);
-        ref_o_b = grt(i_b, i_a);    
+        ref_grt = val > rfr;
+        ref_lst = val < rfr;    
     end
 
     // check enable depending on test
@@ -58,8 +51,8 @@ module magnitude_comparator_tb #(
         #T;
         for (int unsigned i=0; i<IMPLEMENTATIONS; i++) begin
             if (check_enable[i]) begin
-                assert (o_a[i] == ref_o_a) else $error("IMPLEMENTATION[%0d]:  o_a != 1'b%b", i, ref_o_a);
-                assert (o_b[i] == ref_o_b) else $error("IMPLEMENTATION[%0d]:  o_b != 1'b%b", i, ref_o_b);
+                assert (grt[i] == ref_grt) else $error("IMPLEMENTATION[%0d]:  grt != 1'b%b", i, ref_grt);
+                assert (lst[i] == ref_lst) else $error("IMPLEMENTATION[%0d]:  lst != 1'b%b", i, ref_lst);
             end
         end
         #T;
@@ -78,22 +71,22 @@ module magnitude_comparator_tb #(
         // zero test
         test_name = "zero";
         check_enable = IMPLEMENTATIONS'('1);
-        i_a = 'd0;
-        i_b = 'd0;
+        val = 'd0;
+        rfr = 'd0;
         check;
 
         // test 1
         test_name = "zero";
         check_enable = IMPLEMENTATIONS'('1);
-        i_a = 'd1;
-        i_b = 'd0;
+        val = 'd1;
+        rfr = 'd0;
         check;
 
         // test 2
         test_name = "zero";
         check_enable = IMPLEMENTATIONS'('1);
-        i_a = 'd0;
-        i_b = 'd1;
+        val = 'd0;
+        rfr = 'd1;
         check;
 
 //        for (int unsigned pri=0; pri<WIDTH; pri++) begin: for_pri
@@ -122,17 +115,17 @@ module magnitude_comparator_tb #(
     for (genvar i=0; i<IMPLEMENTATIONS; i++) begin: imp
 
         // DUT RTL instance
-        magnitude_comparator_tree #(
+        mag_cmp #(
             .WIDTH (WIDTH),
             .SPLIT (SPLIT)
         ) dut (
-            .i_a (i_a),
-            .i_b (i_b),
-            .o_a (o_a[i]),
-            .o_b (o_b[i])
+            .val (val),
+            .rfr (rfr),
+            .grt (grt[i]),
+            .lst (lst[i])
         );
 
     end: imp
     endgenerate
 
-endmodule: magnitude_comparator_tb
+endmodule: mag_cmp_tb
