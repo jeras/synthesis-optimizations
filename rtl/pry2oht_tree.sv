@@ -64,7 +64,7 @@ module pry2oht_tree #(
             .vld (vld)
         );
 
-        // multiplex sub-branches into branch
+        // mask one-hot signals from sub-branches
         for (genvar i=0; i<SPLIT; i++) begin: mask
             assign oht[i*SPLIT+:SPLIT] = oht_brn[i] ? oht_sub[i] : '0;
         end: mask
