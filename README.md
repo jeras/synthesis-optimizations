@@ -192,6 +192,8 @@ so the delay of the two combined is not the sum of the delay of each,
 but instead the second operation adds just a single element delay to the delay of the first operation.
 See the timing annotated simulations for a better explanation.
 
+TODO: another name "parallel prefix tree".
+
 #### Tree structure
 
 The problem is subdivided into smaller problems
@@ -551,9 +553,55 @@ end
 In case this would provide some kind of advantage (shared logic),
 the operation could also be implemented using `WIDTH_LOG` adders.
 
-### One-hot to thermometer conversion
-
 ### Multiplexer
+
+A multiplexers extracts one of the elements of an array
+based on a control signal which is usually either one-hot or binary encoded.
+
+The data array `dat_ary` of elements of `DAT_T` type (SystemVerilog type generic)
+would be defined as (the unpacked dimension can have ascending or descending order):
+
+```SystemVerilog
+DAT_T dat_ary [0:WIDTH-1];
+```
+
+The one-hot select multiplexer would mask each array element
+with the corresponding bit in the one-hot select vector `oht_sel[WIDTH-1:0]`,
+and than OR all together the those masked values into the output `dat`.
+
+```SystemVerilog
+dat = '0;
+for (int unsigned i=0; i<WIDTH; i++) begin
+    dat |= oht_sel[i] ? dat_ary[i] : '0;
+end
+```
+
+The synthesis tool will construct a tree from the OR reduction.
+This is the preferred solution for ASIC tools,
+since it can be constructed from the simplest/fastest logic cells.
+
+The one-hot select multiplexer can also be written as an explicit linear structure.
+
+```SystemVerilog
+dat = '0;
+for (int unsigned i=0; i<WIDTH; i++) begin
+    dat = oht_sel[i] ? dat_ary[i] : dat;
+end
+```
+
+The binary select multiplexer (priority multiplexer),
+can be implemented using HDL array indexing syntax
+with a binary select signal `bin_sel[WIDTH_LOG-1:0]`.
+
+```SystemVerilog
+    dat = dat_ary[bin_sel];
+```
+
+Synthesis tools construct a tree of multiplexers
+with a slice of the select signal at each layer.
+
+This architecture can be a good fit for FPGA tools.
+A LUT6 can implement a 4 to 1 multiplexer with a 2 bit binary select.
 
 ### Barrel/funnel shifter
 
@@ -562,6 +610,7 @@ https://pages.hmc.edu/harris/cmosvlsi/4e/lect/lect18.pdf
 ### Priority to one-hot conversion
 
 I checked the book, the formula for _a word with a single 1-bit at the position of the rightmost 0-bit in x_ would be:
+
 ```SystemVerilog
 onehot = ~x & (x+1);
 ```
@@ -570,9 +619,11 @@ onehot = ~x & (x+1);
 x_rev = ~bitreverse(x);
 onehot = bitreverse(~(x_rev & (x_rev+1));
 ```
+
 This operation is explicitly using addition.
 
 A for loop formula would be (I did not run it, so it might be wrong):
+
 ```SystemVerilog
 function [WIDTH-1:0] onehot (
   input [WIDTH-1:0] x
@@ -590,6 +641,8 @@ TODO:
 
 - test -x and observe schematic
 - test adder and mux primitives
+
+### One-hot to thermometer conversion
 
 ### Priority to binary conversion
 

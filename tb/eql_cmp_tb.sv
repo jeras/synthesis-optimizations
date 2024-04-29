@@ -9,7 +9,9 @@
 
 module eql_cmp_tb #(
     // size parameters
-    int unsigned WIDTH = 4
+    int unsigned WIDTH = 4,
+    // number of randomized tests
+    int unsigned NUM_RND = 8
 );
 
     // size local parameters
@@ -18,7 +20,7 @@ module eql_cmp_tb #(
     // timing constant
     localparam time T = 10ns;
 
-    localparam int unsigned IMPLEMENTATIONS = 1;
+    localparam int unsigned IMPLEMENTATIONS = 5;
 
     // value and reference inputs
     logic [WIDTH-1:0] val;
@@ -27,6 +29,12 @@ module eql_cmp_tb #(
     logic             eql[0:IMPLEMENTATIONS-1];
     // reference signals
     logic         ref_eql;
+
+//    class rnd_class;
+//        rand bit [WIDTH-1:0] val, rfr;
+//    endclass: rnd_class
+//
+//    rnd_class rnd_obj;
 
 ///////////////////////////////////////////////////////////////////////////////
 // reference calculation and checking of DUT outputs against reference
@@ -69,34 +77,39 @@ module eql_cmp_tb #(
         rfr = 'd0;
         check;
 
-        // test 1
-        test_name = "zero";
+        // test equal (randomized)
+        test_name = "equal";
         check_enable = IMPLEMENTATIONS'('1);
-        val = 'd1;
-        rfr = 'd0;
-        check;
+        for (int unsigned i=0; i<NUM_RND; i++) begin: equal
+            int unsigned rnd;
+            rnd = $urandom();
+            rfr = rnd[WIDTH-1:0];
+            val = rnd[WIDTH-1:0];
+            check;
+        end: equal
 
-        // test 2
-        test_name = "zero";
+        // test not equal (randomized)
+        test_name = "not equal";
         check_enable = IMPLEMENTATIONS'('1);
-        val = 'd0;
-        rfr = 'd1;
-        check;
+        for (int unsigned i=0; i<NUM_RND; i++) begin: not_equal
+            int unsigned rnd;
+            rnd = $urandom();
+            rfr = rnd[WIDTH-1:0];
+            rnd = $urandom();
+            val = rnd[WIDTH-1:0];
+            check;
+        end: not_equal
 
-//        for (int unsigned pri=0; pri<WIDTH; pri++) begin: for_pri
-//            enc_pri = WIDTH_LOG'(pri);
-//
-//            // one-hot encoder test
-//            test = "one-hot";
-//            for (int unsigned i=0; i<WIDTH; i++) begin: for_oht
-//                logic [WIDTH-1:0] tmp_vld;
-//                tmp_vld = '0;
-//                tmp_vld[i] = 1'b1;
-//                dec_vld = tmp_vld;
-//                check;
-//            end: for_oht
-//
-//        end: for_pri
+//        // test randomize
+//        test_name = "randomize";
+//        check_enable = IMPLEMENTATIONS'('1);
+//        rnd_obj = new();
+//        for (int unsigned i=0; i<NUM_RND; i++) begin
+//            rnd_obj.randomize();
+//            val = rnd_obj.val;
+//            rfr = rnd_obj.rfr;
+//            check;
+//        end
 
         $finish;
     end
