@@ -46,7 +46,7 @@ module eql_cmp #(
                 // temporary vector
                 logic [WIDTH:0] tmp;
                 // vectorized loop, initialization is prepended to operand at LSB
-                tmp &= {val ~^ rfr, 1'b0};
+                tmp &= {val ~^ rfr, 1'b1};
                 // results are extracted from temporary vector MSB
                 eql = tmp[WIDTH];
             end
