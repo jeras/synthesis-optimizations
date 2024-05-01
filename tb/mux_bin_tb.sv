@@ -97,7 +97,7 @@ module mux_bin_tb #(
     for (genvar i=0; i<IMPLEMENTATIONS; i++) begin: imp
 
         // DUT RTL instance
-        mux_bin_tree #(
+        mux_bin #(
             .DAT_T (DAT_T),
             .WIDTH (WIDTH),
             .SPLIT (SPLIT),

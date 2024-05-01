@@ -44,17 +44,21 @@ generate
 
         DAT_T             dat_ary [SPLIT-1:0];
 
-        // sub-branches
-        mux_bin_tree #(
-            .DAT_T (DAT_T),
-            .WIDTH (WIDTH/SPLIT),
-            .SPLIT (SPLIT),
-            .IMPLEMENTATION (IMPLEMENTATION)
-        ) mux_bin_sub [SPLIT-1:0] (
-            .bin (bin    [WIDTH_LOG-1-SPLIT_LOG:0]),
-            .ary (ary    ),
-            .dat (dat_ary)
-        );
+        for (genvar i=0; i<SPLIT; i++) begin: sub
+
+            // sub-branches
+            mux_bin_tree #(
+                .DAT_T (DAT_T),
+                .WIDTH (WIDTH/SPLIT),
+                .SPLIT (SPLIT),
+                .IMPLEMENTATION (IMPLEMENTATION)
+            ) mux_bin_sub (
+                .bin (bin    [WIDTH_LOG-1-SPLIT_LOG:0]),
+                .ary (ary    [i*WIDTH/SPLIT+:WIDTH/SPLIT]),
+                .dat (dat_ary[i])
+            );
+
+        end: sub
 
         // branch
         mux_bin_base #(

@@ -112,7 +112,7 @@ module mux_oht_tb #(
     for (genvar i=0; i<IMPLEMENTATIONS; i++) begin: imp
 
         // DUT RTL instance
-        mux_oht_tree #(
+        mux_oht #(
             .DAT_T (DAT_T),
             .WIDTH (WIDTH),
             .SPLIT (SPLIT),
