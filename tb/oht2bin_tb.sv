@@ -83,16 +83,17 @@ module oht2bin_tb #(
         oht <= '0;
         check;
 
-        // one-hot ref_oht2bin test
+        // one-hot test
         test_name = "one-hot";
         check_enable = IMPLEMENTATIONS'('1);
         for (int unsigned i=0; i<WIDTH; i++) begin
-            logic [WIDTH-1:0] tmp_vld;
-            tmp_vld = '0;
-            tmp_vld[i] = 1'b1;
-            oht <= tmp_vld;
+            logic [WIDTH-1:0] tmp_oht;
+            tmp_oht = '0;
+            tmp_oht[i] = 1'b1;
+            oht <= tmp_oht;
             check;
         end
+
         $finish;
     end
 

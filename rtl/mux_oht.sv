@@ -20,7 +20,8 @@ module mux_oht #(
     parameter  int unsigned IMPLEMENTATION = 0
 )(
     input  logic [WIDTH-1:0] oht,              // one-hot select
-    input  DAT_T             ary [0:WIDTH-1],  // data array
+    input  DAT_T             ary [WIDTH-1:0],  // data array
+    output logic             vld,              // valid (OR reduced one-hot)
     output DAT_T             dat               // data selected
 );
 
@@ -33,7 +34,7 @@ module mux_oht #(
     if (WIDTH != POWER) begin: extend
 
         logic [POWER-1:0] oht_tmp;
-        DAT_T             ary_tmp [0:WIDTH-1];
+        DAT_T             ary_tmp [WIDTH-1:0];
         
         // zero extend the one-hot vector
         assign oht_tmp = POWER'(oht);
@@ -45,13 +46,15 @@ module mux_oht #(
 
         // the synthesis tool is expected to optimize out the logic for constant inputs
         mux_oht_tree #(
+            .DAT_T (DAT_T),
             .WIDTH (POWER),
             .SPLIT (SPLIT),
             .IMPLEMENTATION (IMPLEMENTATION)
         ) mux_oht (
             .oht (oht_tmp),
             .ary (ary_tmp),
-            .dat (dat)
+            .vld (vld    ),
+            .dat (dat    )
         );
 
     end: extend
@@ -59,12 +62,14 @@ module mux_oht #(
     else begin: exact
 
         mux_oht_tree #(
+            .DAT_T (DAT_T),
             .WIDTH (WIDTH),
             .SPLIT (SPLIT),
             .IMPLEMENTATION (IMPLEMENTATION)
         ) mux_oht (
             .oht (oht),
             .ary (ary),
+            .vld (vld),
             .dat (dat)
         );
 

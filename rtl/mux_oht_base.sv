@@ -12,15 +12,14 @@ module mux_oht_base #(
     parameter  type DAT_T = logic [8-1:0],
     // size parameters
     parameter  int unsigned WIDTH = 32,
-    // size local parameters
-    localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
     // implementation
     parameter  int unsigned IMPLEMENTATION = 0
     // 0 - reduction
     // 1 - linear
 )(
     input  logic [WIDTH-1:0] oht,              // one-hot select
-    input  DAT_T             ary [0:WIDTH-1],  // data array
+    input  DAT_T             ary [WIDTH-1:0],  // data array
+    output logic             vld,              // valid (OR reduced one-hot)
     output DAT_T             dat               // data selected
 );
 
@@ -30,7 +29,9 @@ module mux_oht_base #(
             always_comb
             begin: adder
                 dat = '0;
+                vld = 1'b0;
                 for (int unsigned i=0; i<WIDTH; i++) begin
+                    vld |= oht[i];
                     dat |= oht[i] ? ary[i] : '0;
                 end
             end: adder
@@ -38,7 +39,9 @@ module mux_oht_base #(
             always_comb
             begin: linear
                 dat = 'x;
+                vld = 1'b0;
                 for (int unsigned i=0; i<WIDTH; i++) begin
+                    vld = oht[i] ? 1'b1   : vld;
                     dat = oht[i] ? ary[i] : dat;
                 end
             end: linear

@@ -24,13 +24,14 @@ module mux_oht_tb #(
 
     localparam int unsigned IMPLEMENTATIONS = 2;
 
-    // one-hot input
+    // one-hot select and data array inputs
     logic [WIDTH-1:0] oht;
-    // data array input
-    DAT_T             ary [0:WIDTH-1];
-    // data output
+    DAT_T             ary [WIDTH-1:0];
+    // data and valid outputa
+    logic             vld [0:IMPLEMENTATIONS-1];
     DAT_T             dat [0:IMPLEMENTATIONS-1];
     // reference signals
+    logic         ref_vld;
     DAT_T         ref_dat;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -39,7 +40,7 @@ module mux_oht_tb #(
 
     function automatic [WIDTH-1:0] ref_mux_oht (
         logic [WIDTH-1:0] oht,
-        DAT_T             ary [0:WIDTH-1]
+        DAT_T             ary [WIDTH-1:0]
     );
         for (int i=0; i<WIDTH; i++) begin
             if (oht[i])  ref_mux_oht = ary[i];
@@ -49,6 +50,7 @@ module mux_oht_tb #(
     // reference
     always_comb
     begin
+        ref_vld =           |(oht     );
         ref_dat = ref_mux_oht(oht, ary);
     end
 
@@ -60,6 +62,7 @@ module mux_oht_tb #(
         #T;
         for (int unsigned i=0; i<IMPLEMENTATIONS; i++) begin
             if (check_enable[i]) begin
+                assert (vld[i] ==  ref_vld) else $error("IMPLEMENTATION[%0d]:  vld != 1'b%b"  , i,            ref_vld);
                 assert (dat[i] ==? ref_dat) else $error("IMPLEMENTATION[%0d]:  dat != %0d'b%b", i, WIDTH, ref_dat);
             end
         end
@@ -87,7 +90,7 @@ module mux_oht_tb #(
         oht <= '0;
         check;
 
-        // one-hot encoder test
+        // one-hot test
         test_name = "one-hot";
         check_enable = IMPLEMENTATIONS'({1'b1, 1'b1});
         for (int unsigned i=0; i<WIDTH; i++) begin
@@ -110,12 +113,14 @@ module mux_oht_tb #(
 
         // DUT RTL instance
         mux_oht_tree #(
+            .DAT_T (DAT_T),
             .WIDTH (WIDTH),
             .SPLIT (SPLIT),
             .IMPLEMENTATION (i)
         ) dut (
             .oht (oht),
             .ary (ary),
+            .vld (vld[i]),
             .dat (dat[i])
         );
 
