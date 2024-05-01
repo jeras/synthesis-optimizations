@@ -558,26 +558,27 @@ the operation could also be implemented using `WIDTH_LOG` adders.
 A multiplexers extracts one of the elements of an array
 based on a control signal which is usually either one-hot or binary encoded.
 
-The data array `dat_ary` of elements of `DAT_T` type (SystemVerilog type generic)
+The data array `ary` of elements of `DAT_T` type (SystemVerilog type generic)
 would be defined as (the unpacked dimension can have ascending or descending order):
 
 ```SystemVerilog
-DAT_T dat_ary [0:WIDTH-1];
+DAT_T ary [0:WIDTH-1];
 ```
 
 The one-hot select multiplexer would mask each array element
-with the corresponding bit in the one-hot select vector `oht_sel[WIDTH-1:0]`,
-and than OR all together the those masked values into the output `dat`.
+with the corresponding bit in the one-hot select vector `oht[WIDTH-1:0]`,
+and than apply OR reduction to combine all those masked values into the output `dat`.
 
 ```SystemVerilog
 dat = '0;
 for (int unsigned i=0; i<WIDTH; i++) begin
-    dat |= oht_sel[i] ? dat_ary[i] : '0;
+    dat |= oht[i] ? ary[i] : '0;
 end
 ```
 
 The synthesis tool will construct a tree from the OR reduction.
-This is the preferred solution for ASIC tools,
+
+One-hot multiplexer is the preferred solution for ASIC designs,
 since it can be constructed from the simplest/fastest logic cells.
 
 The one-hot select multiplexer can also be written as an explicit linear structure.
@@ -585,16 +586,16 @@ The one-hot select multiplexer can also be written as an explicit linear structu
 ```SystemVerilog
 dat = '0;
 for (int unsigned i=0; i<WIDTH; i++) begin
-    dat = oht_sel[i] ? dat_ary[i] : dat;
+    dat = oht[i] ? ary[i] : dat;
 end
 ```
 
 The binary select multiplexer (priority multiplexer),
 can be implemented using HDL array indexing syntax
-with a binary select signal `bin_sel[WIDTH_LOG-1:0]`.
+with a binary select signal `bin[WIDTH_LOG-1:0]`.
 
 ```SystemVerilog
-    dat = dat_ary[bin_sel];
+    dat = ary[bin];
 ```
 
 Synthesis tools construct a tree of multiplexers
