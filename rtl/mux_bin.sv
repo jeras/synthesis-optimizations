@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// multiplexer with one-hot select,
+// multiplexer with binary select,
 // generic version with padding
 //
 // @author: Iztok Jeras <iztok.jeras@gmail.com>
@@ -7,7 +7,7 @@
 // Licensed under CERN-OHL-P v2 or later
 ///////////////////////////////////////////////////////////////////////////////
 
-module mux_oht #(
+module mux_bin #(
     // data type
     parameter  type DAT_T = logic [8-1:0],
     // size parameters
@@ -16,13 +16,12 @@ module mux_oht #(
     // size local parameters
     localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
     localparam int unsigned SPLIT_LOG = $clog2(SPLIT),
-    // implementation (see `mux_oht_base` for details)
+    // implementation (see `bin2oht_base` for details)
     parameter  int unsigned IMPLEMENTATION = 0
 )(
-    input  logic [WIDTH-1:0] oht,              // one-hot select
-    input  DAT_T             ary [WIDTH-1:0],  // data array
-    output logic             vld,              // valid (OR reduced one-hot)
-    output DAT_T             dat               // data selected
+    input  logic [WIDTH_LOG-1:0] bin,              // binary select
+    input  DAT_T                 ary [WIDTH-1:0],  // data array
+    output DAT_T                 dat               // data selected
 );
 
     // SPLIT to the power of logarithm of WIDTH base SPLIT
@@ -36,8 +35,8 @@ module mux_oht #(
         logic [POWER-1:0] oht_tmp;
         DAT_T             ary_tmp [WIDTH-1:0];
         
-        // zero extend the one-hot vector
-        assign oht_tmp = POWER'(oht);
+        // zero extend the binary vector
+        assign oht_tmp = POWER'(bin);
         // don't care extend the data array
         always_comb
         for (int unsigned i=0; i<POWER; i++) begin
@@ -45,15 +44,14 @@ module mux_oht #(
         end
 
         // the synthesis tool is expected to optimize out the logic for constant inputs
-        mux_oht_tree #(
+        mux_bin_tree #(
             .DAT_T (DAT_T),
             .WIDTH (POWER),
             .SPLIT (SPLIT),
             .IMPLEMENTATION (IMPLEMENTATION)
-        ) mux_oht (
-            .oht (oht_tmp),
+        ) mux_bin (
+            .bin (oht_tmp),
             .ary (ary_tmp),
-            .vld (vld    ),
             .dat (dat    )
         );
 
@@ -61,19 +59,18 @@ module mux_oht #(
     // width is a power of split
     else begin: exact
 
-        mux_oht_tree #(
+        mux_bin_tree #(
             .DAT_T (DAT_T),
             .WIDTH (WIDTH),
             .SPLIT (SPLIT),
             .IMPLEMENTATION (IMPLEMENTATION)
-        ) mux_oht (
-            .oht (oht),
+        ) mux_bin (
+            .bin (bin),
             .ary (ary),
-            .vld (vld),
             .dat (dat)
         );
 
     end: exact
     endgenerate
 
-endmodule: mux_oht
+endmodule: mux_bin
