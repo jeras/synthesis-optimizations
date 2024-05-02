@@ -357,11 +357,11 @@ In an ASIC, the comparison is done with one of the following:
 
 2. Using _bitwise binary exclusive NOR operator_ `~^` on `bin`, `ref`
    creates a vector with bits set where there is a match,
-   this vector is reduced using _unary AND operator_ `|` into a scalar
+   this vector is reduced using _unary AND operator_ `&` into a scalar
    indicating all bits are equal `eql`.
 
    ```SystemVerilog
-   
+   eql = &(bin ~^ ref);   
    ```
 
 In practice (ASIC and FPGA) it is best to use the _equality operator_ `==`,
@@ -590,7 +590,7 @@ for (int unsigned i=0; i<WIDTH; i++) begin
 end
 ```
 
-The binary select multiplexer (priority multiplexer),
+The binary select multiplexer (also called priority multiplexer),
 can be implemented using HDL array indexing syntax
 with a binary select signal `bin[WIDTH_LOG-1:0]`.
 
@@ -609,6 +609,18 @@ A LUT6 can implement a 4 to 1 multiplexer with a 2 bit binary select.
 https://pages.hmc.edu/harris/cmosvlsi/4e/lect/lect18.pdf
 
 ### Priority to one-hot conversion
+
+A priority vector has more tnan
+
+```SystemVerilog
+function [WIDTH-1:0] onehot (
+  input [WIDTH-1:0] x
+);
+  for (int i=WIDTH; i>0; i++) begin
+  end
+endfunction: onehot
+```
+
 
 I checked the book, the formula for _a word with a single 1-bit at the position of the rightmost 0-bit in x_ would be:
 
