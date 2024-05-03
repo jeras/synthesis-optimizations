@@ -12,12 +12,12 @@ module mux_oht_tb #(
     parameter  type DAT_T = logic [8-1:0],
     // size parameters
     int unsigned WIDTH = 16,
-    int unsigned SPLIT = 4
+    int unsigned SPLIT = 4,
+    // size local parameters
+    localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
+    localparam int unsigned SPLIT_LOG = $clog2(SPLIT)
 );
 
-    // size local parameters
-    localparam int unsigned WIDTH_LOG = $clog2(WIDTH);
-    localparam int unsigned SPLIT_LOG = $clog2(SPLIT);
 
     // timing constant
     localparam time T = 10ns;
@@ -38,7 +38,7 @@ module mux_oht_tb #(
 // reference calculation and checking of DUT outputs against reference
 ///////////////////////////////////////////////////////////////////////////////
 
-    function automatic [WIDTH-1:0] ref_mux_oht (
+    function automatic DAT_T ref_mux_oht (
         logic [WIDTH-1:0] oht,
         DAT_T             ary [WIDTH-1:0]
     );
