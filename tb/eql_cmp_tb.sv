@@ -26,7 +26,9 @@ module eql_cmp_tb #(
     logic [WIDTH-1:0] val;
     logic [WIDTH-1:0] rfr;
     // equal outputs
+    /* verilator lint_off ASCRANGE */
     logic             eql[0:IMPLEMENTATIONS-1];
+    /* verilator lint_on ASCRANGE */
     // reference signals
     logic         ref_eql;
 
@@ -47,7 +49,9 @@ module eql_cmp_tb #(
     end
 
     // check enable depending on test
+    /* verilator lint_off ASCRANGE */
     bit [0:IMPLEMENTATIONS-1] check_enable;
+    /* verilator lint_on ASCRANGE */
 
     // output checking task
     task check();

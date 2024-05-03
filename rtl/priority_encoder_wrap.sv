@@ -39,6 +39,5 @@ module priority_encoder_wrap #(
         enc_idx <= tmp_enc_idx;
         enc_vld <= tmp_enc_vld;
     end
-    
 
 endmodule: priority_encoder_wrap

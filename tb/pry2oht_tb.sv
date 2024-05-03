@@ -27,8 +27,10 @@ module pry2oht_tb #(
     // priority input
     logic [WIDTH-1:0] pry;
     // one-hot and valid outputs
+    /* verilator lint_off ASCRANGE */
     logic [WIDTH-1:0] oht [0:IMPLEMENTATIONS-1];  // one-hot
     logic             vld [0:IMPLEMENTATIONS-1];  // valid
+    /* verilator lint_on ASCRANGE */
     // reference signals
     logic [WIDTH-1:0] ref_oht;
     logic             ref_vld;

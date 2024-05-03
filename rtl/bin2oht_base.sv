@@ -25,10 +25,10 @@ module bin2oht_base #(
 );
 
     // table unpacked array type
-    typedef bit [WIDTH_LOG-1:0] pow2_mask_t [WIDTH-1:0];
+    typedef bit [WIDTH_LOG-1:0] tbl_t [WIDTH-1:0];
 
     // table function definition
-    function automatic pow2_mask_t tbl_f();
+    function automatic tbl_t tbl_f();
         for (int unsigned i=0; i<WIDTH; i++) begin
             for (int unsigned j=0; j<WIDTH_LOG; j++) begin
                 tbl_f[i][j] = i[j];
@@ -37,7 +37,7 @@ module bin2oht_base #(
     endfunction: tbl_f
 
     // table constant
-    localparam pow2_mask_t TBL = tbl_f;
+    localparam tbl_t TBL = tbl_f();
 
     generate
     case (IMPLEMENTATION)

@@ -28,8 +28,10 @@ module mux_oht_tb #(
     logic [WIDTH-1:0] oht;
     DAT_T             ary [WIDTH-1:0];
     // data and valid outputs
+    /* verilator lint_off ASCRANGE */
     logic             vld [0:IMPLEMENTATIONS-1];
     DAT_T             dat [0:IMPLEMENTATIONS-1];
+    /* verilator lint_on ASCRANGE */
     // reference signals
     logic         ref_vld;
     DAT_T         ref_dat;
@@ -55,7 +57,9 @@ module mux_oht_tb #(
     end
 
     // check enable depending on test
+    /* verilator lint_off ASCRANGE */
     bit [0:IMPLEMENTATIONS-1] check_enable;
+    /* verilator lint_on ASCRANGE */
 
     // output checking task
     task check();

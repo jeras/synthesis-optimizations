@@ -28,7 +28,9 @@ module mux_bin_tb #(
     logic [WIDTH_LOG-1:0] bin;
     DAT_T                 ary [WIDTH-1:0];
     // data and valid outputs
+    /* verilator lint_off ASCRANGE */
     DAT_T                 dat [0:IMPLEMENTATIONS-1];
+    /* verilator lint_on ASCRANGE */
     // reference signals
     DAT_T             ref_dat;
 

@@ -24,36 +24,36 @@ module oht2bin_base #(
 );
 
     // table unpacked array type
-    typedef bit [WIDTH-1:0] log2_mask_t [WIDTH_LOG-1:0];
+    typedef bit [WIDTH-1:0] tbl_t [WIDTH_LOG-1:0];
 
     // table function definition
-    function automatic log2_mask_t log2_mask_f;
+    function automatic tbl_t tbl_f;
         for (int unsigned i=0; i<WIDTH_LOG; i++) begin
             for (int unsigned j=0; j<WIDTH; j++) begin
-                log2_mask_f[i][j] = j[i];
+                tbl_f[i][j] = j[i];
             end
         end
-    endfunction: log2_mask_f
+    endfunction: tbl_f
 
     // table constant
-    localparam log2_mask_t LOG2_MASK = log2_mask_f;
+    localparam tbl_t TBL = tbl_f();
 
     // logarithm
-    function automatic logic [WIDTH_LOG-1:0] log2_f (
+    function automatic logic [WIDTH_LOG-1:0] log_tbl_f (
         logic [WIDTH-1:0] value
     );
         for (int unsigned i=0; i<WIDTH_LOG; i++) begin
-            log2_f[i] = |(value & LOG2_MASK[i]);
+            log_tbl_f[i] = |(value & TBL[i]);
         end
-    endfunction: log2_f
+    endfunction: log_tbl_f
 
     generate
     case (IMPLEMENTATION)
         0:  // table
             always_comb
             begin
-                bin = log2_f(oht);  // logarithm
-                vld =       |oht;
+                bin = log_tbl_f(oht);  // logarithm
+                vld =          |oht;
             end
         1:  // loop all
             always_comb

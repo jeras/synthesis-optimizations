@@ -11,13 +11,12 @@ module mag_cmp_tb #(
     // size parameters
     int unsigned WIDTH = 4,
     int unsigned SPLIT = 2,
+    // size local parameters
+    localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
+    localparam int unsigned SPLIT_LOG = $clog2(SPLIT),
     // number of randomized tests
     int unsigned NUM_RND = 8
 );
-
-    // size local parameters
-    localparam int unsigned WIDTH_LOG = $clog2(WIDTH);
-    localparam int unsigned SPLIT_LOG = $clog2(SPLIT);
 
     // timing constant
     localparam time T = 10ns;
@@ -28,8 +27,10 @@ module mag_cmp_tb #(
     logic [WIDTH-1:0] val;
     logic [WIDTH-1:0] rfr;
     // greater and less than outputs
+    /* verilator lint_off ASCRANGE */
     logic             grt[0:IMPLEMENTATIONS-1];
     logic             lst[0:IMPLEMENTATIONS-1];
+    /* verilator lint_on ASCRANGE */
     // reference signals
     logic         ref_grt;
     logic         ref_lst;

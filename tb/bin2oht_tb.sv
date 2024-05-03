@@ -26,7 +26,9 @@ module bin2oht_tb #(
     logic                 vld;
     logic [WIDTH_LOG-1:0] bin;
     // one-hot output
+    /* verilator lint_off ASCRANGE */
     logic [WIDTH    -1:0] oht [0:IMPLEMENTATIONS-1];
+    /* verilator lint_on ASCRANGE */
     // reference signals
     logic [WIDTH    -1:0] ref_oht;
 

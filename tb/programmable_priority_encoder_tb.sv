@@ -1,12 +1,11 @@
 module programmable_priority_encoder_tb #(
     // size parameters
     int unsigned WIDTH = 4,
-    int unsigned SPLIT = 2
-);
-
+    int unsigned SPLIT = 2,
     // size local parameters
-    localparam int unsigned WIDTH_LOG = $clog2(WIDTH);
-    localparam int unsigned SPLIT_LOG = $clog2(SPLIT);
+    localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
+    localparam int unsigned SPLIT_LOG = $clog2(SPLIT)
+);
 
     // timing constant
     localparam time T = 10ns;

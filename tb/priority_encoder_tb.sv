@@ -10,12 +10,11 @@
 module priority_encoder_tb #(
     // size parameters
     int unsigned WIDTH = 16,
-    int unsigned SPLIT = 4
-);
-
+    int unsigned SPLIT = 4,
     // size local parameters
-    localparam int unsigned WIDTH_LOG = $clog2(WIDTH);
-    localparam int unsigned SPLIT_LOG = $clog2(SPLIT);
+    localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
+    localparam int unsigned SPLIT_LOG = $clog2(SPLIT)
+);
 
     // timing constant
     localparam time T = 10ns;
@@ -25,8 +24,10 @@ module priority_encoder_tb #(
     // input
     logic [WIDTH    -1:0] dec_vld;
     // priority encoder
+    /* verilator lint_off ASCRANGE */
     logic [WIDTH_LOG-1:0] enc_idx [0:IMPLEMENTATIONS-1];
     logic                 enc_vld [0:IMPLEMENTATIONS-1];  // cumulative valid
+    /* verilator lint_on ASCRANGE */
     // reference encoder
     logic [WIDTH_LOG-1:0] ref_enc_idx;
     logic                 ref_enc_vld;

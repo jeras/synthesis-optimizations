@@ -10,12 +10,11 @@
 module oht2bin_tb #(
     // size parameters
     int unsigned WIDTH = 16,
-    int unsigned SPLIT = 4
-);
-
+    int unsigned SPLIT = 4,
     // size local parameters
-    localparam int unsigned WIDTH_LOG = $clog2(WIDTH);
-    localparam int unsigned SPLIT_LOG = $clog2(SPLIT);
+    localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
+    localparam int unsigned SPLIT_LOG = $clog2(SPLIT)
+);
 
     // timing constant
     localparam time T = 10ns;
@@ -25,8 +24,10 @@ module oht2bin_tb #(
     // one-hot input
     logic [WIDTH    -1:0] oht;
     // binary and valid outputs
+    /* verilator lint_off ASCRANGE */
     logic [WIDTH_LOG-1:0] bin [0:IMPLEMENTATIONS-1];
     logic                 vld [0:IMPLEMENTATIONS-1];
+    /* verilator lint_on ASCRANGE */
     // reference signals
     logic [WIDTH_LOG-1:0] ref_bin;
     logic                 ref_vld;
