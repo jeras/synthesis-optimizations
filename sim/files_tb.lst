@@ -1,0 +1,21 @@
+# equality comparator
+../../tb/eql_cmp_tb.sv
+
+# binary to one-hot conversion
+../../tb/bin2oht_tb.sv
+
+# one-hot to binary conversion
+../../tb/oht2bin_tb.sv
+
+# multiplexer with one-hot select
+../../tb/mux_oht_tb.sv
+
+# multiplexer with binary select
+../../tb/mux_bin_tb.sv
+
+
+../../tb/mag_cmp_tb.sv
+../../tb/priority_encoder_tb.sv
+../../tb/programmable_priority_encoder_tb.sv
+../../tb/pry2oht_tb.sv
+../../tb/vivado_simulator_bug_encoder_tb.sv

@@ -1,0 +1,48 @@
+# equality comparator
+../../rtl/eql_cmp.sv
+
+# binary to one-hot conversion
+../../rtl/bin2oht_base.sv
+../../rtl/bin2oht_tree.sv
+../../rtl/bin2oht.sv
+
+# one-hot to binary conversion
+../../rtl/oht2bin_base.sv
+../../rtl/oht2bin_tree.sv
+../../rtl/oht2bin.sv
+
+# multiplexer with one-hot select
+../../rtl/mux_oht_base.sv
+../../rtl/mux_oht_tree.sv
+../../rtl/mux_oht.sv
+
+# multiplexer with binary select
+../../rtl/mux_bin_base.sv
+../../rtl/mux_bin_tree.sv
+../../rtl/mux_bin.sv
+
+
+# magnitude comparator
+../../rtl/mag_cmp_base.sv
+../../rtl/mag_cmp_tree.sv
+../../rtl/mag_cmp.sv
+
+../../rtl/pry2oht_base.sv
+../../rtl/pry2oht_tree.sv
+../../rtl/pry2oht.sv
+
+#../../rtl/pry2oht_bck_base.sv
+#../../rtl/pry2oht_bck_tree.sv
+#../../rtl/pry2oht_bck.sv
+
+../../rtl/priority_encoder_base.sv
+../../rtl/priority_encoder_tree.sv
+../../rtl/priority_encoder_wrap.sv
+
+../../rtl/programmable_priority_encoder.sv
+
+#../../rtl/barrel_shifter.sv
+
+#../../rtl/synthesis_optimization_top.sv
+#../../rtl/placeholder.sv
+#../../rtl/negative.sv
