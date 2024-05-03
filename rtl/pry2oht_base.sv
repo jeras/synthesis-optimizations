@@ -70,6 +70,7 @@ module pry2oht_base #(
                     end: vector
                 default:
                     $fatal("Unsupported DIRECTION parameter value.");
+            endcase
         2:  // adder
             always_comb
             begin: adder

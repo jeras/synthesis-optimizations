@@ -7,7 +7,7 @@
 // Licensed under CERN-OHL-P v2 or later
 ///////////////////////////////////////////////////////////////////////////////
 
-module pry2oht_tree #(
+module pry2oht #(
     // size parameters
     parameter  int unsigned WIDTH = 32,
     parameter  int unsigned SPLIT = 2,
@@ -77,4 +77,4 @@ module pry2oht_tree #(
     end: exact
     endgenerate
 
-endmodule: pry2oht_tree
+endmodule: pry2oht
