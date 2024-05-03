@@ -5,7 +5,9 @@ TOPS="\
     bin2oht_tb \
     oht2bin_tb \
     mux_oht_tb \
-    mux_bin_tb
+    mux_bin_tb \
+    pry2oht_tb \
+    mag_cmp_tb
 "
 
 for TOP in $TOPS

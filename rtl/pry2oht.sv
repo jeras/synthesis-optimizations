@@ -15,7 +15,7 @@ module pry2oht #(
     localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
     localparam int unsigned SPLIT_LOG = $clog2(SPLIT),
     // direction: "LSB" - rightmost, "MSB" - leftmost
-    parameter  bit          DIRECTION = "LSB",
+    parameter  string       DIRECTION = "LSB",
     // implementation (see `pry2oht_base` for details)
     parameter  int unsigned IMPLEMENTATION = 0
 )(

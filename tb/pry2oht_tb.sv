@@ -15,11 +15,11 @@ module pry2oht_tb #(
     localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
     localparam int unsigned SPLIT_LOG = $clog2(SPLIT),
     // direction: "LSB" - rightmost, "MSB" - leftmost
-    parameter  bit          DIRECTION = "LSB"
+    parameter  string       DIRECTION = "LSB"
 );
 
     // implementation (see `pry2oht_base` for details)
-    localparam int unsigned IMPLEMENTATIONS = 2;
+    localparam int unsigned IMPLEMENTATIONS = 3;
 
     // timing constant
     localparam time T = 10ns;
@@ -42,17 +42,19 @@ module pry2oht_tb #(
     function automatic [WIDTH-1:0] ref_pry2oht (
         logic [WIDTH-1:0] pry
     );
+        automatic logic [WIDTH-1:0] oht;
+        automatic logic             vld;
         vld = 1'b0;
         case (DIRECTION)
             "LSB":
                 for (int i=0; i<WIDTH; i++) begin
-                    oht[i] = pry[i] & ~vhd;
-                    vld    = pry[i] |  vhd;
+                    oht[i] = pry[i] & ~vld;
+                    vld    = pry[i] |  vld;
                 end
             "MSB":
                 for (int i=WIDTH-1; i<=0; i--) begin
-                    oht[i] = pry[i] & ~vhd;
-                    vld    = pry[i] |  vhd;
+                    oht[i] = pry[i] & ~vld;
+                    vld    = pry[i] |  vld;
                 end
         endcase
         return oht;
@@ -66,7 +68,9 @@ module pry2oht_tb #(
     end
 
     // check enable depending on test
+    /* verilator lint_off ASCRANGE */
     bit [0:IMPLEMENTATIONS-1] check_enable;
+    /* verilator lint_on ASCRANGE */
 
     // output checking task
     task check();
@@ -109,7 +113,7 @@ module pry2oht_tb #(
 
         // priority encoder test (with undefined inputs)
         test_name = "priority";
-        check_enable = '{3: 1'b0, default: 1'b1};
+        check_enable = '{2: 1'b0, default: 1'b1};
         for (int unsigned i=0; i<WIDTH; i++) begin
             logic [WIDTH-1:0] tmp_vld;
             tmp_vld = 'X;

@@ -21,19 +21,20 @@
 ../../rtl/mux_bin_tree.sv
 ../../rtl/mux_bin.sv
 
+# priority to one-hot conversion
+../../rtl/pry2oht_base.sv
+../../rtl/pry2oht_tree.sv
+../../rtl/pry2oht.sv
+
+# priority to one-hot conversion (backward valid propagation)
+#../../rtl/pry2oht_bck_base.sv
+#../../rtl/pry2oht_bck_tree.sv
+#../../rtl/pry2oht_bck.sv
 
 # magnitude comparator
 ../../rtl/mag_cmp_base.sv
 ../../rtl/mag_cmp_tree.sv
 ../../rtl/mag_cmp.sv
-
-../../rtl/pry2oht_base.sv
-../../rtl/pry2oht_tree.sv
-../../rtl/pry2oht.sv
-
-#../../rtl/pry2oht_bck_base.sv
-#../../rtl/pry2oht_bck_tree.sv
-#../../rtl/pry2oht_bck.sv
 
 ../../rtl/priority_encoder_base.sv
 ../../rtl/priority_encoder_tree.sv

@@ -13,9 +13,15 @@
 # multiplexer with binary select
 ../../tb/mux_bin_tb.sv
 
+# priority to one-hot conversion
+../../tb/pry2oht_tb.sv
 
+# priority to one-hot conversion (backward valid propagation)
+#../../tb/pry2oht_bck_tb.sv
+
+# magnitude comparator
 ../../tb/mag_cmp_tb.sv
+
 ../../tb/priority_encoder_tb.sv
 ../../tb/programmable_priority_encoder_tb.sv
-../../tb/pry2oht_tb.sv
 ../../tb/vivado_simulator_bug_encoder_tb.sv

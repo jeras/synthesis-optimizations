@@ -15,7 +15,7 @@ module pry2oht_tree #(
     localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
     localparam int unsigned SPLIT_LOG = $clog2(SPLIT),
     // direction: "LSB" - rightmost, "MSB" - leftmost
-    parameter  bit          DIRECTION = "LSB",
+    parameter  string       DIRECTION = "LSB",
     // implementation (see `pry2oht_base` for details)
     parameter  int unsigned IMPLEMENTATION = 0
 )(
@@ -71,7 +71,7 @@ module pry2oht_tree #(
 
         // mask one-hot signals from sub-branches
         for (genvar i=0; i<SPLIT; i++) begin: mask
-            assign oht[i*SPLIT+:SPLIT] = oht_brn[i] ? oht_sub[i] : '0;
+            assign oht[i*SPLIT+:WIDTH/SPLIT] = oht_brn[i] ? oht_sub[i] : '0;
         end: mask
 
     end: branch

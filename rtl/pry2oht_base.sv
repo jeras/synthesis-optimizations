@@ -13,7 +13,7 @@ module pry2oht_base #(
     // size local parameters
     localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
     // direction: "LSB" - rightmost, "MSB" - leftmost
-    parameter  bit          DIRECTION = "LSB",
+    parameter  string       DIRECTION = "LSB",
     // implementation
     parameter  int unsigned IMPLEMENTATION = 0
     // 0 - adder
@@ -34,8 +34,8 @@ module pry2oht_base #(
                     begin: loop
                         vld = 1'b0;
                         for (int i=0; i<WIDTH; i++) begin
-                            oht[i] = pry[i] & ~vhd;
-                            vld    = pry[i] |  vhd;
+                            oht[i] = pry[i] & ~vld;
+                            vld    = pry[i] |  vld;
                         end
                     end: loop
                 "MSB":
@@ -43,8 +43,8 @@ module pry2oht_base #(
                     begin: loop
                         vld = 1'b0;
                         for (int i=WIDTH-1; i<=0; i--) begin
-                            oht[i] = pry[i] & ~vhd;
-                            vld    = pry[i] |  vhd;
+                            oht[i] = pry[i] & ~vld;
+                            vld    = pry[i] |  vld;
                         end
                     end: loop
                 default:
