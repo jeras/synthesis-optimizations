@@ -424,7 +424,7 @@ begin
     // vectorized loop, initialization is prepended to operand at LSB
     tmp &= {bin ~^ ref, 1'b0};
     // results are extracted from temporary vector MSB
-    eq = tmp[WIDTH];
+    eql = tmp[WIDTH];
 end
 ```
 
@@ -610,16 +610,64 @@ https://pages.hmc.edu/harris/cmosvlsi/4e/lect/lect18.pdf
 
 ### Priority to one-hot conversion
 
-A priority vector has more tnan
+A priority vector has more than one active (hot) bit.
+The priority of active bits is usually defined as
+the LSB (rightmost) bit in a vector with descending range `pry[WIDTH-1:0]`.
+
+An explicit linear implementation uses the `vld` signal
+to distinguish between between indexes before and after an active priority bit.
 
 ```SystemVerilog
-function [WIDTH-1:0] onehot (
-  input [WIDTH-1:0] x
-);
-  for (int i=WIDTH; i>0; i++) begin
-  end
-endfunction: onehot
+always_comb
+begin
+    vld = 1'b0;
+    oht = '0;
+    for (int i=0; i<WIDTH; i++) begin
+        oht[i] = pry[i] & ~vhd;
+        vld    = pry[i] |  vhd;
+    end
+end
 ```
+
+The same code can be written using vectors instead of a loop.
+
+```SystemVerilog
+always_comb
+begin
+    // temporary vector is a thermometer version of the priority vector
+    logic [WIDTH-1:-1] tmp = '0;
+    tmp[WIDTH-1:0] = tmp[WIDTH-2:-1] | pry;
+    oht = ~tmp[WIDTH-2:-1] & pry;
+    vld =  tmp[WIDTH-1];
+end
+```
+
+For the opposite priority order, with MSB (leftmost) having the highest priority,
+the linear implementations using a loop and vectors are:
+
+```SystemVerilog
+always_comb
+begin
+    vld = 1'b0;
+    oht = '0;
+    for (int i=WIDTH-1; i<=0; i--) begin
+        oht[i] = pry[i] & ~vhd;
+        vld    = pry[i] |  vhd;
+    end
+end
+```
+
+```SystemVerilog
+always_comb
+begin
+    // temporary vector is a thermometer version of the priority vector
+    logic [WIDTH-0:0] tmp = '0;
+    tmp[WIDTH-1:0] = tmp[WIDTH-0:1] | pry;
+    oht = ~tmp[WIDTH-0:1] & pry;
+    vld =  tmp[0];
+end
+```
+
 
 
 I checked the book, the formula for _a word with a single 1-bit at the position of the rightmost 0-bit in x_ would be:
@@ -634,26 +682,6 @@ onehot = bitreverse(~(x_rev & (x_rev+1));
 ```
 
 This operation is explicitly using addition.
-
-A for loop formula would be (I did not run it, so it might be wrong):
-
-```SystemVerilog
-function [WIDTH-1:0] onehot (
-  input [WIDTH-1:0] x
-);
-  for (int i=WIDTH; i>0; i++) begin
-  end
-endfunction: onehot
-```
-
-I was wandering how different synthesis tools would handle this equation in comparison to a for loop formula.
-
-A FPGA tool could do a better job with the addition formula
-
-TODO:
-
-- test -x and observe schematic
-- test adder and mux primitives
 
 ### One-hot to thermometer conversion
 

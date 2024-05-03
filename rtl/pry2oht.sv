@@ -14,6 +14,8 @@ module pry2oht_tree #(
     // size local parameters
     localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
     localparam int unsigned SPLIT_LOG = $clog2(SPLIT),
+    // direction: "LSB" - rightmost, "MSB" - leftmost
+    parameter  bit          DIRECTION = "LSB",
     // implementation (see `pry2oht_base` for details)
     parameter  int unsigned IMPLEMENTATION = 0
 )(
@@ -46,6 +48,7 @@ module pry2oht_tree #(
         pry2oht_tree #(
             .WIDTH (POWER),
             .SPLIT (SPLIT),
+            .DIRECTION (DIRECTION),
             .IMPLEMENTATION (IMPLEMENTATION)
         ) pry2oht (
             .pry (pry_tmp),
@@ -63,6 +66,7 @@ module pry2oht_tree #(
         pry2oht_tree #(
             .WIDTH (POWER),
             .SPLIT (SPLIT),
+            .DIRECTION (DIRECTION),
             .IMPLEMENTATION (IMPLEMENTATION)
         ) pry2oht (
             .pry (pry),

@@ -12,6 +12,8 @@ module pry2oht_base #(
     parameter  int unsigned WIDTH = 32,
     // size local parameters
     localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
+    // direction: "LSB" - rightmost, "MSB" - leftmost
+    parameter  bit          DIRECTION = "LSB",
     // implementation
     parameter  int unsigned IMPLEMENTATION = 0
     // 0 - adder
@@ -25,36 +27,56 @@ module pry2oht_base #(
 
     generate
     case (IMPLEMENTATION)
-        0:  // adder
+        0:  // loop
+            case (DIRECTION)
+                "LSB":
+                    always_comb
+                    begin: loop
+                        vld = 1'b0;
+                        for (int i=0; i<WIDTH; i++) begin
+                            oht[i] = pry[i] & ~vhd;
+                            vld    = pry[i] |  vhd;
+                        end
+                    end: loop
+                "MSB":
+                    always_comb
+                    begin: loop
+                        vld = 1'b0;
+                        for (int i=WIDTH-1; i<=0; i--) begin
+                            oht[i] = pry[i] & ~vhd;
+                            vld    = pry[i] |  vhd;
+                        end
+                    end: loop
+                default:
+                    $fatal("Unsupported DIRECTION parameter value.");
+            endcase
+        1:  // vector (vectorization of the loop code)
+            case (DIRECTION)
+                "LSB":
+                    always_comb
+                    begin: vector
+                        automatic logic [WIDTH-0:0] tmp;
+                        tmp = {pry, 1'b0} | tmp;
+                        oht = ~tmp[WIDTH-1:0] & pry;
+                        vld =  tmp[WIDTH];
+                    end: vector
+                "MSB":
+                    always_comb
+                    begin: vector
+                        automatic logic [WIDTH-0:0] tmp;
+                        tmp[WIDTH-1:0] = tmp[WIDTH-0:1] | pry;
+                        oht = ~tmp[WIDTH-0:1] & pry;
+                        vld =  tmp[0];
+                    end: vector
+                default:
+                    $fatal("Unsupported DIRECTION parameter value.");
+        2:  // adder
             always_comb
             begin: adder
-                automatic logic [WIDTH-1:0] neg_pry;
-                {vld, neg_pry} = -pry;
-                oht = pry & neg_pry;
+                automatic logic [WIDTH-1:0] tmp;
+                {vld, tmp} = -pry;
+                oht = pry & tmp;
             end: adder
-        1:  // loop
-            always_comb
-            begin: loop
-                vld = 1'b0;
-                for (int i=0; i<WIDTH; i++) begin
-                    if (vld) begin
-                        oht[i] = 1'b0;
-                    end else begin
-                        oht[i] = pry[i];
-                        if (pry[i]) begin
-                            vld = 1'b1;
-                        end
-                    end
-                end
-            end: loop
-        2:  // vector (vectorization of the loop code)
-            always_comb
-            begin: vector
-                automatic logic [WIDTH-0:0] carry_chain;
-                carry_chain = {pry, 1'b0} | carry_chain;
-                oht = pry & ~carry_chain[WIDTH-1:0];
-                vld = carry_chain[WIDTH];
-            end: vector
         default:  // parameter validation
             $fatal("Unsupported IMPLEMENTATION parameter value.");
     endcase

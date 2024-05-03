@@ -9,18 +9,20 @@
 
 module pry2oht_tb #(
     // size parameters
-    int unsigned WIDTH = 16,
-    int unsigned SPLIT = 4
+    parameter  int unsigned WIDTH = 32,
+    parameter  int unsigned SPLIT = 2,
+    // size local parameters
+    localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
+    localparam int unsigned SPLIT_LOG = $clog2(SPLIT),
+    // direction: "LSB" - rightmost, "MSB" - leftmost
+    parameter  bit          DIRECTION = "LSB"
 );
 
-    // size local parameters
-    localparam int unsigned WIDTH_LOG = $clog2(WIDTH);
-    localparam int unsigned SPLIT_LOG = $clog2(SPLIT);
+    // implementation (see `pry2oht_base` for details)
+    localparam int unsigned IMPLEMENTATIONS = 2;
 
     // timing constant
     localparam time T = 10ns;
-
-    localparam int unsigned IMPLEMENTATIONS = 2;
 
     // priority input
     logic [WIDTH-1:0] pry;
@@ -36,19 +38,22 @@ module pry2oht_tb #(
 ///////////////////////////////////////////////////////////////////////////////
 
     function automatic [WIDTH-1:0] ref_pry2oht (
-        logic [WIDTH-1:0] valid
+        logic [WIDTH-1:0] pry
     );
-        automatic logic carry = 1'b0;
-        for (int i=0; i<WIDTH; i++) begin
-            if (carry) begin
-                ref_pry2oht[i] = 1'b0;
-            end else begin
-                ref_pry2oht[i] = valid[i];
-                if (valid[i]) begin
-                    carry = 1'b1;
+        vld = 1'b0;
+        case (DIRECTION)
+            "LSB":
+                for (int i=0; i<WIDTH; i++) begin
+                    oht[i] = pry[i] & ~vhd;
+                    vld    = pry[i] |  vhd;
                 end
-            end
-        end
+            "MSB":
+                for (int i=WIDTH-1; i<=0; i--) begin
+                    oht[i] = pry[i] & ~vhd;
+                    vld    = pry[i] |  vhd;
+                end
+        endcase
+        return oht;
     endfunction: ref_pry2oht
 
     // reference
@@ -85,13 +90,13 @@ module pry2oht_tb #(
     begin
         // idle test
         test_name = "idle";
-        check_enable = IMPLEMENTATIONS'({1'b1, 1'b1});
+        check_enable = '{default: 1'b1};
         pry <= '0;
         check;
 
         // one-hot encoder test
         test_name = "one-hot";
-        check_enable = IMPLEMENTATIONS'({1'b1, 1'b1});
+        check_enable = '{default: 1'b1};
         for (int unsigned i=0; i<WIDTH; i++) begin
             logic [WIDTH-1:0] tmp_vld;
             tmp_vld = '0;
@@ -102,7 +107,7 @@ module pry2oht_tb #(
 
         // priority encoder test (with undefined inputs)
         test_name = "priority";
-        check_enable = IMPLEMENTATIONS'({1'b0, 1'b1});
+        check_enable = '{3: 1'b0, default: 1'b1};
         for (int unsigned i=0; i<WIDTH; i++) begin
             logic [WIDTH-1:0] tmp_vld;
             tmp_vld = 'X;
@@ -117,7 +122,7 @@ module pry2oht_tb #(
 
         // priority encoder test (going through all input combinations)
         test_name = "exhaustive";
-        check_enable = IMPLEMENTATIONS'({1'b1, 1'b1});
+        check_enable = '{default: 1'b1};
         for (logic unsigned [WIDTH-1:0] tmp_vld='1; tmp_vld>0; tmp_vld--) begin
             pry <= {<<{tmp_vld}};
             check;
