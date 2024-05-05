@@ -55,18 +55,18 @@ module pry2oht_base #(
                 "LSB":
                     always_comb
                     begin: vector
-                        automatic logic [WIDTH-0:0] tmp;
-                        tmp = {pry, 1'b0} | tmp;
-                        oht = ~tmp[WIDTH-1:0] & pry;
-                        vld =  tmp[WIDTH];
+                        automatic logic [WIDTH-1:0] tmp;
+                        tmp = {1'b0, pry[WIDTH-1:1]} | {tmp[WIDTH-2:0], 1'b0};
+                        oht = pry & ~tmp;
+                        vld = tmp[WIDTH];
                     end: vector
                 "MSB":
                     always_comb
                     begin: vector
-                        automatic logic [WIDTH-0:0] tmp;
-                        tmp[WIDTH-1:0] = tmp[WIDTH-0:1] | pry;
-                        oht = ~tmp[WIDTH-0:1] & pry;
-                        vld =  tmp[0];
+                        automatic logic [WIDTH-1:0] tmp;
+                        tmp = {1'b0, tmp[WIDTH-1:1]} | {pry[WIDTH-2:0], 1'b0};
+                        oht = pry & ~tmp;
+                        vld = tmp[0];
                     end: vector
                 default:
                     $fatal("Unsupported DIRECTION parameter value.");

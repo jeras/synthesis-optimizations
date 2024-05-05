@@ -147,6 +147,7 @@ module pry2oht_tb #(
         pry2oht_tree #(
             .WIDTH (WIDTH),
             .SPLIT (SPLIT),
+            .DIRECTION (DIRECTION),
             .IMPLEMENTATION (i)
         ) dut (
             .pry (pry),
