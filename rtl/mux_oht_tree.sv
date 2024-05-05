@@ -13,9 +13,6 @@ module mux_oht_tree #(
     // size parameters
     parameter  int unsigned WIDTH = 32,
     parameter  int unsigned SPLIT = 2,
-    // size local parameters
-    localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
-    localparam int unsigned SPLIT_LOG = $clog2(SPLIT),
     // implementation (see `mux_oht_base` for details)
     parameter  int unsigned IMPLEMENTATION = 0
 )(

@@ -11,13 +11,9 @@ module mux_oht_tb #(
     // data type
     parameter  type DAT_T = logic [8-1:0],
     // size parameters
-    int unsigned WIDTH = 16,
-    int unsigned SPLIT = 4,
-    // size local parameters
-    localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
-    localparam int unsigned SPLIT_LOG = $clog2(SPLIT)
+    int unsigned WIDTH = 9,
+    int unsigned SPLIT = 3
 );
-
 
     // timing constant
     localparam time T = 10ns;

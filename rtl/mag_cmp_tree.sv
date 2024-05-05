@@ -11,9 +11,6 @@ module mag_cmp_tree #(
     // size parameters
     parameter  int unsigned WIDTH = 32,
     parameter  int unsigned SPLIT = 2,
-    // size local parameters
-    localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
-    localparam int unsigned SPLIT_LOG = $clog2(SPLIT),
     // implementation (see `mag_cmp_base` for details)
     parameter  int unsigned IMPLEMENTATION = 0
 )(
@@ -27,7 +24,6 @@ module mag_cmp_tree #(
     // leafs at the end of tree branches
     if (WIDTH == SPLIT) begin: leaf
 
-        // leaf
         mag_cmp_base #(
             .WIDTH (WIDTH),
             .IMPLEMENTATION (IMPLEMENTATION)
@@ -52,8 +48,8 @@ module mag_cmp_tree #(
             .SPLIT (SPLIT),
             .IMPLEMENTATION (IMPLEMENTATION)
         ) mag_cmp_sub [SPLIT-1:0] (
-            .val (val),
-            .rfr (rfr),
+            .val (val    ),
+            .rfr (rfr    ),
             .grt (grt_val),
             .lst (lst_rfr)
         );
@@ -65,8 +61,8 @@ module mag_cmp_tree #(
         ) mag_cmp_brn (
             .val (grt_val),
             .rfr (lst_rfr),
-            .grt (grt),
-            .lst (lst)
+            .grt (    grt),
+            .lst (    lst)
         );
 
     end: branch

@@ -11,9 +11,6 @@ module mag_cmp #(
     // size parameters
     parameter  int unsigned WIDTH = 32,
     parameter  int unsigned SPLIT = 2,
-    // size local parameters
-    localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
-    localparam int unsigned SPLIT_LOG = $clog2(SPLIT),
     // implementation (see `mag_cmp_base` for details)
     parameter  int unsigned IMPLEMENTATION = 0
 )(
@@ -23,8 +20,15 @@ module mag_cmp #(
     output logic             lst   // less    than
 );
 
-    // SPLIT to the power of logarithm of WIDTH base SPLIT
-    localparam int unsigned POWER = SPLIT**(WIDTH_LOG/SPLIT_LOG);
+    // calculate `$ceil($ln(WIDTH), $ln(SPLIT))` using just integers
+    function int unsigned clogbase (int unsigned number, base);
+        clogbase = 0;
+        while (base**clogbase < number)  clogbase++;
+    endfunction: clogbase
+
+    // SPLIT to the power of POWER_LOG (logarithm of WIDTH base SPLIT rounded up)
+    localparam int unsigned POWER_LOG = clogbase(WIDTH, SPLIT);
+    localparam int unsigned POWER     = SPLIT**POWER_LOG;
 
     generate
     // if WIDTH is not a power of SPLIT
@@ -52,9 +56,8 @@ module mag_cmp #(
     end: extend
     else begin: exact
 
-        // the synthesis tool is expected to optimize out the logic for constant inputs
         mag_cmp_tree #(
-            .WIDTH (POWER),
+            .WIDTH (WIDTH),
             .SPLIT (SPLIT),
             .IMPLEMENTATION (IMPLEMENTATION)
         ) mag_cmp (

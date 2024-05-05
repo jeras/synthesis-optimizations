@@ -13,9 +13,6 @@ module mux_oht #(
     // size parameters
     parameter  int unsigned WIDTH = 32,
     parameter  int unsigned SPLIT = 2,
-    // size local parameters
-    localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
-    localparam int unsigned SPLIT_LOG = $clog2(SPLIT),
     // implementation (see `mux_oht_base` for details)
     parameter  int unsigned IMPLEMENTATION = 0
 )(
@@ -25,8 +22,14 @@ module mux_oht #(
     output DAT_T             dat               // data selected
 );
 
-    // SPLIT to the power of logarithm of WIDTH base SPLIT
-    localparam int unsigned POWER_LOG = WIDTH_LOG/SPLIT_LOG;
+    // calculate `$ceil($ln(WIDTH), $ln(SPLIT))` using just integers
+    function int unsigned clogbase (int unsigned number, base);
+        clogbase = 0;
+        while (base**clogbase < number)  clogbase++;
+    endfunction: clogbase
+
+    // SPLIT to the power of POWER_LOG (logarithm of WIDTH base SPLIT rounded up)
+    localparam int unsigned POWER_LOG = clogbase(WIDTH, SPLIT);
     localparam int unsigned POWER     = SPLIT**POWER_LOG;
 
     generate
@@ -50,7 +53,7 @@ module mux_oht #(
             .WIDTH (POWER),
             .SPLIT (SPLIT),
             .IMPLEMENTATION (IMPLEMENTATION)
-        ) mux_oht (
+        ) mux_oht_tree (
             .oht (oht_tmp),
             .ary (ary_tmp),
             .vld (vld    ),
@@ -66,7 +69,7 @@ module mux_oht #(
             .WIDTH (WIDTH),
             .SPLIT (SPLIT),
             .IMPLEMENTATION (IMPLEMENTATION)
-        ) mux_oht (
+        ) mux_oht_tree (
             .oht (oht),
             .ary (ary),
             .vld (vld),

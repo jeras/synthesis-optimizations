@@ -9,8 +9,8 @@
 
 module pry2oht_tb #(
     // size parameters
-    parameter  int unsigned WIDTH = 16,
-    parameter  int unsigned SPLIT = 4,
+    parameter  int unsigned WIDTH = 9,
+    parameter  int unsigned SPLIT = 3,
     // direction: "LSB" - rightmost, "MSB" - leftmost
     parameter  string       DIRECTION = "LSB"
 );
