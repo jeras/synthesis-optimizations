@@ -24,8 +24,8 @@ module pry2oht #(
     output logic             vld   // valid
 );
 
-    // SPLIT to the power of logarithm of WIDTH base SPLIT
-    localparam int unsigned POWER_LOG = WIDTH_LOG/SPLIT_LOG;
+    // SPLIT to the power of POWER_LOG (logarithm of WIDTH base SPLIT rounded up)
+    localparam int unsigned POWER_LOG = WIDTH_LOG/SPLIT_LOG + (WIDTH_LOG%SPLIT_LOG ? 1 : 0);
     localparam int unsigned POWER     = SPLIT**POWER_LOG;
 
     generate
@@ -50,7 +50,7 @@ module pry2oht #(
             .SPLIT (SPLIT),
             .DIRECTION (DIRECTION),
             .IMPLEMENTATION (IMPLEMENTATION)
-        ) pry2oht (
+        ) pry2oht_tree (
             .pry (pry_tmp),
             .oht (oht_tmp),
             .vld (vld)
@@ -64,11 +64,11 @@ module pry2oht #(
     else begin: exact
 
         pry2oht_tree #(
-            .WIDTH (POWER),
+            .WIDTH (WIDTH),
             .SPLIT (SPLIT),
             .DIRECTION (DIRECTION),
             .IMPLEMENTATION (IMPLEMENTATION)
-        ) pry2oht (
+        ) pry2oht_tree (
             .pry (pry),
             .oht (oht),
             .vld (vld)

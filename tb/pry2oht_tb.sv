@@ -9,7 +9,7 @@
 
 module pry2oht_tb #(
     // size parameters
-    parameter  int unsigned WIDTH = 16,
+    parameter  int unsigned WIDTH = 32,
     parameter  int unsigned SPLIT = 4,
     // size local parameters
     localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
@@ -146,7 +146,7 @@ module pry2oht_tb #(
     for (genvar i=0; i<IMPLEMENTATIONS; i++) begin: imp
 
         // DUT RTL instance
-        pry2oht_tree #(
+        pry2oht #(
             .WIDTH (WIDTH),
             .SPLIT (SPLIT),
             .DIRECTION (DIRECTION),
