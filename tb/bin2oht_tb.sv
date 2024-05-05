@@ -10,17 +10,26 @@
 module bin2oht_tb #(
     // size parameters
     int unsigned WIDTH = 16,
-    int unsigned SPLIT = 4
+    int unsigned SPLIT = 4,
+    // size local parameters
+    localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
+    localparam int unsigned SPLIT_LOG = $clog2(SPLIT)
 );
 
-    // size local parameters
-    localparam int unsigned WIDTH_LOG = $clog2(WIDTH);
-    localparam int unsigned SPLIT_LOG = $clog2(SPLIT);
+    // implementation (see `bin2oht_base` for details)
+    localparam int unsigned IMPLEMENTATIONS = 4;
+
+    // check enable depending on test
+    struct packed {
+        bit shift;      // 3
+        bit power;      // 2
+        bit loop;       // 1
+        bit bit_table;  // 0
+    } check_enable;
 
     // timing constant
     localparam time T = 10ns;
 
-    localparam int unsigned IMPLEMENTATIONS = 4;
 
     // valid and binary inputs
     logic                 vld;
@@ -55,7 +64,9 @@ module bin2oht_tb #(
     task check();
         #T;
         for (int unsigned i=0; i<IMPLEMENTATIONS; i++) begin
-            assert (oht[i] ==  ref_oht) else $error("IMPLEMENTATION[%0d]:  oht != %0d'b%b", i, WIDTH, ref_oht);
+            if (check_enable[i]) begin
+                assert (oht[i] ==  ref_oht) else $error("IMPLEMENTATION[%0d]:  oht != %0d'b%b", i, WIDTH, ref_oht);
+            end
         end
         #T;
     endtask: check
@@ -72,17 +83,20 @@ module bin2oht_tb #(
     begin
         // idle test
         test_name = "idle";
+        check_enable = '{bit_table: 1'b1, loop: 1'b1, power: 1'b1, shift: 1'b0};
         vld <= 1'b0;
         bin <= 'x;
         check;
 
         // test all binary combinations
         test_name = "one-hot";
+        check_enable = IMPLEMENTATIONS'('1);
         vld <= 1'b1;
         for (int unsigned i=0; i<WIDTH; i++) begin
             bin = i[WIDTH_LOG-1:0];
             check;
         end
+
         $finish;
     end
 

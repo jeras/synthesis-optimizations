@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// multiplexer with binary select,
+// multiplexer with binary select (priority multiplexer),
 // base with parametrized implementation options
 //
 // @author: Iztok Jeras <iztok.jeras@gmail.com>
@@ -16,7 +16,7 @@ module mux_bin_tree #(
     // size local parameters
     localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
     localparam int unsigned SPLIT_LOG = $clog2(SPLIT),
-    // implementation (see `bin2oht_base` for details)
+    // implementation (see `mux_bin_base` for details)
     parameter  int unsigned IMPLEMENTATION = 0
 )(
     input  logic [WIDTH_LOG-1:0] bin,              // binary select
@@ -24,7 +24,7 @@ module mux_bin_tree #(
     output DAT_T                 dat               // data selected
 );
 
-generate
+    generate
     // leafs at the end of tree branches
     if (WIDTH == SPLIT) begin: leaf
 

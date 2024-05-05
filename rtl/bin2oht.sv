@@ -22,8 +22,8 @@ module bin2oht #(
     output logic [WIDTH    -1:0] oht   // one-hot
 );
 
-    // SPLIT to the power of logarithm of WIDTH base SPLIT
-    localparam int unsigned POWER_LOG = WIDTH_LOG/SPLIT_LOG;
+    // SPLIT to the power of POWER_LOG (logarithm of WIDTH base SPLIT rounded up)
+    localparam int unsigned POWER_LOG = WIDTH_LOG/SPLIT_LOG + (WIDTH_LOG%SPLIT_LOG ? 1 : 0);
     localparam int unsigned POWER     = SPLIT**POWER_LOG;
 
     generate
@@ -42,13 +42,13 @@ module bin2oht #(
             .WIDTH (POWER),
             .SPLIT (SPLIT),
             .IMPLEMENTATION (IMPLEMENTATION)
-        ) bin2oht (
+        ) bin2oht_tree (
             .vld (vld),
             .bin (bin),
             .oht (oht_tmp)
         );
 
-        // crop the input vector
+        // crop the output vector
         assign oht = WIDTH'(oht_tmp);
 
     end: extend
@@ -56,10 +56,10 @@ module bin2oht #(
     else begin: exact
 
         bin2oht_tree #(
-            .WIDTH (POWER),
+            .WIDTH (WIDTH),
             .SPLIT (SPLIT),
             .IMPLEMENTATION (IMPLEMENTATION)
-        ) bin2oht (
+        ) bin2oht_tree (
             .vld (vld),
             .bin (bin),
             .oht (oht)

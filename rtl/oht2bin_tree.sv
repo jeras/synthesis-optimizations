@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// one-hot to binary conversion (one-hot encoder)
+// one-hot to binary conversion (one-hot encoder),
 // implemented as a tree using recursion
 //
 // @author: Iztok Jeras <iztok.jeras@gmail.com>

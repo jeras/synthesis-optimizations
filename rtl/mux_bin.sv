@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// multiplexer with binary select,
+// multiplexer with binary select (priority multipleser),
 // generic version with padding
 //
 // @author: Iztok Jeras <iztok.jeras@gmail.com>
@@ -16,7 +16,7 @@ module mux_bin #(
     // size local parameters
     localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
     localparam int unsigned SPLIT_LOG = $clog2(SPLIT),
-    // implementation (see `bin2oht_base` for details)
+    // implementation (see `mux_bin_base` for details)
     parameter  int unsigned IMPLEMENTATION = 0
 )(
     input  logic [WIDTH_LOG-1:0] bin,              // binary select
@@ -24,13 +24,19 @@ module mux_bin #(
     output DAT_T                 dat               // data selected
 );
 
-    // SPLIT to the power of logarithm of WIDTH base SPLIT
-    localparam int unsigned POWER_LOG = WIDTH_LOG/SPLIT_LOG;
+    // SPLIT to the power of POWER_LOG (logarithm of WIDTH base SPLIT rounded up)
+    localparam int unsigned POWER_LOG = WIDTH_LOG/SPLIT_LOG + (WIDTH_LOG%SPLIT_LOG ? 1 : 0);
     localparam int unsigned POWER     = SPLIT**POWER_LOG;
 
     generate
+    // if SPLIT is not a power of 2
+    if (SPLIT != (2**SPLIT_LOG)) begin: validation
+
+        $error("Parameter SPLIT is not a power of 2.");
+
+    end: validation
     // if WIDTH is not a power of SPLIT
-    if (WIDTH != POWER) begin: extend
+    else if (WIDTH != POWER) begin: extend
 
         logic [POWER-1:0] oht_tmp;
         DAT_T             ary_tmp [WIDTH-1:0];
@@ -49,7 +55,7 @@ module mux_bin #(
             .WIDTH (POWER),
             .SPLIT (SPLIT),
             .IMPLEMENTATION (IMPLEMENTATION)
-        ) mux_bin (
+        ) mux_bin_tree (
             .bin (oht_tmp),
             .ary (ary_tmp),
             .dat (dat    )
@@ -64,7 +70,7 @@ module mux_bin #(
             .WIDTH (WIDTH),
             .SPLIT (SPLIT),
             .IMPLEMENTATION (IMPLEMENTATION)
-        ) mux_bin (
+        ) mux_bin_tree (
             .bin (bin),
             .ary (ary),
             .dat (dat)

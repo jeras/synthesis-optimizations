@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// one-hot to binary conversion (one-hot encoder)
+// one-hot to binary conversion (one-hot encoder),
 // generic version with padding
 //
 // @author: Iztok Jeras <iztok.jeras@gmail.com>
@@ -22,8 +22,8 @@ module oht2bin #(
     output logic                 vld   // valid
 );
 
-    // SPLIT to the power of logarithm of WIDTH base SPLIT
-    localparam int unsigned POWER_LOG = WIDTH_LOG/SPLIT_LOG;
+    // SPLIT to the power of POWER_LOG (logarithm of WIDTH base SPLIT rounded up)
+    localparam int unsigned POWER_LOG = WIDTH_LOG/SPLIT_LOG + (WIDTH_LOG%SPLIT_LOG ? 1 : 0);
     localparam int unsigned POWER     = SPLIT**POWER_LOG;
 
     generate
@@ -46,7 +46,7 @@ module oht2bin #(
             .WIDTH (POWER),
             .SPLIT (SPLIT),
             .IMPLEMENTATION (IMPLEMENTATION)
-        ) oht2bin (
+        ) oht2bin_tree (
             .oht (oht_tmp),
             .bin (bin),
             .vld (vld)
@@ -59,7 +59,7 @@ module oht2bin #(
         oht2bin_tree #(
             .WIDTH (WIDTH),
             .IMPLEMENTATION (IMPLEMENTATION)
-        ) oht2bin (
+        ) oht2bin_tree (
             .oht (oht),
             .bin (bin),
             .vld (vld)

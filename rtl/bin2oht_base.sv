@@ -14,8 +14,8 @@ module bin2oht_base #(
     localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
     // implementation
     parameter  int unsigned IMPLEMENTATION = 0
-    // 0 - loop
-    // 1 - table
+    // 0 - bit table
+    // 1 - loop
     // 2 - power
     // 3 - shift
 )(
@@ -41,7 +41,7 @@ module bin2oht_base #(
 
     generate
     case (IMPLEMENTATION)
-        0:  // table
+        0:  // bit table
             always_comb
             for (int unsigned i=0; i<WIDTH; i++) begin
                 oht[i] = (TBL[i] == bin) ? vld : 1'b0;

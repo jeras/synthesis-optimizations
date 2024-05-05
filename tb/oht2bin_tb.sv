@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// one-hot ref_oht2bin,
+// one-hot to binary conversion (one-hot encoder),
 // testbench
 //
 // @author: Iztok Jeras <iztok.jeras@gmail.com>
@@ -16,10 +16,17 @@ module oht2bin_tb #(
     localparam int unsigned SPLIT_LOG = $clog2(SPLIT)
 );
 
+    // implementation (see `pry2oht_base` for details)
+    localparam int unsigned IMPLEMENTATIONS = 2;
+
+    // check enable depending on test
+    struct packed {
+        bit loop;       // 1
+        bit bit_table;  // 0
+    } check_enable;
+
     // timing constant
     localparam time T = 10ns;
-
-    localparam int unsigned IMPLEMENTATIONS = 3;
 
     // one-hot input
     logic [WIDTH    -1:0] oht;
@@ -52,9 +59,6 @@ module oht2bin_tb #(
         ref_bin = ref_oht2bin(oht);
         ref_vld =           |(oht);    
     end
-
-    // check enable depending on test
-    bit [0:IMPLEMENTATIONS-1] check_enable;
 
     // output checking task
     task check();

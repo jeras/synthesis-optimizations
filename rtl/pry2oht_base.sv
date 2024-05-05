@@ -16,9 +16,9 @@ module pry2oht_base #(
     parameter  string       DIRECTION = "LSB",
     // implementation
     parameter  int unsigned IMPLEMENTATION = 0
-    // 0 - adder
-    // 1 - loop
-    // 2 - vector
+    // 0 - loop
+    // 1 - vector
+    // 2 - adder
 )(
     input  logic [WIDTH-1:0] pry,  // priority
     output logic [WIDTH-1:0] oht,  // one-hot

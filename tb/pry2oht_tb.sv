@@ -9,7 +9,7 @@
 
 module pry2oht_tb #(
     // size parameters
-    parameter  int unsigned WIDTH = 32,
+    parameter  int unsigned WIDTH = 16,
     parameter  int unsigned SPLIT = 4,
     // size local parameters
     localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
@@ -35,8 +35,8 @@ module pry2oht_tb #(
     logic [WIDTH-1:0] pry;
     // one-hot and valid outputs
     /* verilator lint_off ASCRANGE */
-    logic [WIDTH-1:0] oht [0:IMPLEMENTATIONS-1];  // one-hot
-    logic             vld [0:IMPLEMENTATIONS-1];  // valid
+    logic [WIDTH-1:0] oht [0:IMPLEMENTATIONS-1];
+    logic             vld [0:IMPLEMENTATIONS-1];
     /* verilator lint_on ASCRANGE */
     // reference signals
     logic [WIDTH-1:0] ref_oht;

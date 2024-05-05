@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// multiplexer with binary select,
+// multiplexer with binary select (priority multipleser),
 // testbench
 //
 // @author: Iztok Jeras <iztok.jeras@gmail.com>
@@ -18,11 +18,14 @@ module mux_bin_tb #(
     localparam int unsigned SPLIT_LOG = $clog2(SPLIT)
 );
 
+    // implementation (see `mux_bin_base` for details)
+    localparam int unsigned IMPLEMENTATIONS = 1;
+
+    // check enable depending on test
+    bit [0:IMPLEMENTATIONS-1] check_enable;
 
     // timing constant
     localparam time T = 10ns;
-
-    localparam int unsigned IMPLEMENTATIONS = 1;
 
     // binary select and data array inputs
     logic [WIDTH_LOG-1:0] bin;
@@ -50,9 +53,6 @@ module mux_bin_tb #(
     begin
         ref_dat = ref_mux_bin(bin, ary);
     end
-
-    // check enable depending on test
-    bit [0:IMPLEMENTATIONS-1] check_enable;
 
     // output checking task
     task check();
@@ -82,7 +82,7 @@ module mux_bin_tb #(
 
         // test
         test_name = "binary";
-        check_enable = IMPLEMENTATIONS'({1'b1, 1'b1});
+        check_enable = IMPLEMENTATIONS'('1);
         for (int unsigned i=0; i<WIDTH; i++) begin
             bin <= i[WIDTH_LOG-1:0];
             check;

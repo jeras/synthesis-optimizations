@@ -14,9 +14,8 @@ module oht2bin_base #(
     localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
     // implementation
     parameter  int unsigned IMPLEMENTATION = 0
-    // 0 - table
-    // 1 - loop all
-    // 2 - loop ones
+    // 0 - bit table
+    // 1 - loop
 )(
     input  logic [WIDTH    -1:0] oht,  // one-hot
     output logic [WIDTH_LOG-1:0] bin,  // binary
@@ -49,30 +48,21 @@ module oht2bin_base #(
 
     generate
     case (IMPLEMENTATION)
-        0:  // table
+        0:  // bit table
             always_comb
             begin
                 bin = log_tbl_f(oht);  // logarithm
                 vld =          |oht;
             end
-        1:  // loop all
+        1:  // loop
             always_comb
             begin
                 bin = WIDTH_LOG'('0);
+                vld = 1'b0;
                 for (int unsigned i=0; i<WIDTH; i++) begin
                     bin |= oht[i] ? i[WIDTH_LOG-1:0] : WIDTH_LOG'('0);
+                    vld |= oht[i] ? 1'b1             : 1'b0          ;
                 end
-                vld = |oht;
-            end
-        2:  // loop ones
-            always_comb
-            begin
-                bin = WIDTH_LOG'('0);
-                for (int unsigned i=0; i<WIDTH; i++) begin
-                    // the OR operator prevents synthesis of a priority encoder
-                    if (oht[i])  bin = bin | i[WIDTH_LOG-1:0];
-                end
-                vld = |oht;
             end
         default:  // parameter validation
             $fatal("Unsupported IMPLEMENTATION parameter value.");

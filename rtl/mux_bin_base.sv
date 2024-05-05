@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// multiplexer with binary select,
+// multiplexer with binary select (priority multiplexer),
 // base with parametrized implementation options
 //
 // @author: Iztok Jeras <iztok.jeras@gmail.com>
