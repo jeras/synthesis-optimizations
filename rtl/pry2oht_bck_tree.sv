@@ -12,9 +12,8 @@ module pry2oht_bck_tree #(
     // size parameters
     parameter  int unsigned WIDTH = 32,
     parameter  int unsigned SPLIT = 2,
-    // size local parameters
-    localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
-    localparam int unsigned SPLIT_LOG = $clog2(SPLIT),
+    // direction: "LSB" - rightmost, "MSB" - leftmost
+    parameter  string       DIRECTION = "LSB",
     // implementation (see `pry2oht_base` for details)
     parameter  int unsigned IMPLEMENTATION = 0
 )(
@@ -28,10 +27,11 @@ module pry2oht_bck_tree #(
     // leafs at the end of tree branches
     if (WIDTH == SPLIT) begin: leaf
 
-        pry2oht_base #(
+        pry2oht_bck_base #(
             .WIDTH (WIDTH),
+            .DIRECTION (DIRECTION),
             .IMPLEMENTATION (IMPLEMENTATION)
-        ) pry2oht (
+        ) pry2oht_bck (
             .pry (pry),
             .ena (ena),
             .oht (oht),
@@ -42,30 +42,31 @@ module pry2oht_bck_tree #(
     // combining SPLIT sub-branches into a single branch closer to the tree trunk
     else begin: branch
 
-        logic [SPLIT-1:0] [WIDTH/SPLIT-1:0] oht_sub;  // one-hot from sub-branches
-        logic [SPLIT-1:0]                   vld_sub;  // valid   from sub-branches
-        logic [SPLIT-1:0]                   oht_brn;  // one-hot from     branch
+        logic [SPLIT-1:0]                   vld_pry;  // valid   from sub-branches
+        logic [SPLIT-1:0]                   oht_ena;  // one-hot from     branch
 
         // sub-branches
         pry2oht_bck_tree #(
             .WIDTH (WIDTH/SPLIT),
             .SPLIT (SPLIT),
+            .DIRECTION (DIRECTION),
             .IMPLEMENTATION (IMPLEMENTATION)
-        ) pry2oht_sub [SPLIT-1:0] (
-            .pry (pry),
-            .ena (oht_brn),
-            .oht (oht_sub),
-            .vld (vld_sub)
+        ) pry2oht_bck_sub [SPLIT-1:0] (
+            .pry (    pry),
+            .ena (oht_ena),
+            .oht (oht),
+            .vld (vld_pry)
         );
 
         // branch
         pry2oht_bck_base #(
             .WIDTH (SPLIT),
+            .DIRECTION (DIRECTION),
             .IMPLEMENTATION (IMPLEMENTATION)
-        ) pry2oht_brn (
-            .pry (vld_sub),
-            .ena (ena),
-            .oht (oht_brn),
+        ) pry2oht_bck_brn (
+            .pry (vld_pry),
+            .ena (    ena),
+            .oht (oht_ena),
             .vld (vld)
         );
 

@@ -11,13 +11,13 @@
 module pry2oht_bck_base #(
     // size parameters
     parameter  int unsigned WIDTH = 32,
-    // size local parameters
-    localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
+    // direction: "LSB" - rightmost, "MSB" - leftmost
+    parameter  string       DIRECTION = "LSB",
     // implementation
     parameter  int unsigned IMPLEMENTATION = 0
-    // 0 - adder
-    // 1 - loop
-    // 2 - vector
+    // 0 - loop
+    // 1 - vector
+    // 2 - adder
 )(
     input  logic [WIDTH-1:0] pry,  // priority
     input  logic             ena,  // enable
@@ -27,36 +27,62 @@ module pry2oht_bck_base #(
 
     generate
     case (IMPLEMENTATION)
-        0:  // adder
+        0:  // loop
+        begin: loop
+            case (DIRECTION)
+                "LSB":
+                    always_comb
+                    begin: loop
+                        vld = 1'b0;
+                        for (int i=0; i<WIDTH; i++) begin
+                            oht[i] = pry[i] & ~vld & ena;
+                            vld    = pry[i] |  vld;
+                        end
+                    end: loop
+                "MSB":
+                    always_comb
+                    begin: loop
+                        vld = 1'b0;
+                        for (int i=WIDTH-1; i<=0; i--) begin
+                            oht[i] = pry[i] & ~vld & ena;
+                            vld    = pry[i] |  vld;
+                        end
+                    end: loop
+                default:
+                    $fatal("Unsupported DIRECTION parameter value.");
+            endcase
+        end: loop
+        1:  // vector (vectorization of the loop code)
+        begin: vector
+            logic [WIDTH-1:0] tmp;
+            case (DIRECTION)
+                "LSB":
+                    always_comb
+                    begin: vector
+                        tmp = {pry[WIDTH-2:0] | tmp[WIDTH-2:0], 1'b0};
+                        oht = ena ? (pry & ~tmp) : WIDTH'('0);
+                        vld = tmp[WIDTH];
+                    end: vector
+                "MSB":
+                    always_comb
+                    begin: vector
+                        tmp = {1'b0, tmp[WIDTH-1:1] | pry[WIDTH-1:1]};
+                        oht = ena ? (pry & ~tmp) : WIDTH'('0);
+                        vld = tmp[0];
+                    end: vector
+                default:
+                    $fatal("Unsupported DIRECTION parameter value.");
+            endcase
+        end: vector
+        2:  // adder
+        begin: adder
+            logic [WIDTH-1:0] tmp;
             always_comb
             begin: adder
-                automatic logic [WIDTH-1:0] neg_pry;
-                {vld, neg_pry} = -pry;
-                oht = ena ? (pry & neg_pry) : WIDTH'('0);
+                {vld, tmp} = -pry;
+                oht = ena ? (pry & tmp) : WIDTH'('0);
             end: adder
-        1:  // loop
-            always_comb
-            begin: loop
-                vld = 1'b0;
-                for (int i=0; i<WIDTH; i++) begin
-                    if (vld) begin
-                        oht[i] = 1'b0;
-                    end else begin
-                        oht[i] = ena & pry[i];
-                        if (pry[i]) begin
-                            vld = 1'b1;
-                        end
-                    end
-                end
-            end: loop
-        2:  // vector (vectorization of the loop code)
-            always_comb
-            begin: vector
-                automatic logic [WIDTH-0:0] carry_chain;
-                carry_chain = {pry, 1'b0} | carry_chain;
-                oht = ena & (pry & ~carry_chain[WIDTH-1:0]) : WIDTH'('0);
-                vld =               carry_chain[WIDTH];
-            end: vector
+        end: adder
         default:  // parameter validation
             $fatal("Unsupported IMPLEMENTATION parameter value.");
     endcase
