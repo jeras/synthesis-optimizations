@@ -9,8 +9,8 @@
 
 module pry2oht_tb #(
     // size parameters
-    parameter  int unsigned WIDTH = 32,
-    parameter  int unsigned SPLIT = 2,
+    parameter  int unsigned WIDTH = 16,
+    parameter  int unsigned SPLIT = 4,
     // size local parameters
     localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
     localparam int unsigned SPLIT_LOG = $clog2(SPLIT),
@@ -20,6 +20,13 @@ module pry2oht_tb #(
 
     // implementation (see `pry2oht_base` for details)
     localparam int unsigned IMPLEMENTATIONS = 3;
+
+    // check enable depending on test
+    struct packed {
+        bit adder ;  // 2
+        bit vector;  // 1
+        bit loop  ;  // 0
+    } check_enable;
 
     // timing constant
     localparam time T = 10ns;
@@ -67,11 +74,6 @@ module pry2oht_tb #(
         ref_vld =           |(pry);    
     end
 
-    // check enable depending on test
-    /* verilator lint_off ASCRANGE */
-    bit [0:IMPLEMENTATIONS-1] check_enable;
-    /* verilator lint_on ASCRANGE */
-
     // output checking task
     task check();
         #T;
@@ -96,13 +98,13 @@ module pry2oht_tb #(
     begin
         // idle test
         test_name = "idle";
-        check_enable = '{default: 1'b1};
+        check_enable = '{loop: 1'b1, vector: 1'b0, adder: 1'b1};
         pry <= '0;
         check;
 
         // one-hot encoder test
         test_name = "one-hot";
-        check_enable = '{default: 1'b1};
+        check_enable = '{loop: 1'b1, vector: 1'b0, adder: 1'b1};
         for (int unsigned i=0; i<WIDTH; i++) begin
             logic [WIDTH-1:0] tmp_vld;
             tmp_vld = '0;
@@ -113,7 +115,7 @@ module pry2oht_tb #(
 
         // priority encoder test (with undefined inputs)
         test_name = "priority";
-        check_enable = '{2: 1'b0, default: 1'b1};
+        check_enable = '{loop: 1'b1, vector: 1'b0, adder: 1'b0};
         for (int unsigned i=0; i<WIDTH; i++) begin
             logic [WIDTH-1:0] tmp_vld;
             tmp_vld = 'X;
@@ -128,7 +130,7 @@ module pry2oht_tb #(
 
         // priority encoder test (going through all input combinations)
         test_name = "exhaustive";
-        check_enable = '{default: 1'b1};
+        check_enable = '{loop: 1'b1, vector: 1'b0, adder: 1'b1};
         for (logic unsigned [WIDTH-1:0] tmp_vld='1; tmp_vld>0; tmp_vld--) begin
             pry <= {<<{tmp_vld}};
             check;

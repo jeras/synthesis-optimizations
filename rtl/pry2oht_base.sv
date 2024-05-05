@@ -28,6 +28,7 @@ module pry2oht_base #(
     generate
     case (IMPLEMENTATION)
         0:  // loop
+        begin: loop
             case (DIRECTION)
                 "LSB":
                     always_comb
@@ -50,34 +51,38 @@ module pry2oht_base #(
                 default:
                     $fatal("Unsupported DIRECTION parameter value.");
             endcase
+        end: loop
         1:  // vector (vectorization of the loop code)
+        begin: vector
+            logic [WIDTH-1:0] tmp;
             case (DIRECTION)
                 "LSB":
                     always_comb
                     begin: vector
-                        automatic logic [WIDTH-1:0] tmp;
-                        tmp = {1'b0, pry[WIDTH-1:1]} | {tmp[WIDTH-2:0], 1'b0};
+                        tmp = {pry[WIDTH-2:0] | tmp[WIDTH-2:0], 1'b0};
                         oht = pry & ~tmp;
                         vld = tmp[WIDTH];
                     end: vector
                 "MSB":
                     always_comb
                     begin: vector
-                        automatic logic [WIDTH-1:0] tmp;
-                        tmp = {1'b0, tmp[WIDTH-1:1]} | {pry[WIDTH-2:0], 1'b0};
+                        tmp = {1'b0, tmp[WIDTH-1:1] | pry[WIDTH-1:1]};
                         oht = pry & ~tmp;
                         vld = tmp[0];
                     end: vector
                 default:
                     $fatal("Unsupported DIRECTION parameter value.");
             endcase
+        end: vector
         2:  // adder
+        begin: adder
+            logic [WIDTH-1:0] tmp;
             always_comb
             begin: adder
-                automatic logic [WIDTH-1:0] tmp;
                 {vld, tmp} = -pry;
                 oht = pry & tmp;
             end: adder
+        end: adder
         default:  // parameter validation
             $fatal("Unsupported IMPLEMENTATION parameter value.");
     endcase
