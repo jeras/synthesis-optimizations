@@ -11,9 +11,6 @@ module pry2oht_tree #(
     // size parameters
     parameter  int unsigned WIDTH = 32,
     parameter  int unsigned SPLIT = 2,
-    // size local parameters
-    localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
-    localparam int unsigned SPLIT_LOG = $clog2(SPLIT),
     // direction: "LSB" - rightmost, "MSB" - leftmost
     parameter  string       DIRECTION = "LSB",
     // implementation (see `pry2oht_base` for details)

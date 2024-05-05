@@ -10,8 +10,6 @@
 module pry2oht_base #(
     // size parameters
     parameter  int unsigned WIDTH = 32,
-    // size local parameters
-    localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
     // direction: "LSB" - rightmost, "MSB" - leftmost
     parameter  string       DIRECTION = "LSB",
     // implementation

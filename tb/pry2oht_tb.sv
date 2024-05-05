@@ -11,9 +11,6 @@ module pry2oht_tb #(
     // size parameters
     parameter  int unsigned WIDTH = 16,
     parameter  int unsigned SPLIT = 4,
-    // size local parameters
-    localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
-    localparam int unsigned SPLIT_LOG = $clog2(SPLIT),
     // direction: "LSB" - rightmost, "MSB" - leftmost
     parameter  string       DIRECTION = "LSB"
 );

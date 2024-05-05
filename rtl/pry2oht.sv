@@ -11,9 +11,6 @@ module pry2oht #(
     // size parameters
     parameter  int unsigned WIDTH = 32,
     parameter  int unsigned SPLIT = 2,
-    // size local parameters
-    localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
-    localparam int unsigned SPLIT_LOG = $clog2(SPLIT),
     // direction: "LSB" - rightmost, "MSB" - leftmost
     parameter  string       DIRECTION = "LSB",
     // implementation (see `pry2oht_base` for details)
@@ -24,19 +21,19 @@ module pry2oht #(
     output logic             vld   // valid
 );
 
+    // calculate `$ceil($ln(WIDTH), $ln(SPLIT))` using just integers
+    function int unsigned clogbase (int unsigned number, base);
+        clogbase = 0;
+        while (base**clogbase < number)  clogbase++;
+    endfunction: clogbase
+
     // SPLIT to the power of POWER_LOG (logarithm of WIDTH base SPLIT rounded up)
-    localparam int unsigned POWER_LOG = WIDTH_LOG/SPLIT_LOG + (WIDTH_LOG%SPLIT_LOG ? 1 : 0);
+    localparam int unsigned POWER_LOG = clogbase(WIDTH, SPLIT);
     localparam int unsigned POWER     = SPLIT**POWER_LOG;
 
     generate
-    // if SPLIT is not a power of 2
-    if (SPLIT != (2**SPLIT_LOG)) begin: validation
-
-        $error("Parameter SPLIT is not a power of 2.");
-
-    end: validation
     // if WIDTH is not a power of SPLIT
-    else if (WIDTH != POWER) begin: extend
+    if (WIDTH != POWER) begin: extend
 
         logic [POWER-1:0] pry_tmp;
         logic [POWER-1:0] oht_tmp;
