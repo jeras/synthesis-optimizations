@@ -21,6 +21,11 @@
 ../../rtl/mux_bin_tree.sv
 ../../rtl/mux_bin.sv
 
+# priority to thermometer conversion
+../../rtl/pry2thr_base.sv
+../../rtl/pry2thr_tree.sv
+../../rtl/pry2thr.sv
+
 # priority to one-hot conversion
 ../../rtl/pry2oht_base.sv
 ../../rtl/pry2oht_tree.sv

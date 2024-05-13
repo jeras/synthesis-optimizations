@@ -13,6 +13,9 @@
 # multiplexer with binary select
 ../../tb/mux_bin_tb.sv
 
+# priority to thermometer conversion
+../../tb/pry2pry_tb.sv
+
 # priority to one-hot conversion
 ../../tb/pry2oht_tb.sv
 

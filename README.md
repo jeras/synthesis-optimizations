@@ -392,7 +392,7 @@ Synthesis tools would implement the above code with a tree structure.
 
 In ASIC a tree of AND/OR/XOR logic cells
 with two or more inputs will be used to construct the tree.
-TODO: add link to yosys option regarding reduction.
+TODO: add link to Yosys option regarding reduction.
 
 In a FPGA, if the `bin`/`ref` input width is the same or less than the number of LUT inputs,
 the operation will consume a single LUT.
@@ -608,6 +608,26 @@ A LUT6 can implement a 4 to 1 multiplexer with a 2 bit binary select.
 
 https://pages.hmc.edu/harris/cmosvlsi/4e/lect/lect18.pdf
 
+### Priority to thermometer conversion
+
+Since the one-hot encoding is an edge case of the priority encoding
+(as is thermometer encoding itself) this conversion results in
+thermometer encoding regardless whether the input is
+priority, one-hot or thermometer encoded.
+
+```SystemVerilog
+always_comb
+begin
+    logic [WIDTH-1:-1] tmp
+    tmp[0] = 1'b0;
+    for (int i=0; i<WIDTH; i++) begin
+        tmp[i] = pry[i] | tmp[i-1];
+    end
+    trm = tmp[WIDTH-1:0];
+end
+```
+
+
 ### Priority to one-hot conversion
 
 A priority vector has more than one active (hot) bit.
@@ -657,16 +677,6 @@ begin
 end
 ```
 
-```SystemVerilog
-always_comb
-begin
-    // temporary vector is a thermometer version of the priority vector
-    logic [WIDTH-0:0] tmp = '0;
-    tmp[WIDTH-1:0] = tmp[WIDTH-0:1] | pry;
-    oht = ~tmp[WIDTH-0:1] & pry;
-    vld =  tmp[0];
-end
-```
 
 
 
@@ -682,8 +692,6 @@ onehot = bitreverse(~(x_rev & (x_rev+1));
 ```
 
 This operation is explicitly using addition.
-
-### One-hot to thermometer conversion
 
 ### Priority to binary conversion
 
