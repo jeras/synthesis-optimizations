@@ -11,7 +11,7 @@
 module pry2oht_bck_base #(
     // size parameters
     parameter  int unsigned WIDTH = 32,
-    // direction: "LSB" - rightmost, "MSB" - leftmost
+    // direction: "LSB" - rightmost first, "MSB" - leftmost first
     parameter  string       DIRECTION = "LSB",
     // implementation
     parameter  int unsigned IMPLEMENTATION = 0
