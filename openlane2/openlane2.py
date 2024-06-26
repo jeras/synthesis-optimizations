@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import os
-
 import itertools
+from jinja2 import Environment, FileSystemLoader
 
 import openlane
 from openlane.flows import SequentialFlow
@@ -29,8 +29,11 @@ class MyFlow(SequentialFlow):
 
 print(openlane.__version__)
 
+width_range = [4, 6, 8, 12, 16, 24, 32, 48, 64]
+width_range = [8, 12, 16]
+
 designs=[
-    {'top': "bin2oht_base", 'parameters': {"IMPLEMENTATION": [0, 1, 2, 3], "WIDTH": [4,6,8,12,16,24,32,48,64]}},
+    {'top': "bin2oht_base", 'parameters': {"IMPLEMENTATION": [0, 1, 2, 3], "WIDTH": width_range}},
 #    "oht2bin_base",
 #    "eql_cmp",
 #    "mag_cmp_base",
@@ -38,19 +41,23 @@ designs=[
 #    "mux_oht_base",
 ]
 
+report_environment = Environment(loader=FileSystemLoader("."))
+report_template = report_environment.get_template("report_template.md")
+
 for design in designs:
     top = design['top']
-    # iterate over all parameter combinations
+    # iterate over all parameter combinations (cartesian product)
     combinations = [dict(zip(design['parameters'], x)) for x in itertools.product(*design['parameters'].values())]
+    report_context = {'parameters': list(design['parameters'].keys()), 'combinations': []}
     for combination in combinations:
-        parameters = [f"{parameter}={value}" for parameter, value in combination.items()]
+        combination_parameters = [f"{parameter}={value}" for parameter, value in combination.items()]
         combination_name = '_'.join([f"{parameter}_{value}" for parameter, value in combination.items()])
         flow = MyFlow(
             {
                 "PDK": "sky130A",
                 "DESIGN_NAME": top,
                 "USE_SYNLIG": True,
-                "SYNTH_PARAMETERS": parameters,
+                "SYNTH_PARAMETERS": combination_parameters,
                 "VERILOG_FILES": [
                     "../rtl/bin2oht_base.sv",
                     "../rtl/bin2oht_tree.sv",
@@ -74,3 +81,15 @@ for design in designs:
             design_dir=".",
         )
         flow.start(tag=top+combination_name)
+
+        report_context['combinations'].append({
+            'parameters': list(combination.values())
+            # hierarchy.dot.svg 
+            # techmap.dot.svg
+        })
+
+    print(report_context)
+    report_filename = "report.md"
+    with open(report_filename, mode="w", encoding="utf-8") as report:
+        report.write(report_template.render(report_context))
+        print(f"... wrote {report_filename}")
