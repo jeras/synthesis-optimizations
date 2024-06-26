@@ -42,7 +42,7 @@ designs=[
 ]
 
 report_environment = Environment(loader=FileSystemLoader("."))
-report_template = report_environment.get_template("report_template.md")
+report_template = report_environment.get_template("report.md.jinja")
 
 for design in designs:
     top = design['top']
@@ -80,7 +80,7 @@ for design in designs:
             },
             design_dir=".",
         )
-        flow.start(tag=top+combination_name)
+        flow.start(tag=top+'_'+combination_name)
 
         report_context['combinations'].append({
             'parameters': list(combination.values())
