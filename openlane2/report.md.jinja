@@ -1,7 +1,7 @@
 # Report
 
-|{% for parameter in             parameters %} {{ parameter }} |{% endfor %}    hierarchy    |    techmap    |
-|{% for parameter in             parameters %}-----------------|{% endfor %}-----------------|---------------|
+|{% for parameter in             parameters %} {{ parameter }} |{% endfor %}                hierarchy    |                primitive_techmap    |
+|{% for parameter in             parameters %}-----------------|{% endfor %}-----------------------------|-------------------------------------|
 {% for combination in combinations -%}
-|{% for parameter in combination.parameters %} {{ parameter }} |{% endfor %} {{ hierarchy }} | {{ techmap }} |
+|{% for parameter in combination.parameters %} {{ parameter }} |{% endfor %} {{ combination.hierarchy }} | {{ combination.primitive_techmap }} |
 {% endfor %}

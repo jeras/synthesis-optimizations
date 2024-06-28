@@ -3,6 +3,7 @@
 import os
 import itertools
 from jinja2 import Environment, FileSystemLoader
+import pydot
 
 import openlane
 from openlane.flows import SequentialFlow
@@ -30,7 +31,6 @@ class MyFlow(SequentialFlow):
 print(openlane.__version__)
 
 width_range = [4, 6, 8, 12, 16, 24, 32, 48, 64]
-width_range = [8, 12, 16]
 
 designs=[
     {'top': "bin2oht_base", 'parameters': {"IMPLEMENTATION": [0, 1, 2, 3], "WIDTH": width_range}},
@@ -80,12 +80,20 @@ for design in designs:
             },
             design_dir=".",
         )
-        flow.start(tag=top+'_'+combination_name)
+        flow.start(tag=top+'_'+combination_name, overwrite=True)
 
+        step_yosys = next(step for step in flow.step_objects if isinstance(step, Yosys.Synthesis))
+        step_yosys_dir = os.path.relpath(step_yosys.step_dir, os.getcwd())
+        schematic_hierarchy_path         = step_yosys_dir+"/hierarchy.dot"
+        schematic_primitive_techmap_path = step_yosys_dir+"/primitive_techmap.dot"
+        schematic_hierarchy         = pydot.graph_from_dot_file(schematic_hierarchy_path        )
+        schematic_primitive_techmap = pydot.graph_from_dot_file(schematic_primitive_techmap_path)
+        schematic_hierarchy        [0].write_svg(schematic_hierarchy_path        +".svg")
+        schematic_primitive_techmap[0].write_svg(schematic_primitive_techmap_path+".svg")
         report_context['combinations'].append({
-            'parameters': list(combination.values())
-            # hierarchy.dot.svg 
-            # techmap.dot.svg
+            'parameters': list(combination.values()),
+            'hierarchy'        : "[SVG]("+ schematic_hierarchy_path         +".svg)",
+            'primitive_techmap': "[SVG]("+ schematic_primitive_techmap_path +".svg)",
         })
 
     print(report_context)
