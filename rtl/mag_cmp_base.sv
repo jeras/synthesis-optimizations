@@ -21,7 +21,16 @@ module mag_cmp_base #(
     output logic             lst   // less    than
 );
 
-    assign grt = val > rfr;
-    assign lst = val < rfr;
+    generate
+    case (IMPLEMENTATION)
+        0:  // index
+        begin
+            assign grt = val > rfr;
+            assign lst = val < rfr;
+        end
+        default:  // parameter validation
+            $fatal("Unsupported IMPLEMENTATION parameter value.");
+    endcase
+    endgenerate
 
 endmodule: mag_cmp_base
