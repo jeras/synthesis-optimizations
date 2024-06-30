@@ -1,7 +1,10 @@
 # Report
+{% for design in designs %}
+## `{{ design.top }}`
 
-|{% for parameter in             parameters %} {{ parameter }} |{% endfor %}                hierarchy    |                primitive_techmap    |
-|{% for parameter in             parameters %}-----------------|{% endfor %}-----------------------------|-------------------------------------|
-{% for combination in combinations -%}
-|{% for parameter in combination.parameters %} {{ parameter }} |{% endfor %} {{ combination.hierarchy }} | {{ combination.primitive_techmap }} |
+|{% for parameter in      design.parameters %} {{ parameter }} |{% endfor %}                hierarchy    |                primitive_techmap    |                netlist    |
+|{% for parameter in      design.parameters %}-----------------|{% endfor %}-----------------------------|-------------------------------------|---------------------------|
+{% for combination in design.combinations -%}
+|{% for parameter in combination.parameters %} {{ parameter }} |{% endfor %} {{ combination.hierarchy }} | {{ combination.primitive_techmap }} | {{ combination.netlist }} |
+{% endfor %}
 {% endfor %}

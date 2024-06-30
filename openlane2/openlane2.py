@@ -3,7 +3,6 @@
 import os
 import itertools
 from jinja2 import Environment, FileSystemLoader
-import pydot
 
 import openlane
 from openlane.flows import SequentialFlow
@@ -31,24 +30,27 @@ class MyFlow(SequentialFlow):
 print(openlane.__version__)
 
 width_range = [4, 6, 8, 12, 16, 24, 32, 48, 64]
+width_range = [8, 16]
 
 designs=[
     {'top': "bin2oht_base", 'parameters': {"IMPLEMENTATION": [0, 1, 2, 3], "WIDTH": width_range}},
-#    "oht2bin_base",
-#    "eql_cmp",
-#    "mag_cmp_base",
-#    "mux_bin_base",
-#    "mux_oht_base",
+#    {'top': "oht2bin_base", 'parameters': {"IMPLEMENTATION": [0, 1, 2], "DIRECTION": ['LSB', 'MSB'], "WIDTH": width_range}},
+    {'top': "eql_cmp", 'parameters': {"IMPLEMENTATION": [0, 1, 2, 3, 4], "WIDTH": width_range}},
+    {'top': "mag_cmp_base", 'parameters': {"IMPLEMENTATION": [0], "WIDTH": width_range}},
+    {'top': "mux_bin_base", 'parameters': {"IMPLEMENTATION": [0], "WIDTH": width_range}},
+    {'top': "mux_oht_base", 'parameters': {"IMPLEMENTATION": [0, 1], "WIDTH": width_range}},
 ]
 
 report_environment = Environment(loader=FileSystemLoader("."))
 report_template = report_environment.get_template("report.md.jinja")
 
+report_context = {'designs': []}
+
 for design in designs:
     top = design['top']
     # iterate over all parameter combinations (cartesian product)
+    design_context = {'top': top, 'parameters': list(design['parameters'].keys()), 'combinations': []}
     combinations = [dict(zip(design['parameters'], x)) for x in itertools.product(*design['parameters'].values())]
-    report_context = {'parameters': list(design['parameters'].keys()), 'combinations': []}
     for combination in combinations:
         combination_parameters = [f"{parameter}={value}" for parameter, value in combination.items()]
         combination_name = '_'.join([f"{parameter}_{value}" for parameter, value in combination.items()])
@@ -84,20 +86,17 @@ for design in designs:
 
         step_yosys = next(step for step in flow.step_objects if isinstance(step, Yosys.Synthesis))
         step_yosys_dir = os.path.relpath(step_yosys.step_dir, os.getcwd())
-        schematic_hierarchy_path         = step_yosys_dir+"/hierarchy.dot"
-        schematic_primitive_techmap_path = step_yosys_dir+"/primitive_techmap.dot"
-        schematic_hierarchy         = pydot.graph_from_dot_file(schematic_hierarchy_path        )
-        schematic_primitive_techmap = pydot.graph_from_dot_file(schematic_primitive_techmap_path)
-        schematic_hierarchy        [0].write_svg(schematic_hierarchy_path        +".svg")
-        schematic_primitive_techmap[0].write_svg(schematic_primitive_techmap_path+".svg")
-        report_context['combinations'].append({
+        design_context['combinations'].append({
             'parameters': list(combination.values()),
-            'hierarchy'        : "[SVG]("+ schematic_hierarchy_path         +".svg)",
-            'primitive_techmap': "[SVG]("+ schematic_primitive_techmap_path +".svg)",
+            'hierarchy'        : "[SVG]("+step_yosys_dir+"/hierarchy.svg)",
+            'primitive_techmap': "[SVG]("+step_yosys_dir+"/primitive_techmap.svg)",
+            'netlist'          : "[SVG]("+step_yosys_dir+"/netlist.svg)",
         })
 
-    print(report_context)
-    report_filename = "report.md"
-    with open(report_filename, mode="w", encoding="utf-8") as report:
-        report.write(report_template.render(report_context))
-        print(f"... wrote {report_filename}")
+    report_context['designs'].append(design_context)
+
+#print(report_context)
+report_filename = "report.md"
+with open(report_filename, mode="w", encoding="utf-8") as report:
+    report.write(report_template.render(report_context))
+    print(f"... wrote {report_filename}")
