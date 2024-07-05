@@ -788,6 +788,17 @@ overlayed waveforms from simulation with multiple random or exhaustive input val
 - https://en.wikipedia.org/wiki/Encoder_(digital)
 - https://www.edaboard.com/threads/priority-encoder-for-one-hot-to-binary.366915/
 
+### Multiplexer
+
+One hot multiplexer synthesis using Xilinx Vivado for the Ultrascale family.
+
+https://andy-knowles.github.io/one-hot-mux/
+
+
+http://fpgacpu.ca/fpga/Multiplexer_One_Hot.html
+
+
+
 ### Priority encoder
 
 - [Priority encoder](https://en.wikipedia.org/wiki/Priority_encoder)

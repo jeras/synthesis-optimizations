@@ -12,6 +12,9 @@
 ../../rtl/oht2bin.sv
 
 # multiplexer with one-hot select
+../../rtl/mux_oht.sv
+
+# multiplexer with priority select
 ../../rtl/mux_oht_base.sv
 ../../rtl/mux_oht_tree.sv
 ../../rtl/mux_oht.sv
