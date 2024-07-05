@@ -7,7 +7,7 @@
 // Licensed under CERN-OHL-P v2 or later
 ///////////////////////////////////////////////////////////////////////////////
 
-module mux_oht_base #(
+module mux_oht #(
     // data type
     parameter  type DAT_T = logic [8-1:0],
     // size parameters
@@ -27,27 +27,27 @@ module mux_oht_base #(
     case (IMPLEMENTATION)
         0:  // reduction
             always_comb
-            begin: adder
+            begin: reduce
                 dat = '0;
                 vld = 1'b0;
                 for (int unsigned i=0; i<WIDTH; i++) begin
                     vld |= oht[i];
                     dat |= oht[i] ? ary[i] : '0;
                 end
-            end: adder
-        1:  // linear
+            end: reduce
+        1:  // chain
             always_comb
-            begin: linear
-                dat = 'x;
+            begin: chain
+                dat = '0;
                 vld = 1'b0;
                 for (int unsigned i=0; i<WIDTH; i++) begin
-                    vld = oht[i] ? 1'b1   : vld;
-                    dat = oht[i] ? ary[i] : dat;
+                    vld |= oht[i];
+                    dat |= oht[i] ? ary[i] : '0;
                 end
-            end: linear
+            end: chain
         default:  // parameter validation
             $fatal("Unsupported IMPLEMENTATION parameter value.");
     endcase
     endgenerate
 
-endmodule: mux_oht_base
+endmodule: mux_oht
