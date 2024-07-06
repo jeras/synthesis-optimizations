@@ -30,15 +30,17 @@ class MyFlow(SequentialFlow):
 print(openlane.__version__)
 
 width_range = [4, 6, 8, 12, 16, 24, 32, 48, 64]
-width_range = [8, 16]
+width_range = [8, 32]
 
 designs=[
-    {'top': "bin2oht_base", 'parameters': {"IMPLEMENTATION": [0, 1, 2, 3], "WIDTH": width_range}},
-#    {'top': "oht2bin_base", 'parameters': {"IMPLEMENTATION": [0, 1, 2], "DIRECTION": ['LSB', 'MSB'], "WIDTH": width_range}},
-    {'top': "eql_cmp", 'parameters': {"IMPLEMENTATION": [0, 1, 2, 3, 4], "WIDTH": width_range}},
-    {'top': "mag_cmp_base", 'parameters': {"IMPLEMENTATION": [0], "WIDTH": width_range}},
-    {'top': "mux_bin_base", 'parameters': {"IMPLEMENTATION": [0], "WIDTH": width_range}},
-    {'top': "mux_oht_base", 'parameters': {"IMPLEMENTATION": [0, 1], "WIDTH": width_range}},
+#   {'top': "bin2oht_base", 'parameters': {"IMPLEMENTATION": [0, 1, 2, 3], "WIDTH": width_range}},
+#   {'top': "oht2bin_base", 'parameters': {"IMPLEMENTATION": [0, 1], "DIRECTION": ['LSB', 'MSB'], "WIDTH": width_range}},
+#   {'top': "pry2oht_base", 'parameters': {"IMPLEMENTATION": [0, 1, 2], "DIRECTION": ['LSB', 'MSB'], "WIDTH": width_range}},
+#   {'top': "eql_cmp", 'parameters': {"IMPLEMENTATION": [0, 1, 2, 3, 4], "WIDTH": width_range}},
+   {'top': "mag_cmp_base", 'parameters': {"IMPLEMENTATION": [0], "WIDTH": width_range}},
+#   {'top': "mux_bin_base", 'parameters': {"IMPLEMENTATION": [0], "WIDTH": width_range}},
+#   {'top': "mux_oht_base", 'parameters': {"IMPLEMENTATION": [0, 1], "WIDTH": width_range}},
+    {'top': "add_base"    , 'parameters': {"IMPLEMENTATION": [0], "WIDTH": width_range}},
 ]
 
 report_environment = Environment(loader=FileSystemLoader("."))
@@ -60,10 +62,14 @@ for design in designs:
                 "DESIGN_NAME": top,
                 "USE_SYNLIG": True,
                 "SYNTH_PARAMETERS": combination_parameters,
+                "SYNTH_ADDER_TYPE": "FA",
                 "VERILOG_FILES": [
                     "../rtl/bin2oht_base.sv",
                     "../rtl/bin2oht_tree.sv",
                     "../rtl/bin2oht.sv",
+                    "../rtl/pry2oht_base.sv",
+                    "../rtl/pry2oht_tree.sv",
+                    "../rtl/pry2oht.sv",
                     "../rtl/oht2bin_base.sv",
                     "../rtl/oht2bin_tree.sv",
                     "../rtl/oht2bin.sv",
@@ -77,6 +83,7 @@ for design in designs:
                     "../rtl/mux_oht_base.sv",
                     "../rtl/mux_oht_tree.sv",
                     "../rtl/mux_oht.sv",
+                    "../rtl/add_base.sv",
                 ],
                 "CLOCK_PORT": None,
             },

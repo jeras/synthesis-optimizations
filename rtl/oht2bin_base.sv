@@ -14,6 +14,8 @@ module oht2bin_base #(
     localparam int unsigned WIDTH_LOG = $clog2(WIDTH),
     // direction: "LSB" - rightmost first, "MSB" - leftmost first
     parameter  string       DIRECTION = "LSB",
+    // polarity: "POS" - positive, "NEG" - negative
+    parameter  string       POLARITY = "POS",
     // implementation
     parameter  int unsigned IMPLEMENTATION = 0
     // 0 - reduction
@@ -24,37 +26,20 @@ module oht2bin_base #(
     output logic                 vld   // valid
 );
 
-    // table unpacked array type
-    typedef bit [WIDTH-1:0] tbl_t [WIDTH_LOG-1:0];
-
-    // table function definition
-    function automatic tbl_t tbl_f;
-        for (int unsigned i=0; i<WIDTH_LOG; i++) begin
-            for (int unsigned j=0; j<WIDTH; j++) begin
-                tbl_f[i][j] = j[i];
-            end
-        end
-    endfunction: tbl_f
-
-    // table constant
-    localparam tbl_t TBL = tbl_f();
-
-    // logarithm
-    function automatic logic [WIDTH_LOG-1:0] log_tbl_f (
-        logic [WIDTH-1:0] value
-    );
-        for (int unsigned i=0; i<WIDTH_LOG; i++) begin
-            log_tbl_f[i] = |(value & TBL[i]);
-        end
-    endfunction: log_tbl_f
-
     generate
     case (IMPLEMENTATION)
         0:  // reduction
             always_comb
             begin
-                bin = log_tbl_f(oht);  // logarithm
-                vld =          |oht;
+                for (int unsigned i=0; i<WIDTH_LOG; i++) begin
+                    logic [WIDTH-1:0] msk;
+                    for (int unsigned j=0; j<WIDTH; j++) begin
+                        msk[j] = j[i];
+                    end
+                    // use a mask pattern on one-hot input for each bit of the binary output
+                    bin[i] = |(oht & msk);
+                end
+                vld = |oht;
             end
         1:  // linear
             case (DIRECTION)
@@ -68,12 +53,12 @@ module oht2bin_base #(
                         vld |= oht[i] ? 1'b1             : 1'b0          ;
                     end
                 end
-            "LSB":
+            "MSB":
                 always_comb
                 begin
                     bin = WIDTH_LOG'('0);
                     vld = 1'b0;
-                    for (int unsigned i=0; i<WIDTH; i++) begin
+                    for (int i=WIDTH-1; i>0; i--) begin
                         bin |= oht[i] ? i[WIDTH_LOG-1:0] : WIDTH_LOG'('0);
                         vld |= oht[i] ? 1'b1             : 1'b0          ;
                     end
