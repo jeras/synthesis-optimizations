@@ -17,7 +17,7 @@
 ../../tb/mux_bin_tb.sv
 
 # priority to thermometer conversion
-../../tb/pry2pry_tb.sv
+../../tb/pry2thr_tb.sv
 
 # priority to one-hot conversion
 ../../tb/pry2oht_tb.sv

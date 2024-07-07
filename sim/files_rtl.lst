@@ -15,9 +15,9 @@
 ../../rtl/mux_oht.sv
 
 # multiplexer with priority select
-../../rtl/mux_oht_base.sv
-../../rtl/mux_oht_tree.sv
-../../rtl/mux_oht.sv
+../../rtl/mux_pry_base.sv
+../../rtl/mux_pry_tree.sv
+../../rtl/mux_pry.sv
 
 # multiplexer with binary select
 ../../rtl/mux_bin_base.sv
