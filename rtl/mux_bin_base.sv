@@ -9,7 +9,7 @@
 
 module mux_bin_base #(
     // data type
-    parameter  type DAT_T = logic [8-1:0],
+    parameter  type DAT_T = logic [4-1:0],
     // size parameters
     parameter  int unsigned WIDTH = 32,
     // size local parameters

@@ -9,7 +9,7 @@
 
 module mux_oht #(
     // data type
-    parameter  type DAT_T = logic [8-1:0],
+    parameter  type DAT_T = logic [4-1:0],
     // size parameters
     parameter  int unsigned WIDTH = 32,
     // implementation
@@ -27,22 +27,24 @@ module mux_oht #(
     case (IMPLEMENTATION)
         0:  // reduction
             always_comb
-            begin: reduce
-                dat = '0;
-                vld = 1'b0;
-                for (int unsigned i=0; i<WIDTH; i++) begin
-                    vld |= oht[i];
-                    dat |= oht[i] ? ary[i] : '0;
-                end
-            end: reduce
+            begin: reduction
+                for (int unsigned b=0; b<$bits(DAT_T); b++) begin: data_loop
+                    logic [WIDTH-1:0] tmp;
+                    for (int unsigned i=0; i<WIDTH; i++) begin: control_loop
+                        tmp[i] = ary[i][b];
+                    end: control_loop
+                    dat[b] = |(tmp & oht);
+                end: data_loop
+                vld = |oht;
+            end: reduction
         1:  // chain
             always_comb
             begin: chain
                 dat = '0;
                 vld = 1'b0;
                 for (int unsigned i=0; i<WIDTH; i++) begin
-                    vld |= oht[i];
                     dat |= oht[i] ? ary[i] : '0;
+                    vld |= oht[i];
                 end
             end: chain
         default:  // parameter validation
