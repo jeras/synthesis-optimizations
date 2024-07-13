@@ -20,11 +20,13 @@ This library focuses on basic combinational components
 described in every digital design book.
 
 - multiplexer,
-- decoder
-- one-hot encoder
-- priority encoder
+- decoder,
+- one-hot encoder,
+- priority encoder,
 - thermometer encoder,
 - equivalence/magnitude comparator,
+- mask/range address decoder,
+- Gray encoder/decoder,
 - shifter,
 - population count,
 - arbitration.
@@ -36,9 +38,9 @@ The focus of the library is on experimenting with
 the following coding techniques:
 
 - iterative algorithms,
-- regular tree structures,
-- recursion,
 - loop unwinding and vectorization,
+- parallel prefix network structures,
+- recursion,
 - HDL coding techniques.
 
 Specific mapping of the RTL onto ASIC standard libraries and FPGA architectures during synthesis,
@@ -131,7 +133,18 @@ TODO: think through the best unpacked array range order, for memories it is usua
 
 The diagrams also try to match the same orientation and order as bit vectors.
 
-### Linear versus tree structure
+### Complexity
+
+| problem (sulution)      | size   | timing    |
+|-------------------------|--------|-----------|
+| bitwise                 | O(n)   | O(C)      |
+| reduction (chain)       | O(n)   | O(n)      |
+| reduction (tree)        | O(n)   | O(log(n)) |
+| parallel prefix (chain) | O(n)   | O(n)      |
+| parallel prefix (tree)  | O(n)   | O(log(n)) |
+| non associative (chain) | O(n)   | O(n)      |
+
+#### Linear versus tree structure
 
 One of the aims of this document is to showcase the difference
 between implementing a combinational logic problem as
@@ -164,7 +177,7 @@ explaining some advantages and disadvantages.
 | propagation delay | O(WIDTH) | O(log(WIDTH)) |
 | power consumption | TBD      | TBD           |
 
-#### Linear structure
+##### Linear structure
 
 A **linear structure** can also be called a **chain** or a **cascade**.
 
@@ -194,7 +207,7 @@ See the timing annotated simulations for a better explanation.
 
 TODO: another name "parallel prefix tree".
 
-#### Tree structure
+##### Tree structure
 
 The problem is subdivided into smaller problems
 which are then organized into a hierarchical tree,
@@ -330,6 +343,30 @@ or they would just optimize the code into a tree.
 
 TODO: Yosys does have an option for the conversion from chain to tree.
 
+### Parallel prefix AND/OR/XOR operation
+
+Parallel prefix AND/OR/XOR operations differ from regression
+in that thay produce an output for each input and it also depends on the previous output.
+Inputs and outputs have a defined priority order.
+
+Parallel prefix AND/OR can be used to convert
+priority vectors into thermometer vectors,
+which is usefull for priority encoders.
+
+Parallel prefix XOR is used in Gray to binary encoding conversion.
+
+```SystemVerilog
+always_comb
+begin
+    // loop
+    for (unsigned int i=0; i<WIDTH-1; i++) begin
+        and_o[i] = op_i[i] & (i>0 ? and_o[i-1] : 1'b1;
+        or_o [i] = op_i[i] | (i>0 ? or_o [i-1] : 1'b0;
+        xor_o[i] = op_i[i] ^ (i>0 ? xor_o[i-1] : POLARITY;
+    end
+end
+```
+
 ### Equality comparator
 
 The equality comparator compares an input vector `bin` against another input or constant vector `ref`.
@@ -361,7 +398,7 @@ In an ASIC, the comparison is done with one of the following:
    indicating all bits are equal `eql`.
 
    ```SystemVerilog
-   eql = &(bin ~^ ref);   
+   eql = &(bin ~^ ref);
    ```
 
 In practice (ASIC and FPGA) it is best to use the _equality operator_ `==`,
@@ -447,9 +484,11 @@ tmp = (~bin) + 1;
 eql = ~tmp[WIDTH];
 ```
 
-### Address decoder (power of 2 aligned and sized ranges)
+### Address mask decoder
 
-An address decoder 
+(power of 2 aligned and sized ranges)
+
+### Address range decoder
 
 TODO
 
@@ -569,6 +608,10 @@ The one-hot select multiplexer would mask each array element
 with the corresponding bit in the one-hot select vector `oht[WIDTH-1:0]`,
 and than apply OR reduction to combine all those masked values into the output `dat`.
 
+TODO: wrire down an explicit unary regression.
+
+The one-hot select multiplexer can also be written as an explicit linear structure.
+
 ```SystemVerilog
 dat = '0;
 for (int unsigned i=0; i<WIDTH; i++) begin
@@ -577,11 +620,15 @@ end
 ```
 
 The synthesis tool will construct a tree from the OR reduction.
+TODO: Yosys has
 
-One-hot multiplexer is the preferred solution for ASIC designs,
-since it can be constructed from the simplest/fastest logic cells.
+The priority select multiplexer is similar to the one-hot version,
+but more than one select input can be active, and the one with the highest priority
+defines which array input maps to the data output.
 
-The one-hot select multiplexer can also be written as an explicit linear structure.
+The order in which the priority vector bits are processed defines the priority order.
+In the given example the priority vector is preocessed from right to left
+giving the rightmost `pry` bit the highest priority.
 
 ```SystemVerilog
 dat = '0;
@@ -603,6 +650,10 @@ with a slice of the select signal at each layer.
 
 This architecture can be a good fit for FPGA tools.
 A LUT6 can implement a 4 to 1 multiplexer with a 2 bit binary select.
+
+One-hot multiplexer is the preferred solution for ASIC designs,
+since it can be constructed from the simplest/fastest logic cells.
+TODO: there is no clear cut, each has its advantages.
 
 ### Barrel/funnel shifter
 
@@ -626,7 +677,6 @@ begin
     trm = tmp[WIDTH-1:0];
 end
 ```
-
 
 ### Priority to one-hot conversion
 
@@ -768,6 +818,10 @@ I would also like to see whether an adder followed by a linear zero comparator
 provides better timing compared to a tree implementation.
 For this I would show the waveforms from timing annotated simulation,
 overlayed waveforms from simulation with multiple random or exhaustive input values.
+
+https://yosyshq.readthedocs.io/projects/yosys/en/latest/cmd/demuxmap.html
+
+https://yosyshq.readthedocs.io/projects/yosys/en/latest/cmd/extract_reduce.html
 
 ## References
 
