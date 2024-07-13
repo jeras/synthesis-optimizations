@@ -73,6 +73,7 @@ module mux_bin_tb #(
     string        test_name;
 
     // test sequence
+    /* verilator lint_off INITIALDLY */
     initial
     begin
         // initialize input array
@@ -90,6 +91,7 @@ module mux_bin_tb #(
 
         $finish;
     end
+    /* verilator lint_on INITIALDLY */
 
 ///////////////////////////////////////////////////////////////////////////////
 // DUT instance array (for each implementation)

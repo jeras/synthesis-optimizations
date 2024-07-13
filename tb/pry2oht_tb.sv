@@ -20,9 +20,9 @@ module pry2oht_tb #(
 
     // check enable depending on test
     struct packed {
-        bit adder ;  // 2
-        bit vector;  // 1
-        bit loop  ;  // 0
+        bit adder     ;  // 2
+        bit vectorized;  // 1
+        bit loop      ;  // 0
     } check_enable;
 
     // timing constant
@@ -91,17 +91,18 @@ module pry2oht_tb #(
     string        test_name;
 
     // test sequence
+    /* verilator lint_off INITIALDLY */
     initial
     begin
         // idle test
         test_name = "idle";
-        check_enable = '{loop: 1'b1, vector: 1'b0, adder: 1'b1};
+        check_enable = '{loop: 1'b1, vectorized: 1'b0, adder: 1'b1};
         pry <= '0;
         check;
 
         // one-hot encoder test
         test_name = "one-hot";
-        check_enable = '{loop: 1'b1, vector: 1'b0, adder: 1'b1};
+        check_enable = '{loop: 1'b1, vectorized: 1'b0, adder: 1'b1};
         for (int unsigned i=0; i<WIDTH; i++) begin
             logic [WIDTH-1:0] tmp_vld;
             tmp_vld = '0;
@@ -112,7 +113,7 @@ module pry2oht_tb #(
 
         // priority encoder test (with undefined inputs)
         test_name = "priority";
-        check_enable = '{loop: 1'b1, vector: 1'b0, adder: 1'b0};
+        check_enable = '{loop: 1'b1, vectorized: 1'b0, adder: 1'b0};
         for (int unsigned i=0; i<WIDTH; i++) begin
             logic [WIDTH-1:0] tmp_vld;
             tmp_vld = 'X;
@@ -127,13 +128,14 @@ module pry2oht_tb #(
 
         // priority encoder test (going through all input combinations)
         test_name = "exhaustive";
-        check_enable = '{loop: 1'b1, vector: 1'b0, adder: 1'b1};
+        check_enable = '{loop: 1'b1, vectorized: 1'b0, adder: 1'b1};
         for (logic unsigned [WIDTH-1:0] tmp_vld='1; tmp_vld>0; tmp_vld--) begin
             pry <= {<<{tmp_vld}};
             check;
         end
         $finish;
     end
+    /* verilator lint_on INITIALDLY */
 
 ///////////////////////////////////////////////////////////////////////////////
 // DUT instance array (for each implementation)

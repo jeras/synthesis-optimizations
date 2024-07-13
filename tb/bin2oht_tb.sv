@@ -17,14 +17,13 @@ module bin2oht_tb #(
 );
 
     // implementation (see `bin2oht_base` for details)
-    localparam int unsigned IMPLEMENTATIONS = 4;
+    localparam int unsigned IMPLEMENTATIONS = 3;
 
     // check enable depending on test
     struct packed {
         bit shift;      // 3
         bit power;      // 2
         bit loop;       // 1
-        bit bit_table;  // 0
     } check_enable;
 
     // timing constant
@@ -79,11 +78,12 @@ module bin2oht_tb #(
     string        test_name;
 
     // test sequence
+    /* verilator lint_off INITIALDLY */
     initial
     begin
         // idle test
         test_name = "idle";
-        check_enable = '{bit_table: 1'b1, loop: 1'b1, power: 1'b1, shift: 1'b0};
+        check_enable = '{loop: 1'b1, power: 1'b1, shift: 1'b0};
         vld <= 1'b0;
         bin <= 'x;
         check;
@@ -99,6 +99,7 @@ module bin2oht_tb #(
 
         $finish;
     end
+    /* verilator lint_on INITIALDLY */
 
 ///////////////////////////////////////////////////////////////////////////////
 // DUT instance array (for each implementation)

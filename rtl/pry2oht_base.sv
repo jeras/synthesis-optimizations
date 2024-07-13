@@ -52,6 +52,7 @@ module pry2oht_base #(
         end: loop
         1:  // vector (vectorization of the loop code)
         begin: vector
+            /* verilator lint_off ALWCOMBORDER */
             logic [WIDTH-1:0] tmp;
             case (DIRECTION)
                 "LSB":
@@ -59,7 +60,7 @@ module pry2oht_base #(
                     begin: vector
                         tmp = {pry[WIDTH-2:0] | tmp[WIDTH-2:0], 1'b0};
                         oht = pry & ~tmp;
-                        vld = tmp[WIDTH];
+                        vld = tmp[WIDTH-1];
                     end: vector
                 "MSB":
                     always_comb
@@ -71,6 +72,7 @@ module pry2oht_base #(
                 default:
                     $fatal("Unsupported DIRECTION parameter value.");
             endcase
+            /* verilator lint_on ALWCOMBORDER */
         end: vector
         2:  // adder
         begin: adder

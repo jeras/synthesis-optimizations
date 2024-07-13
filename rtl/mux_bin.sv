@@ -25,7 +25,7 @@ module mux_bin #(
 );
 
     // SPLIT to the power of POWER_LOG (logarithm of WIDTH base SPLIT rounded up)
-    localparam int unsigned POWER_LOG = WIDTH_LOG/SPLIT_LOG + (WIDTH_LOG%SPLIT_LOG ? 1 : 0);
+    localparam int unsigned POWER_LOG = WIDTH_LOG/SPLIT_LOG + (WIDTH_LOG%SPLIT_LOG>0 ? 1 : 0);
     localparam int unsigned POWER     = SPLIT**POWER_LOG;
 
     generate

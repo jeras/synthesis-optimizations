@@ -11,8 +11,7 @@ module mux_oht_tb #(
     // data type
     parameter  type DAT_T = logic [8-1:0],
     // size parameters
-    int unsigned WIDTH = 9,
-    int unsigned SPLIT = 3
+    int unsigned WIDTH = 16
 );
 
     // timing constant
@@ -77,6 +76,7 @@ module mux_oht_tb #(
     string        test_name;
 
     // test sequence
+    /* verilator lint_off INITIALDLY */
     initial
     begin
         // initialize input array
@@ -103,6 +103,7 @@ module mux_oht_tb #(
 
         $finish;
     end
+    /* verilator lint_on INITIALDLY */
 
 ///////////////////////////////////////////////////////////////////////////////
 // DUT instance array (for each implementation)
@@ -115,7 +116,6 @@ module mux_oht_tb #(
         mux_oht #(
             .DAT_T (DAT_T),
             .WIDTH (WIDTH),
-            .SPLIT (SPLIT),
             .IMPLEMENTATION (i)
         ) dut (
             .oht (oht),

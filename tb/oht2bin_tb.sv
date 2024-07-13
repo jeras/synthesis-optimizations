@@ -80,6 +80,7 @@ module oht2bin_tb #(
     string        test_name;
 
     // test sequence
+    /* verilator lint_off INITIALDLY */
     initial
     begin
         // idle test
@@ -101,6 +102,7 @@ module oht2bin_tb #(
 
         $finish;
     end
+    /* verilator lint_on INITIALDLY */
 
 ///////////////////////////////////////////////////////////////////////////////
 // DUT instance array (for each implementation)
