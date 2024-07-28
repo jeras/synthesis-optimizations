@@ -12,5 +12,8 @@ TOPS="\
 
 for TOP in $TOPS
 do
-    verilator --lint-only --timing --top $TOP -f ../files_rtl.lst -f ../files_tb.lst
+    verilator -j 0 --lint-only --timing --top $TOP -f ../files_rtl.lst -f ../files_tb.lst
+#    verilator -j 0 --binary    --timing --top $TOP -f ../files_rtl.lst -f ../files_tb.lst -Wall
+    verilator -j 0 --binary    --timing --top $TOP -f ../files_rtl.lst -f ../files_tb.lst --trace-fst
+    obj_dir/V${TOP}
 done

@@ -159,4 +159,16 @@ module pry2oht_bck_tb #(
     end: imp
     endgenerate
 
+///////////////////////////////////////////////////////////////////////////////
+// waveforms
+///////////////////////////////////////////////////////////////////////////////
+
+    `ifdef VERILATOR
+    initial
+    begin
+        $dumpfile("pry2oht_bck_tb.fst");
+        $dumpvars(0, pry2oht_bck_tb);
+    end
+`endif
+
 endmodule: pry2oht_bck_tb

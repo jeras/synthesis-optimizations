@@ -125,4 +125,16 @@ module oht2bin_tb #(
     end: imp
     endgenerate
 
+///////////////////////////////////////////////////////////////////////////////
+// waveforms
+///////////////////////////////////////////////////////////////////////////////
+
+    `ifdef VERILATOR
+    initial
+    begin
+        $dumpfile("oht2bin_tb.fst");
+        $dumpvars(0, oht2bin_tb);
+    end
+`endif
+
 endmodule: oht2bin_tb

@@ -125,4 +125,16 @@ module mag_cmp_tb #(
     end: imp
     endgenerate
 
+///////////////////////////////////////////////////////////////////////////////
+// waveforms
+///////////////////////////////////////////////////////////////////////////////
+
+    `ifdef VERILATOR
+    initial
+    begin
+        $dumpfile("mag_cmp_tb.fst");
+        $dumpvars(0, mag_cmp_tb);
+    end
+`endif
+
 endmodule: mag_cmp_tb

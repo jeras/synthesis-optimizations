@@ -122,4 +122,16 @@ module bin2oht_tb #(
     end: imp
     endgenerate
 
+///////////////////////////////////////////////////////////////////////////////
+// waveforms
+///////////////////////////////////////////////////////////////////////////////
+
+`ifdef VERILATOR
+    initial
+    begin
+        $dumpfile("bin2oht_tb.fst");
+        $dumpvars(0, bin2oht_tb);
+    end
+`endif
+
 endmodule: bin2oht_tb

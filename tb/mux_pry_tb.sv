@@ -127,4 +127,16 @@ module mux_pry_tb #(
     end: imp
     endgenerate
 
+///////////////////////////////////////////////////////////////////////////////
+// waveforms
+///////////////////////////////////////////////////////////////////////////////
+
+    `ifdef VERILATOR
+    initial
+    begin
+        $dumpfile("mux_pry_tb.fst");
+        $dumpvars(0, mux_pry_tb);
+    end
+`endif
+
 endmodule: mux_pry_tb

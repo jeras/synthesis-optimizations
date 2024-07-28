@@ -127,4 +127,16 @@ module mux_oht_tb #(
     end: imp
     endgenerate
 
+///////////////////////////////////////////////////////////////////////////////
+// waveforms
+///////////////////////////////////////////////////////////////////////////////
+
+    `ifdef VERILATOR
+    initial
+    begin
+        $dumpfile("mux_oht_tb.fst");
+        $dumpvars(0, mux_oht_tb);
+    end
+`endif
+
 endmodule: mux_oht_tb

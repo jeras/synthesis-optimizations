@@ -73,7 +73,7 @@ module eql_cmp_tb #(
 
     // test sequence
     initial
-    begin
+    begin: test_sequence
         // zero test
         test_name = "zero";
         check_enable = IMPLEMENTATIONS'('1);
@@ -116,7 +116,7 @@ module eql_cmp_tb #(
 //        end
 
         $finish;
-    end
+    end: test_sequence
 
 ///////////////////////////////////////////////////////////////////////////////
 // DUT instance array (for each implementation)
@@ -136,5 +136,17 @@ module eql_cmp_tb #(
 
     end: imp
     endgenerate
+
+///////////////////////////////////////////////////////////////////////////////
+// waveforms
+///////////////////////////////////////////////////////////////////////////////
+
+`ifdef VERILATOR
+    initial
+    begin
+        $dumpfile("eql_cmp_tb.fst");
+        $dumpvars(0, eql_cmp_tb);
+    end
+`endif
 
 endmodule: eql_cmp_tb

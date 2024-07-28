@@ -155,4 +155,16 @@ module pry2thr_tb #(
     end: imp
     endgenerate
 
+///////////////////////////////////////////////////////////////////////////////
+// waveforms
+///////////////////////////////////////////////////////////////////////////////
+
+    `ifdef VERILATOR
+    initial
+    begin
+        $dumpfile("pry2thr_tb.fst");
+        $dumpvars(0, pry2thr_tb);
+    end
+`endif
+
 endmodule: pry2thr_tb

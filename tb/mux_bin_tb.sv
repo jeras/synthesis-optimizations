@@ -115,4 +115,16 @@ module mux_bin_tb #(
     end: imp
     endgenerate
 
+///////////////////////////////////////////////////////////////////////////////
+// waveforms
+///////////////////////////////////////////////////////////////////////////////
+
+    `ifdef VERILATOR
+    initial
+    begin
+        $dumpfile("mux_bin_tb.fst");
+        $dumpvars(0, mux_bin_tb);
+    end
+`endif
+
 endmodule: mux_bin_tb
