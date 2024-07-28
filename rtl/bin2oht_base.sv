@@ -35,7 +35,9 @@ module bin2oht_base #(
         2:  // shift
             assign oht = WIDTH'(vld) << bin;
         default:  // parameter validation
+            /* verilator lint_off USERFATAL */
             $fatal("Unsupported IMPLEMENTATION parameter value.");
+            /* verilator lint_on USERFATAL */
     endcase
     endgenerate
 
