@@ -670,11 +670,11 @@ priority, one-hot or thermometer encoded.
 always_comb
 begin
     logic [WIDTH-1:-1] tmp
-    tmp[0] = 1'b0;
+    tmp[-1] = 1'b0;
     for (int i=0; i<WIDTH; i++) begin
         tmp[i] = pry[i] | tmp[i-1];
     end
-    trm = tmp[WIDTH-1:0];
+    thr = tmp[WIDTH-1:0];
 end
 ```
 

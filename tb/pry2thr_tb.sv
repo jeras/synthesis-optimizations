@@ -47,16 +47,14 @@ module pry2thr_tb #(
         logic [WIDTH-1:0] pry
     );
         automatic logic [WIDTH-1:0] thr;
-        case (DIRECTION)
+        unique case (DIRECTION)
             "LSB":
                 for (int i=0; i<WIDTH; i++) begin
-                    thr[i] = |pry[i:0];
-                    vld    = |pry;
+                    thr[i] = |pry[0+:i+1];
                 end
             "MSB":
-                for (int i=WIDTH-1; i<=0; i--) begin
-                    thr[i] = |pry[WIDTH-1:i];
-                    vld    = |pry;
+                for (int i=0; i<WIDTH; i--) begin
+                    thr[WIDTH-1-i] = |pry[WIDTH-1:i+1];
                 end
         endcase
         return thr;
@@ -66,11 +64,11 @@ module pry2thr_tb #(
     always_comb
     begin
         ref_thr = ref_pry2thr(pry);
-        ref_vld =           |(pry);    
+        ref_vld =           |(pry);
     end
 
     // output checking task
-    task check();
+    task automatic check();
         #T;
         for (int unsigned i=0; i<IMPLEMENTATIONS; i++) begin
             if (check_enable[i]) begin

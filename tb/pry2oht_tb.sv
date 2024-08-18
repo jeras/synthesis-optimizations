@@ -49,7 +49,7 @@ module pry2oht_tb #(
         automatic logic [WIDTH-1:0] oht;
         automatic logic             vld;
         vld = 1'b0;
-        case (DIRECTION)
+        unique case (DIRECTION)
             "LSB":
                 for (int i=0; i<WIDTH; i++) begin
                     oht[i] = pry[i] & ~vld;
@@ -68,11 +68,11 @@ module pry2oht_tb #(
     always_comb
     begin
         ref_oht = ref_pry2oht(pry);
-        ref_vld =           |(pry);    
+        ref_vld =           |(pry);
     end
 
     // output checking task
-    task check();
+    task automatic check();
         #T;
         for (int unsigned i=0; i<IMPLEMENTATIONS; i++) begin
             if (check_enable[i]) begin

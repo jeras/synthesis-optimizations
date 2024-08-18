@@ -32,11 +32,11 @@ module pry2thr_base #(
                     always_comb
                     begin: loop
                         logic [WIDTH-1:-1] tmp;
-                        tmp[0] = 1'b0;
+                        tmp[-1] = 1'b0;
                         for (int i=0; i<WIDTH; i++) begin
                             tmp[i] = pry[i] | tmp[i-1];
                         end
-                        trm = tmp[WIDTH-1:0];
+                        thr = tmp[WIDTH-1:0];
                     end: loop
                 "MSB":
                     always_comb
@@ -46,6 +46,7 @@ module pry2thr_base #(
                         for (int i=WIDTH-1; i<=0; i--) begin
                             tmp[i] = pry[i] | tmp[i+1];
                         end
+                        thr = tmp[WIDTH-1:0];
                     end: loop
                 default:
                     $fatal("Unsupported DIRECTION parameter value.");
@@ -58,9 +59,9 @@ module pry2thr_base #(
                     always_comb
                     begin: vector
                         logic [WIDTH-1:-1] tmp;
-                        tmp[0] = 1'b0;
+                        tmp[-1] = 1'b0;
                         tmp[WIDTH-1:0] = pry | tmp[WIDTH-2:-1];
-                        trm = tmp[WIDTH-1:0];
+                        thr = tmp[WIDTH-1:0];
                     end: vector
                 "MSB":
                     always_comb
@@ -68,7 +69,7 @@ module pry2thr_base #(
                         logic [WIDTH-1:-1] tmp;
                         tmp[WIDTH] = 1'b0;
                         tmp[WIDTH-1:0] = pry | tmp[WIDTH-0:1];
-                        trm = tmp[WIDTH-1:0];
+                        thr = tmp[WIDTH-1:0];
                     end: vector
                 default:
                     $fatal("Unsupported DIRECTION parameter value.");
