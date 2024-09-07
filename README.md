@@ -30,6 +30,8 @@ described in every digital design book.
 - shifter,
 - population count,
 - arbitration.
+- [sorting network](https://en.wikipedia.org/wiki/Sorting_network),
+
 
 The library uses arithmetic logic (adders) in some cases,
 but different adder architectures are not the fucus of this library.
@@ -825,11 +827,33 @@ https://yosyshq.readthedocs.io/projects/yosys/en/latest/cmd/extract_reduce.html
 
 ## References
 
+### FPGA mapping
+
+https://idus.us.es/bitstream/handle/11441/134956/1/electronics-11-00027-v2.pdf?sequence=1
+https://ieeexplore.ieee.org/document/831434
+https://ieeexplore.ieee.org/document/5272382
+
+### Yosys techmap
+
+https://tomverbeure.github.io/2022/11/18/Primitive-Transformations-with-Yosys-Techmap.html
+https://github.com/YosysHQ/yosys/blob/main/docs/source/yosys_internals/formats/cell_library.rst
+
 ### CPU
 
 - https://books.google.si/books/about/Hacker_s_Delight.html?id=VicPJYM0I5QC
 - http://www-graphics.stanford.edu/~seander/bithacks.html
 - https://github.com/riscv/riscv-bitmanip/releases/download/v0.93/bitmanip-0.93.pdf
+
+### Parallel prefix
+
+https://en.wikipedia.org/wiki/Prefix_sum
+
+https://en.wikipedia.org/wiki/Fold_(higher-order_function)
+https://courses.csail.mit.edu/18.337/2004/book/Lecture_03-Parallel_Prefix.pdf
+
+https://en.wikipedia.org/wiki/Recurrence_relation
+
+https://www.cs.cmu.edu/~guyb/papers/Ble93.pdf
 
 ### Digital design
 
@@ -851,6 +875,35 @@ https://andy-knowles.github.io/one-hot-mux/
 
 http://fpgacpu.ca/fpga/Multiplexer_One_Hot.html
 
+### Adder
+
+https://en.wikipedia.org/wiki/Adder_(electronics)
+https://cseweb.ucsd.edu/classes/fa06/cse246/lingadder.pdf
+http://www.rjsweb.net/publications/asilomar_conference_38_paper_2004.pdf
+
+https://github.com/mattvenn/instrumented_adder/tree/177d358d927fc541a00551a8c82ca78676e935e4
+https://github.com/tdene/synth_opt_adders
+https://github.com/lnis-uofu/yosys_prefix_trees/tree/main
+
+### inverse polarity
+
+https://ieeexplore.ieee.org/document/799453
+
+### Reverse carry propagate
+
+https://www.researchgate.net/publication/346412576_DESIGN_AND_IMPLEMENTATION_OF_REVERSE_CARRY_PROPAGATE_ADDER_RCPA_ON_FPGA
+https://www.sciencedirect.com/science/article/abs/pii/S0141933119305976#:~:text=The%20reverse%20carry%20propagate%20adder,delay%20variations%20increases%20the%20stability.
+https://ieeexplore.ieee.org/document/9002494
+
+
+### Network switch
+
+Hipernetch: High-Performance FPGA Network Switch
+https://dl.acm.org/doi/10.1145/3477054
+
+### Arbiter
+
+https://dl.acm.org/doi/10.5555/1364486.1364503
 
 
 ### Priority encoder
