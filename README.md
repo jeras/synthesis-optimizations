@@ -844,9 +844,29 @@ https://github.com/YosysHQ/yosys/blob/main/docs/source/yosys_internals/formats/c
 - http://www-graphics.stanford.edu/~seander/bithacks.html
 - https://github.com/riscv/riscv-bitmanip/releases/download/v0.93/bitmanip-0.93.pdf
 
-### Parallel prefix
+### Bitwise
 
-https://en.wikipedia.org/wiki/Prefix_sum
+Similar to [`map` higher-order function](https://en.wikipedia.org/wiki/Map_(higher-order_function)).
+
+### Reduction and commutativity
+
+Here assuming commutativity is required and enough to define a reduction operation (did not see a proof yet).
+I did not find a good generic definition of boolean reduction.
+There is the [`reduce`/`fold` higher order functions](https://en.wikipedia.org/wiki/Fold_(higher-order_function))
+from the parallel processing field and [Lambda calculus](https://en.wikipedia.org/wiki/Lambda_calculus).
+
+Of special interest are operations which are commutative but not associative,
+see [Commutative magma](https://en.wikipedia.org/wiki/Commutative_magma).
+
+### Parallel prefix and associativity
+
+Wikipedia provides an overview of the [Prefix sum](https://en.wikipedia.org/wiki/Prefix_sum) operation,
+and a definition of [associative property](https://en.wikipedia.org/wiki/Associative_property),
+which can be used to construct a test using an equality checker
+(the two sides of the associativity operation are equal).
+A more efficient test would be [Light's associativity test](https://en.wikipedia.org/wiki/Light%27s_associativity_test).
+The Bednarek’s extension to this test is also mentioned.
+
 
 https://en.wikipedia.org/wiki/Fold_(higher-order_function)
 https://courses.csail.mit.edu/18.337/2004/book/Lecture_03-Parallel_Prefix.pdf
@@ -918,3 +938,7 @@ https://dl.acm.org/doi/10.5555/1364486.1364503
 - [Binary Golay code](https://en.wikipedia.org/wiki/Binary_Golay_code)
 
 - https://pages.hmc.edu/harris/cmosvlsi/4e/lect/lect18.pdf
+
+### Sorting network
+
+
