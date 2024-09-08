@@ -610,7 +610,7 @@ The one-hot select multiplexer would mask each array element
 with the corresponding bit in the one-hot select vector `oht[WIDTH-1:0]`,
 and than apply OR reduction to combine all those masked values into the output `dat`.
 
-TODO: wrire down an explicit unary regression.
+TODO: wire down an explicit unary regression.
 
 The one-hot select multiplexer can also be written as an explicit linear structure.
 
@@ -629,7 +629,7 @@ but more than one select input can be active, and the one with the highest prior
 defines which array input maps to the data output.
 
 The order in which the priority vector bits are processed defines the priority order.
-In the given example the priority vector is preocessed from right to left
+In the given example the priority vector is precessedfrom right to left
 giving the rightmost `pry` bit the highest priority.
 
 ```SystemVerilog
@@ -761,10 +761,11 @@ https://www.researchgate.net/publication/266262724_Pipelined_Compressor_Tree_Opt
 ### Arbiter
 
 TODO: arbiter with combinational loop.
-related OpenSTA options:
--  set_logic_dc, set_logic_one, set_logic_zero
-- conditional set_case_analysis, sta_cond_default_arcs_enabled, sta_dynamic_loop_breaking
-- report issue: unset_data_check
+Related OpenSTA options:
+
+-  `set_logic_dc`, `set_logic_one`, `set_logic_zero`
+- conditional set_case_analysis, `sta_cond_default_arcs_enabled`, `sta_dynamic_loop_breaking`
+- report issue: `unset_data_check`
 
 https://www.edaboard.com/threads/moved-combinational-loop-synthesis.372034/
 ones-complement adder
@@ -875,11 +876,11 @@ which can be used to construct a test using an equality checker
 A more efficient test would be [Light's associativity test](https://en.wikipedia.org/wiki/Light%27s_associativity_test).
 The Bednarek’s extension to this test is also mentioned.
 
+This article provides some interesting transformations from
+recurrence relations (https://en.wikipedia.org/wiki/Recurrence_relation) to prefix sum:
+https://www.cs.cmu.edu/afs/cs/academic/class/15750-s11/www/handouts/PrefixSumBlelloch.pdf
 
-https://en.wikipedia.org/wiki/Fold_(higher-order_function)
 https://courses.csail.mit.edu/18.337/2004/book/Lecture_03-Parallel_Prefix.pdf
-
-https://en.wikipedia.org/wiki/Recurrence_relation
 
 https://www.cs.cmu.edu/~guyb/papers/Ble93.pdf
 
@@ -912,6 +913,13 @@ http://www.rjsweb.net/publications/asilomar_conference_38_paper_2004.pdf
 https://github.com/mattvenn/instrumented_adder/tree/177d358d927fc541a00551a8c82ca78676e935e4
 https://github.com/tdene/synth_opt_adders
 https://github.com/lnis-uofu/yosys_prefix_trees/tree/main
+
+### FIR/IIR filters
+
+https://en.wikipedia.org/wiki/Finite_impulse_response
+https://en.wikipedia.org/wiki/Infinite_impulse_response
+
+file:///home/izi/VLSI/doc/potsangbam2019.pdf
 
 ### inverse polarity
 
@@ -947,8 +955,27 @@ https://dl.acm.org/doi/10.5555/1364486.1364503
 
 - https://pages.hmc.edu/harris/cmosvlsi/4e/lect/lect18.pdf
 
+### Networks
+
 ### Sorting and switching networks
 
+This wikipedia article introduces [sorting networks](https://en.wikipedia.org/wiki/Sorting_network).
+There are several methods to construct such networks,
+
+- [bitonic sorter](https://en.wikipedia.org/wiki/Bitonic_sorter),
+- [pairwise sorting network](https://en.wikipedia.org/wiki/Pairwise_sorting_network),
+- [some know optimal networks](https://bertdobbelaere.github.io/sorting_networks.html),
+- ...
+
+Sorting networks and their applications
+by K. E. BATCHER
+https://www.cs.kent.edu/~batcher/sort.pdf
+
+#### Crossbar
+
+https://en.wikipedia.org/wiki/Butterfly_network
+https://en.wikipedia.org/wiki/Banyan_switch
+https://en.wikipedia.org/wiki/Nonblocking_minimal_spanning_switch
 
 ### Handshake protocols and pipelines
 
