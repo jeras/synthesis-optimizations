@@ -879,6 +879,9 @@ The Bednarek’s extension to this test is also mentioned.
 This article provides some interesting transformations from
 recurrence relations (https://en.wikipedia.org/wiki/Recurrence_relation) to prefix sum:
 https://www.cs.cmu.edu/afs/cs/academic/class/15750-s11/www/handouts/PrefixSumBlelloch.pdf
+This article provides some interesting transformations from
+recurrence relations (https://en.wikipedia.org/wiki/Recurrence_relation) to prefix sum:
+https://www.cs.cmu.edu/afs/cs/academic/class/15750-s11/www/handouts/PrefixSumBlelloch.pdf
 
 https://courses.csail.mit.edu/18.337/2004/book/Lecture_03-Parallel_Prefix.pdf
 
