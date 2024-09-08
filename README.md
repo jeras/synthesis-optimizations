@@ -844,6 +844,14 @@ https://github.com/YosysHQ/yosys/blob/main/docs/source/yosys_internals/formats/c
 - http://www-graphics.stanford.edu/~seander/bithacks.html
 - https://github.com/riscv/riscv-bitmanip/releases/download/v0.93/bitmanip-0.93.pdf
 
+### Design synthesis optimization in practice
+
+Basilisk: Achieving Competitive Performance with
+Open EDA Tools on an Open-Source
+Linux-Capable RISC-V SoC
+https://arxiv.org/pdf/2405.03523
+
+
 ### Bitwise
 
 Similar to [`map` higher-order function](https://en.wikipedia.org/wiki/Map_(higher-order_function)).
@@ -939,6 +947,15 @@ https://dl.acm.org/doi/10.5555/1364486.1364503
 
 - https://pages.hmc.edu/harris/cmosvlsi/4e/lect/lect18.pdf
 
-### Sorting network
+### Sorting and switching networks
 
 
+### Handshake protocols and pipelines
+
+MICROPIPELINES
+IVAN E. SUTHERLAND
+https://dl.acm.org/doi/pdf/10.1145/63526.63532
+
+The Theory of Latency Insensitive Design
+Luca P. Carloni
+https://ptolemy.berkeley.edu/projects/embedded/asves/dsm/lid/papers/lipTransactions.pdf
