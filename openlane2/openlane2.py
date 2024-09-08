@@ -9,9 +9,14 @@ import openlane
 from openlane.flows import SequentialFlow
 from openlane.steps import Yosys, Misc, OpenROAD, Magic, Netgen
 
+class CustomYosysSynthesis(Yosys.Synthesis):
+    def get_script_path(self):
+        return "synthesize.tcl"
+
 class MyFlow(SequentialFlow):
     Steps = [
-        Yosys.Synthesis,
+        CustomYosysSynthesis
+        #Yosys.Synthesis,
 #        OpenROAD.CheckSDCFiles,
 #        OpenROAD.Floorplan,
 #        OpenROAD.TapEndcapInsertion,
@@ -32,6 +37,7 @@ print(openlane.__version__)
 
 width_range = [4, 6, 8, 12, 16, 24, 32, 48, 64]
 width_range = [8, 32]
+width_range = [32]
 
 designs=[
 #   {'top': "bin2oht_base", 'parameters': {"IMPLEMENTATION": [0, 1, 2, 3], "WIDTH": width_range}},
@@ -41,8 +47,9 @@ designs=[
 #   {'top': "mag_cmp_base", 'parameters': {"IMPLEMENTATION": [0]   , "WIDTH": width_range}},
 #   {'top': "mux_bin_base", 'parameters': {"IMPLEMENTATION": [0]   , "WIDTH": width_range}},
 #   {'top': "mux_pry_base", 'parameters': {"IMPLEMENTATION": [0]   , "WIDTH": width_range}},
-    {'top': "mux_oht"     , 'parameters': {"IMPLEMENTATION": [0, 1], "WIDTH": width_range}},
-#   {'top': "add_base"    , 'parameters': {"IMPLEMENTATION": [0]   , "WIDTH": width_range}},
+#   {'top': "mux_oht"     , 'parameters': {"IMPLEMENTATION": [0, 1], "WIDTH": width_range}},
+    {'top': "add_base"    , 'parameters': {"IMPLEMENTATION": [0]   , "WIDTH": width_range}},
+    {'top': "negative"    , 'parameters': {                          "WIDTH": width_range}},
 ]
 
 report_environment = Environment(loader=FileSystemLoader("."))
@@ -87,6 +94,7 @@ for design in designs:
                     "../rtl/mux_pry_tree.sv",
                     "../rtl/mux_pry.sv",
                     "../rtl/add_base.sv",
+                    "../rtl/negative.sv",
                 ],
                 "CLOCK_PORT": None,
             },
