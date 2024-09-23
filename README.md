@@ -857,6 +857,11 @@ https://arxiv.org/pdf/2405.03523
 
 Similar to [`map` higher-order function](https://en.wikipedia.org/wiki/Map_(higher-order_function)).
 
+### General encoder decoder
+
+Synthesising Heterogeneously Encoded Systems
+https://apt.cs.manchester.ac.uk/ftp/pub/apt/papers/WT_Async06.pdf
+
 ### Reduction and commutativity
 
 Here assuming commutativity is required and enough to define a reduction operation (did not see a proof yet).
@@ -866,6 +871,9 @@ from the parallel processing field and [Lambda calculus](https://en.wikipedia.or
 
 Of special interest are operations which are commutative but not associative,
 see [Commutative magma](https://en.wikipedia.org/wiki/Commutative_magma).
+
+Yosys `extract_reduce`
+https://yosyshq.readthedocs.io/projects/yosys/en/latest/cmd/extract_reduce.html
 
 ### Parallel prefix and associativity
 
@@ -887,6 +895,20 @@ https://courses.csail.mit.edu/18.337/2004/book/Lecture_03-Parallel_Prefix.pdf
 
 https://www.cs.cmu.edu/~guyb/papers/Ble93.pdf
 
+A Taxonomy of Parallel Prefix Networks
+David Harris
+https://pages.hmc.edu/harris/research/taxonomy.pdf
+Article focuses on adders, but it is otherwise about generalization.
+
+Design of high-performance CMOS priority encoders and incrementer/decrementers using multilevel lookahead and multilevel folding techniques
+https://ieeexplore.ieee.org/document/974546
+
+Reddit discussions:
+https://www.reddit.com/r/Verilog/comments/1apw1tr/_/
+
+Pulp Platform LZC
+https://github.com/pulp-platform/common_cells/blob/69d40a536665ab9c8f0066ee48b139579df7fccd/src/lzc.sv
+
 ### Digital design
 
 - http://fpgacpu.ca/fpga/index.html
@@ -898,6 +920,8 @@ https://www.cs.cmu.edu/~guyb/papers/Ble93.pdf
 - https://en.wikipedia.org/wiki/Encoder_(digital)
 - https://www.edaboard.com/threads/priority-encoder-for-one-hot-to-binary.366915/
 
+https://en.wikipedia.org/wiki/Sum-addressed_decoder
+
 ### Multiplexer
 
 One hot multiplexer synthesis using Xilinx Vivado for the Ultrascale family.
@@ -907,7 +931,43 @@ https://andy-knowles.github.io/one-hot-mux/
 
 http://fpgacpu.ca/fpga/Multiplexer_One_Hot.html
 
-### Adder
+### Arbiter
+
+Algorithm-Hardware Codesign of Fast Parallel Round-Robin Arbiters
+Si Qing Zheng, Senior Member, IEEE, and Mei Yang, Member, IEEE
+https://ieeexplore.ieee.org/abstract/document/4020514
+
+A Low-Latency Fair-Arbiter Architecture for Network-on-Chip Switches
+https://www.mdpi.com/2076-3417/12/23/12458#B23-applsci-12-12458
+example of unfair arbiter
+
+Fast arbiters for on-chip network switches
+https://ieeexplore.ieee.org/document/4751932
+Also discusses cyclic implementation.
+
+Engineering Issues, Arbiters and Allocators
+http://cva.stanford.edu/classes/ee382c/ee482b/scribes01/lect11/lect11.pdf
+Discusses fairness
+
+A fair arbitration for Network-on-Chip routing with odd-even turn model
+Lu Liu, Zhangming Zhu, Duan Zhou, Yintang Yang
+
+Fast Fair Arbiter Design in Packet Switches
+Feng Wang and Mounir Hamdi
+
+A FAST ARBITRATION SCHEME FOR TERABIT PACKET SWITCHES
+H. Jonathan Chao, Cheuk H. Lam, and Xiaolei Guo 
+https://ieeexplore.ieee.org/document/829968
+
+#### Arbiter fairness
+
+Statistial Fairness of Ordered Arbiters
+A. Madalinski, A. Bystrov, A. Yakovlev
+https://www.researchgate.net/publication/2321410_Statistical_Fairness_of_Ordered_Arbiters
+
+### Arithmetic operations
+
+#### Adder
 
 https://en.wikipedia.org/wiki/Adder_(electronics)
 https://cseweb.ucsd.edu/classes/fa06/cse246/lingadder.pdf
@@ -917,12 +977,42 @@ https://github.com/mattvenn/instrumented_adder/tree/177d358d927fc541a00551a8c82c
 https://github.com/tdene/synth_opt_adders
 https://github.com/lnis-uofu/yosys_prefix_trees/tree/main
 
+#### Incrementer/Decrementer
+
+Highly parallel increment/decrement using CMOS technology
+R. Hashemian
+https://ieeexplore.ieee.org/document/140858
+
 ### FIR/IIR filters
 
 https://en.wikipedia.org/wiki/Finite_impulse_response
 https://en.wikipedia.org/wiki/Infinite_impulse_response
 
 file:///home/izi/VLSI/doc/potsangbam2019.pdf
+
+### CIC
+
+This is a bit outside from the overall theme.
+
+https://tomverbeure.github.io/2020/09/30/Moving-Average-and-CIC-Filters.html
+
+https://tomverbeure.github.io/2020/12/20/Design-of-a-Multi-Stage-PDM-to-PCM-Decimation-Pipeline.html
+
+#### Vocoder
+
+https://web.archive.org/web/20040617224423/http://www.ircam.fr/equipes/analyse-synthese/roebel/paper/dafx2003.pdf
+https://github.com/haoyu987/phasevocoder
+
+A Review of Time-Scale Modification of Music Signals
+https://www.mdpi.com/2076-3417/6/2/57
+
+https://www.youtube.com/watch?v=7Ci55e4GcdE&ab_channel=ELENE4896
+
+https://www.youtube.com/watch?v=pi-VvW4SX7w&ab_channel=LippoldHaken
+
+https://www.youtube.com/watch?v=Tmx-v4FiP6I&ab_channel=AnotherRoof
+
+
 
 ### inverse polarity
 
@@ -951,12 +1041,32 @@ https://dl.acm.org/doi/10.5555/1364486.1364503
 - https://www.edaboard.com/threads/verilog-bit-mask-to-index-converter.274344/
 - https://www.beyond-circuits.com/wordpress/2009/01/recursive-modules/
 
+### CRC
+
+A Systematic Approach for Parallel CRC Computations
+https://caslab.ee.ncku.edu.tw/dokuwiki/_media/research:caslab_2001_jnl_01.pdf
+
+Parallel CRC Logic Optimization Algorithm for High Speed Communication Systems
+https://ieeexplore.ieee.org/document/4085745
+
+Generalized Parallel CRC Computation
+https://www.ijmtst.com/documents/13.IJMTST020407.pdf
+
+A Practical Parallel CRC Generation Method
+http://outputlogic.com/my-stuff/parallel_crc_generator_whitepaper.pdf
+
+
+
+
 ### ECC
 
 - [Hamming code](https://en.wikipedia.org/wiki/Hamming_code#Hamming_codes_with_additional_parity_(SECDED))
 - [Binary Golay code](https://en.wikipedia.org/wiki/Binary_Golay_code)
 
 - https://pages.hmc.edu/harris/cmosvlsi/4e/lect/lect18.pdf
+
+Pragmatic Formal Verification of Sequential Error Detection and Correction Codes (ECCs) used in Safety-Critical Design
+https://vimeo.com/827700226
 
 ### Networks
 
