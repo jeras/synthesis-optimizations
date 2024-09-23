@@ -1,4 +1,4 @@
-# Synthesis primitives
+# Logic primitives
 
 A quick link table for those who are looking for something specific instead of reading it all.
 
