@@ -1055,18 +1055,23 @@ https://www.ijmtst.com/documents/13.IJMTST020407.pdf
 A Practical Parallel CRC Generation Method
 http://outputlogic.com/my-stuff/parallel_crc_generator_whitepaper.pdf
 
-
-
-
 ### ECC
-
-- [Hamming code](https://en.wikipedia.org/wiki/Hamming_code#Hamming_codes_with_additional_parity_(SECDED))
-- [Binary Golay code](https://en.wikipedia.org/wiki/Binary_Golay_code)
 
 - https://pages.hmc.edu/harris/cmosvlsi/4e/lect/lect18.pdf
 
 Pragmatic Formal Verification of Sequential Error Detection and Correction Codes (ECCs) used in Safety-Critical Design
 https://vimeo.com/827700226
+
+## Hamming
+
+- [Hamming code](https://en.wikipedia.org/wiki/Hamming_code#Hamming_codes_with_additional_parity_(SECDED))
+
+#### Golay
+
+- [Binary Golay code](https://en.wikipedia.org/wiki/Binary_Golay_code)
+- [The Hidden Geometry of Error-Free Communication](https://www.youtube.com/watch?v=Tmx-v4FiP6I&ab_channel=AnotherRoof)
+- [Design and implementation of reconfigurable coders for communication systems](https://ieeexplore.ieee.org/document/7593063)
+- [Extended (24, 12) Binary Golay Code: Encoding and Decoding Procedures](https://www.maplesoft.com/applications/Preview.aspx?id=1757)
 
 ### Networks
 
