@@ -43,13 +43,13 @@ designs=[
 #   {'top': "bin2oht_base", 'parameters': {"IMPLEMENTATION": [0, 1, 2, 3], "WIDTH": width_range}},
 #   {'top': "oht2bin_base", 'parameters': {"IMPLEMENTATION": [0, 1], "DIRECTION": ['LSB', 'MSB'], "WIDTH": width_range}},
 #   {'top': "pry2oht_base", 'parameters': {"IMPLEMENTATION": [0, 1, 2], "DIRECTION": ['LSB', 'MSB'], "WIDTH": width_range}},
-#   {'top': "eql_cmp"    , 'parameters': {"IMPLEMENTATION": [0, 1, 2, 3, 4], "WIDTH": width_range}},
+    {'top': "eql_cmp"     , 'parameters': {"IMPLEMENTATION": [0, 1, 2, 3, 4], "WIDTH": width_range}},
 #   {'top': "mag_cmp_base", 'parameters': {"IMPLEMENTATION": [0]   , "WIDTH": width_range}},
 #   {'top': "mux_bin_base", 'parameters': {"IMPLEMENTATION": [0]   , "WIDTH": width_range}},
 #   {'top': "mux_pry_base", 'parameters': {"IMPLEMENTATION": [0]   , "WIDTH": width_range}},
 #   {'top': "mux_oht"     , 'parameters': {"IMPLEMENTATION": [0, 1], "WIDTH": width_range}},
-    {'top': "add_base"    , 'parameters': {"IMPLEMENTATION": [0]   , "WIDTH": width_range}},
-    {'top': "negative"    , 'parameters': {                          "WIDTH": width_range}},
+#   {'top': "add_base"    , 'parameters': {"IMPLEMENTATION": [0]   , "WIDTH": width_range}},
+#   {'top': "negative"    , 'parameters': {                          "WIDTH": width_range}},
 ]
 
 report_environment = Environment(loader=FileSystemLoader("."))
