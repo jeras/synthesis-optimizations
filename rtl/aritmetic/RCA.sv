@@ -23,5 +23,4 @@ module RCA #(
     endgenerate
     // output carry
     assign Co = C[WIDTH-1];
-    end
 endmodule: RCA
