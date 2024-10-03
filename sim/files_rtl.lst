@@ -1,57 +1,74 @@
+###############################################################################
+# logic
+###############################################################################
+
 # equality comparator
-../../rtl/eql_cmp.sv
+../../rtl/logic/eql_cmp.sv
 
 # binary to one-hot conversion
-../../rtl/bin2oht_base.sv
-../../rtl/bin2oht_tree.sv
-../../rtl/bin2oht.sv
+../../rtl/logic/bin2oht_base.sv
+../../rtl/logic/bin2oht_tree.sv
+../../rtl/logic/bin2oht.sv
 
 # one-hot to binary conversion
-../../rtl/oht2bin_base.sv
-../../rtl/oht2bin_tree.sv
-../../rtl/oht2bin.sv
+../../rtl/logic/oht2bin_base.sv
+../../rtl/logic/oht2bin_tree.sv
+../../rtl/logic/oht2bin.sv
+
+# priority to thermometer conversion
+../../rtl/logic/pry2thr_base.sv
+../../rtl/logic/pry2thr_tree.sv
+../../rtl/logic/pry2thr.sv
+
+# priority to one-hot conversion
+../../rtl/logic/pry2oht_base.sv
+../../rtl/logic/pry2oht_tree.sv
+../../rtl/logic/pry2oht.sv
+
+# priority to one-hot conversion (backward valid propagation)
+#../../rtl/logic/pry2oht_bck_base.sv
+#../../rtl/logic/pry2oht_bck_tree.sv
+#../../rtl/logic/pry2oht_bck.sv
+
+# magnitude comparator
+../../rtl/logic/mag_cmp_base.sv
+../../rtl/logic/mag_cmp_tree.sv
+../../rtl/logic/mag_cmp.sv
+
+../../rtl/logic/priority_encoder_base.sv
+../../rtl/logic/priority_encoder_tree.sv
+../../rtl/logic/priority_encoder_wrap.sv
+
+../../rtl/logic/programmable_priority_encoder.sv
+
+###############################################################################
+# arithmetic
+###############################################################################
+
+#../../rtl/arithmetic/negative.sv
+
+###############################################################################
+# multiplexer
+###############################################################################
 
 # multiplexer with one-hot select
 ../../rtl/mux_oht.sv
 
 # multiplexer with priority select
-../../rtl/mux_pry_base.sv
-../../rtl/mux_pry_tree.sv
-../../rtl/mux_pry.sv
+../../rtl/multiplexer/mux_pry_base.sv
+../../rtl/multiplexer/mux_pry_tree.sv
+../../rtl/multiplexer/mux_pry.sv
 
 # multiplexer with binary select
-../../rtl/mux_bin_base.sv
-../../rtl/mux_bin_tree.sv
-../../rtl/mux_bin.sv
+../../rtl/multiplexer/mux_bin_base.sv
+../../rtl/multiplexer/mux_bin_tree.sv
+../../rtl/multiplexer/mux_bin.sv
 
-# priority to thermometer conversion
-../../rtl/pry2thr_base.sv
-../../rtl/pry2thr_tree.sv
-../../rtl/pry2thr.sv
+#../../rtl/multiplexer/barrel_shifter.sv
 
-# priority to one-hot conversion
-../../rtl/pry2oht_base.sv
-../../rtl/pry2oht_tree.sv
-../../rtl/pry2oht.sv
-
-# priority to one-hot conversion (backward valid propagation)
-#../../rtl/pry2oht_bck_base.sv
-#../../rtl/pry2oht_bck_tree.sv
-#../../rtl/pry2oht_bck.sv
-
-# magnitude comparator
-../../rtl/mag_cmp_base.sv
-../../rtl/mag_cmp_tree.sv
-../../rtl/mag_cmp.sv
-
-../../rtl/priority_encoder_base.sv
-../../rtl/priority_encoder_tree.sv
-../../rtl/priority_encoder_wrap.sv
-
-../../rtl/programmable_priority_encoder.sv
-
-#../../rtl/barrel_shifter.sv
+###############################################################################
+# mixed
+###############################################################################
 
 #../../rtl/synthesis_optimization_top.sv
 #../../rtl/placeholder.sv
-#../../rtl/negative.sv

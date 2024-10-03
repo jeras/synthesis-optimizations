@@ -1,33 +1,50 @@
+###############################################################################
+# logic
+###############################################################################
+
 # equality comparator
-../../tb/eql_cmp_tb.sv
+../../tb/logic/eql_cmp_tb.sv
 
 # binary to one-hot conversion
-../../tb/bin2oht_tb.sv
+../../tb/logic/bin2oht_tb.sv
 
 # one-hot to binary conversion
-../../tb/oht2bin_tb.sv
-
-# multiplexer with one-hot select
-../../tb/mux_oht_tb.sv
-
-# multiplexer with one-hot select
-../../tb/mux_pry_tb.sv
-
-# multiplexer with binary select
-../../tb/mux_bin_tb.sv
+../../tb/logic/oht2bin_tb.sv
 
 # priority to thermometer conversion
-../../tb/pry2thr_tb.sv
+../../tb/logic/pry2thr_tb.sv
 
 # priority to one-hot conversion
-../../tb/pry2oht_tb.sv
+../../tb/logic/pry2oht_tb.sv
 
 # priority to one-hot conversion (backward valid propagation)
-#../../tb/pry2oht_bck_tb.sv
+#../../tb/logic/pry2oht_bck_tb.sv
 
 # magnitude comparator
-../../tb/mag_cmp_tb.sv
+../../tb/logic/mag_cmp_tb.sv
 
-../../tb/priority_encoder_tb.sv
-../../tb/programmable_priority_encoder_tb.sv
+../../tb/logic/priority_encoder_tb.sv
+../../tb/logic/programmable_priority_encoder_tb.sv
+
+###############################################################################
+# arithmetic
+###############################################################################
+
+###############################################################################
+# multiplexer
+###############################################################################
+
+# multiplexer with one-hot select
+../../tb/multiplexer/mux_oht_tb.sv
+
+# multiplexer with one-hot select
+../../tb/multiplexer/mux_pry_tb.sv
+
+# multiplexer with binary select
+../../tb/multiplexer/mux_bin_tb.sv
+
+###############################################################################
+# mixed
+###############################################################################
+
 ../../tb/vivado_simulator_bug_encoder_tb.sv
