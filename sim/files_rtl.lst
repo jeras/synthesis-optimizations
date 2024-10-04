@@ -52,7 +52,7 @@
 ###############################################################################
 
 # multiplexer with one-hot select
-../../rtl/mux_oht.sv
+../../rtl/multiplexer/mux_oht.sv
 
 # multiplexer with priority select
 ../../rtl/multiplexer/mux_pry_base.sv
