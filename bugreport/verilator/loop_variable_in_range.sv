@@ -34,11 +34,11 @@ module loop_variable_in_range #(
         /* verilator lint_on ALWCOMBORDER */
         // method B
         for (int i=0; i<WIDTH; i++) begin
-//            thr_b[i] = |pry[0+:i+1];
+            thr_b[i] = |pry[0+:i+1];
         end
         // method C
         for (int i=0; i<WIDTH; i++) begin
-//            thr_c[i] = |pry[i:0];
+            thr_c[i] = |pry[i:0];
         end
     end
 
