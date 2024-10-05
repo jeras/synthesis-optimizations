@@ -29,11 +29,11 @@ module counter_fractional #(
     generate
     case (IMPLEMENTATION)
         0:  // carry in
-
+        begin
             // TODO
-
+        end
         1:  // multiplexer
-
+        begin
             // local signals
             logic unsigned [WIDTH-0:0] nxt;
             logic   signed [WIDTH-0:0] rem;
@@ -55,7 +55,7 @@ module counter_fractional #(
                 if (wrp)  cnt <= rem;
                 else      cnt <= nxt;
             end
-
+        end
         default:  // parameter validation
             $fatal("Unsupported IMPLEMENTATION parameter value.");
     endcase

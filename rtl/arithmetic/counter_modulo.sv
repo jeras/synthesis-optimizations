@@ -28,7 +28,7 @@ module counter_modulo #(
     generate
     case (IMPLEMENTATION)
         1:  // compare current
-
+        begin
             // local signals
             logic wrp;
 
@@ -41,9 +41,9 @@ module counter_modulo #(
                 if (wrp)  cnt <= '0;
                 else      cnt <= cnt + 1;
             end
-
+        end
         2:  // compare next
-
+        begin
             // local signals
             logic [WIDTH-1:0] nxt;
             logic             wrp;
@@ -59,7 +59,7 @@ module counter_modulo #(
                 if (wrp)  cnt <= '0;
                 else      cnt <= nxt;
             end
-
+        end
         default:  // parameter validation
             $fatal("Unsupported IMPLEMENTATION parameter value.");
     endcase

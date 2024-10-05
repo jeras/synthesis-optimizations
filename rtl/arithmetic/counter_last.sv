@@ -31,23 +31,23 @@ module counter_maximum #(
     generate
     case (IMPLEMENTATION)
         0:  // carry in
-
+        begin
             always_ff @(posedge clk, posedge rst)
             if (rst)  cnt <= '0;
             else begin
                 if (ena & wrp)  cnt <= '0;
                 else            cnt <= cnt + ena;
             end
-
+        end
         1:  // multiplexer
-
+        begin
             always_ff @(posedge clk, posedge rst)
             if (rst)  cnt <= '0;
             else if (ena) begin
                 if (wrp)  cnt <= '0;
                 else      cnt <= cnt + 1;
             end
-
+        end
         default:  // parameter validation
             $fatal("Unsupported IMPLEMENTATION parameter value.");
     endcase

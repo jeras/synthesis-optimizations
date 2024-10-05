@@ -11,7 +11,7 @@ module RCA #(
     logic [WIDTH-1:-1] C;  // carry chain
     // instantiation loop
     generate
-    for (genvar int i=0; i<WIDTH; i++) begin:loop
+    for (genvar i=0; i<WIDTH; i++) begin:loop
         FA add (
             .A   (A[i]),
             .B   (B[i]),
