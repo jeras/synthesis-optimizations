@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 TOPS="\
     eql_cmp_tb \
@@ -13,10 +13,13 @@ TOPS="\
 
 TOPS="pry2thr_tb"
 
+CONF=" -Wno-INITIALDLY"
+CONF+=" -Wno-UNOPTFLAT"
+
 for TOP in $TOPS
 do
-    verilator -j 0 --lint-only --timing --top $TOP -f ../files_rtl.lst -f ../files_tb.lst
+    verilator -j 0 --lint-only --timing --top $TOP -f ../files_rtl.lst -f ../files_tb.lst $CONF
 #    verilator -j 0 --binary    --timing --top $TOP -f ../files_rtl.lst -f ../files_tb.lst -Wall
-    verilator -j 0 --binary    --timing --top $TOP -f ../files_rtl.lst -f ../files_tb.lst --trace-fst
+    verilator -j 0 --binary    --timing --top $TOP -f ../files_rtl.lst -f ../files_tb.lst $CONF --trace-fst
     obj_dir/V${TOP}
 done

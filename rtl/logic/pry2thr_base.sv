@@ -27,50 +27,38 @@ module pry2thr_base #(
     case (IMPLEMENTATION)
         0:  // loop
         begin: loop
+            /* verilator lint_off ALWCOMBORDER */
             case (DIRECTION)
                 "LSB":
                     always_comb
                     begin: loop
-                        logic [WIDTH-1:-1] tmp;
-                        tmp[-1] = 1'b0;
-                        for (int i=0; i<WIDTH; i++) begin
-                            tmp[i] = pry[i] | tmp[i-1];
+                        thr[0] = pry[0];
+                        for (int i=1; i<WIDTH; i++) begin
+                            thr[i] = pry[i] | thr[i-1];
                         end
-                        thr = tmp[WIDTH-1:0];
                     end: loop
                 "MSB":
                     always_comb
                     begin: loop
-                        logic [WIDTH-0:0] tmp;
-                        tmp[WIDTH] = 1'b0;
-                        for (int i=WIDTH-1; i<=0; i--) begin
-                            tmp[i] = pry[i] | tmp[i+1];
+                        thr[WIDTH-1] = pry[WIDTH-1];
+                        for (int i=WIDTH-2; i>=0; i--) begin
+                            thr[i] = pry[i] | thr[i+1];
                         end
-                        thr = tmp[WIDTH-1:0];
                     end: loop
                 default:
                     $fatal("Unsupported DIRECTION parameter value.");
             endcase
+            /* verilator lint_on ALWCOMBORDER */
         end: loop
         1:  // vector (vectorization of the loop code)
         begin: vector
             case (DIRECTION)
                 "LSB":
                     always_comb
-                    begin: vector
-                        logic [WIDTH-1:-1] tmp;
-                        tmp[-1] = 1'b0;
-                        tmp[WIDTH-1:0] = pry | tmp[WIDTH-2:-1];
-                        thr = tmp[WIDTH-1:0];
-                    end: vector
+                    thr = pry | {thr[WIDTH-2:0], 1'b0};
                 "MSB":
                     always_comb
-                    begin: vector
-                        logic [WIDTH-1:-1] tmp;
-                        tmp[WIDTH] = 1'b0;
-                        tmp[WIDTH-1:0] = pry | tmp[WIDTH-0:1];
-                        thr = tmp[WIDTH-1:0];
-                    end: vector
+                    thr = pry | {1'b0, thr[WIDTH-1:1]};
                 default:
                     $fatal("Unsupported DIRECTION parameter value.");
             endcase

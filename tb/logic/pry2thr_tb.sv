@@ -20,9 +20,9 @@ module pry2thr_tb #(
 
     // check enable depending on test
     struct packed {
-        bit adder ;  // 2
-        bit vector;  // 1
-        bit loop  ;  // 0
+        bit adder;  // 2
+        bit vect ;  // 1
+        bit loop ;  // 0
     } check_enable;
 
     // timing constant
@@ -43,22 +43,30 @@ module pry2thr_tb #(
 // reference calculation and checking of DUT outputs against reference
 ///////////////////////////////////////////////////////////////////////////////
 
+    /* verilator lint_off ALWCOMBORDER */
     function automatic [WIDTH-1:0] ref_pry2thr (
         logic [WIDTH-1:0] pry
     );
         automatic logic [WIDTH-1:0] thr;
         unique case (DIRECTION)
             "LSB":
-                for (int i=0; i<WIDTH; i++) begin
-                    thr[i] = |pry[0+:i+1];
+                begin
+                    thr[0] = pry[0];
+                    for (int i=1; i<WIDTH; i++) begin
+                        thr[i] = pry[i] | thr[i-1];
+                    end
                 end
             "MSB":
-                for (int i=0; i<WIDTH; i--) begin
-                    thr[WIDTH-1-i] = |pry[WIDTH-1:i+1];
+                begin
+                    thr[WIDTH-1] = pry[WIDTH-1];
+                    for (int i=WIDTH-2; i>=0; i--) begin
+                        thr[i] = pry[i] | thr[i+1];
+                    end
                 end
-        endcase
+            endcase
         return thr;
     endfunction: ref_pry2thr
+    /* verilator lint_on ALWCOMBORDER */
 
     // reference
     always_comb
@@ -91,13 +99,13 @@ module pry2thr_tb #(
     begin
         // idle test
         test_name = "idle";
-        check_enable = '{loop: 1'b1, vector: 1'b0, adder: 1'b1};
+        check_enable = '{loop: 1'b1, vect: 1'b0, adder: 1'b1};
         pry <= '0;
         check;
 
         // thermometer encoder test
         test_name = "thermometer";
-        check_enable = '{loop: 1'b1, vector: 1'b0, adder: 1'b1};
+        check_enable = '{loop: 1'b1, vect: 1'b0, adder: 1'b1};
         for (int unsigned i=0; i<WIDTH; i++) begin
             logic [WIDTH-1:0] tmp_vld;
             tmp_vld = '0;
@@ -108,7 +116,7 @@ module pry2thr_tb #(
 
         // priority encoder test (with undefined inputs)
         test_name = "priority";
-        check_enable = '{loop: 1'b1, vector: 1'b0, adder: 1'b0};
+        check_enable = '{loop: 1'b1, vect: 1'b0, adder: 1'b0};
         for (int unsigned i=0; i<WIDTH; i++) begin
             logic [WIDTH-1:0] tmp_vld;
             tmp_vld = 'X;
@@ -123,7 +131,7 @@ module pry2thr_tb #(
 
         // priority encoder test (going through all input combinations)
         test_name = "exhaustive";
-        check_enable = '{loop: 1'b1, vector: 1'b0, adder: 1'b1};
+        check_enable = '{loop: 1'b1, vect: 1'b0, adder: 1'b1};
         for (logic unsigned [WIDTH-1:0] tmp_vld='1; tmp_vld>0; tmp_vld--) begin
             pry <= {<<{tmp_vld}};
             check;
