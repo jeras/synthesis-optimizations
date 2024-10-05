@@ -7,7 +7,7 @@
 // Licensed under CERN-OHL-P v2 or later
 ///////////////////////////////////////////////////////////////////////////////
 
-module counter_maximum #(
+module counter_last #(
     // size parameters
     parameter  int unsigned WIDTH = 32,
     // implementation
@@ -25,8 +25,11 @@ module counter_maximum #(
     output logic             pls    // last pulse
 );
 
+    // local signals
+    logic wrp;  // wrap condition
+
     // wrap on reaching maximum
-    assign wrp = nxt == max;
+    assign wrp = cnt == max;
 
     generate
     case (IMPLEMENTATION)
@@ -36,7 +39,7 @@ module counter_maximum #(
             if (rst)  cnt <= '0;
             else begin
                 if (ena & wrp)  cnt <= '0;
-                else            cnt <= cnt + ena;
+                else            cnt <= cnt + WIDTH'(ena);
             end
         end
         1:  // multiplexer
@@ -56,4 +59,4 @@ module counter_maximum #(
     // pulse on wrap
     assign pls = ena & wrp;
 
-endmodule: counter_maximum
+endmodule: counter_last

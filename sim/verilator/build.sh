@@ -24,7 +24,7 @@ TOPS+="\
 "
 
 # override to debug a single testcase
-TOPS="counter_wrap_tb"
+TOPS="counter_last_tb"
 
 CONF=" -Wno-INITIALDLY"
 CONF+=" -Wno-UNOPTFLAT"
