@@ -46,6 +46,18 @@
 ###############################################################################
 
 #../../rtl/arithmetic/negative.sv
+#../../rtl/arithmetic/add_base.sv
+
+# primitives
+../../rtl/arithmetic/HA.sv
+../../rtl/arithmetic/FA.sv
+../../rtl/arithmetic/RCA.sv
+
+# counters
+../../rtl/arithmetic/counter_wrap.sv
+../../rtl/arithmetic/counter_last.sv
+../../rtl/arithmetic/counter_modulo.sv
+../../rtl/arithmetic/counter_fractional.sv
 
 ###############################################################################
 # multiplexer
