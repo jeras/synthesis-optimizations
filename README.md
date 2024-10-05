@@ -839,6 +839,10 @@ https://ieeexplore.ieee.org/document/5272382
 https://tomverbeure.github.io/2022/11/18/Primitive-Transformations-with-Yosys-Techmap.html
 https://github.com/YosysHQ/yosys/blob/main/docs/source/yosys_internals/formats/cell_library.rst
 
+https://www.reddit.com/r/yosys/comments/586w5e/changing_cell_type/
+
+
+
 ### CPU
 
 - https://books.google.si/books/about/Hacker_s_Delight.html?id=VicPJYM0I5QC
@@ -982,6 +986,11 @@ https://github.com/lnis-uofu/yosys_prefix_trees/tree/main
 Highly parallel increment/decrement using CMOS technology
 R. Hashemian
 https://ieeexplore.ieee.org/document/140858
+
+
+#### Magnitude comparator
+
+https://www.researchgate.net/publication/335740403_128_bit_Parallel_Prefix_Tree_Structure_Comparator
 
 ### FIR/IIR filters
 

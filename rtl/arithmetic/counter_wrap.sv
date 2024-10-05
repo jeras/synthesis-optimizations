@@ -16,27 +16,27 @@ module counter_wrap #(
     // 1 - multiplexer
 )(
     // system signals
-    input  logic             clk,   // clock
-    input  logic             rst,   // reset
+    input  logic             clk,  // clock
+    input  logic             rst,  // reset
     // counter
-    input  logic             ena,   // enable
-    output logic [WIDTH-1:0] cnt    // counter
+    input  logic             ena,  // enable
+    output logic [WIDTH-1:0] cnt   // counter
 );
 
     generate
     case (IMPLEMENTATION)
         0:  // carry in
-
+        begin
             always_ff @(posedge clk, posedge rst)
             if (rst)  cnt <= '0;
-            else      cnt <= cnt + ena;
-
+            else      cnt <= cnt + WIDTH'(ena);
+        end
         1:  // multiplexer
-
+        begin
             always_ff @(posedge clk, posedge rst)
             if (rst)       cnt <= '0;
             else if (ena)  cnt <= cnt + 1;
-
+        end
         default:  // parameter validation
             $fatal("Unsupported IMPLEMENTATION parameter value.");
     endcase

@@ -1,17 +1,30 @@
 #!/bin/bash
 
+# logic
 TOPS="\
     eql_cmp_tb \
     bin2oht_tb \
     oht2bin_tb \
-    mux_oht_tb \
-    mux_bin_tb \
     pry2thr_tb \
     pry2oht_tb \
     mag_cmp_tb
 "
+# multiplexer
+TOPS+="\
+    mux_oht_tb \
+    mux_pry_tb \
+    mux_bin_tb
+"
+# arithmetic
+TOPS+="\
+    counter_wrap_tb
+    counter_last_tb
+    counter_modulo_tb
+    counter_fractional_tb
+"
 
-TOPS="pry2thr_tb"
+# override to debug a single testcase
+TOPS="counter_wrap_tb"
 
 CONF=" -Wno-INITIALDLY"
 CONF+=" -Wno-UNOPTFLAT"
