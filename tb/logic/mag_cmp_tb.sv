@@ -129,7 +129,7 @@ module mag_cmp_tb #(
 // waveforms
 ///////////////////////////////////////////////////////////////////////////////
 
-    `ifdef VERILATOR
+`ifdef VERILATOR
     initial
     begin
         $dumpfile("mag_cmp_tb.fst");

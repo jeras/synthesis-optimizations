@@ -129,7 +129,7 @@ module oht2bin_tb #(
 // waveforms
 ///////////////////////////////////////////////////////////////////////////////
 
-    `ifdef VERILATOR
+`ifdef VERILATOR
     initial
     begin
         $dumpfile("oht2bin_tb.fst");
