@@ -32,8 +32,11 @@ module counter_last_tb #(
     integer       ref_cnt;
     logic         ref_pls;
 
+    // control counter
+    integer       ctl_cnt;
+
     // testcases
-    localparam logic [WIDTH-1:0] max_lst [5] = '{0, 1, 2**WIDTH-1};
+    localparam logic [WIDTH-1:0] max_lst [3] = '{0, 1, 2**WIDTH-1};
 
 ///////////////////////////////////////////////////////////////////////////////
 // reference calculation and checking of DUT outputs against reference
@@ -87,27 +90,30 @@ module counter_last_tb #(
     // test sequence
     initial
     begin
-        // reset sequence (asynchronous set, synchronous release)
-        rst = 1'b1;
-        repeat(4) @(posedge clk);
-        rst <= 1'b0;
-
         // loop over max value choices
         foreach(max_lst[i])
         begin: testcase
+            // reset sequence (asynchronous set, synchronous release)
+            rst = 1'b1;
+            repeat(4) @(posedge clk);
+            rst <= 1'b0;
+    
+            // set the conter wrap limit
             @(posedge clk);
-            max = max_lst[i];
+            max <= max_lst[i];
             // randomized enable
             test_name = "randomized_enable";
+            ctl_cnt = 0;
             do
             begin: random
                 int unsigned rnd;
                 rnd = $urandom();
                 @(posedge clk);
-                ena = rnd[0];
+                ena <= rnd[0];
                 check;
+                if (rnd[0]) ctl_cnt++;
             end: random
-            while (ref_cnt < (2**WIDTH)+2);
+            while (ctl_cnt < (2**WIDTH)+2);
         end: testcase
 
         repeat(4) @(posedge clk);

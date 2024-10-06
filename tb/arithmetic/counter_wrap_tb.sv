@@ -85,7 +85,7 @@ module counter_wrap_tb #(
             int unsigned rnd;
             rnd = $urandom();
             @(posedge clk);
-            ena = rnd[0];
+            ena <= rnd[0];
             check;
         end: random
         while (ref_cnt < (2**WIDTH)+2);
