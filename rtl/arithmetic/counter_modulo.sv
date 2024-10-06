@@ -20,20 +20,20 @@ module counter_modulo #(
     input  logic             rst,   // reset
     // counter
     input  logic             ena,   // enable
-    input  logic [WIDTH-0:0] max,   // maximum value
+    input  logic [WIDTH-0:0] mod,   // modulo value
     output logic [WIDTH-1:0] cnt,   // counter
     output logic             pls    // last pulse
 );
 
-    generate
-    case (IMPLEMENTATION)
-        1:  // compare current
-        begin
-            // local signals
-            logic wrp;
+    // local signals
+    logic wrp;
 
+generate
+    case (IMPLEMENTATION)
+        0:  // compare current
+        begin
             // wrap
-            assign wrp = nxt == val-1;
+            assign wrp = {1'b0, cnt} == mod-1;
 
             always_ff @(posedge clk, posedge rst)
             if (rst)  cnt <= '0;
@@ -42,16 +42,15 @@ module counter_modulo #(
                 else      cnt <= cnt + 1;
             end
         end
-        2:  // compare next
+        1:  // compare next
         begin
             // local signals
-            logic [WIDTH-1:0] nxt;
-            logic             wrp;
+            logic [WIDTH-0:0] nxt;
 
             // next
             assign nxt = cnt + 1;
             // wrap
-            assign wrp = nxt == val;
+            assign wrp = nxt == mod;
 
             always_ff @(posedge clk, posedge rst)
             if (rst)  cnt <= '0;

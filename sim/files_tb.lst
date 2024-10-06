@@ -33,7 +33,7 @@
 # counters
 ../../tb/arithmetic/counter_wrap_tb.sv
 ../../tb/arithmetic/counter_last_tb.sv
-#../../tb/arithmetic/counter_modulo_tb.sv
+../../tb/arithmetic/counter_modulo_tb.sv
 #../../tb/arithmetic/counter_fractional_tb.sv
 
 ###############################################################################
