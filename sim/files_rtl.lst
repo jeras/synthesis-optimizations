@@ -55,7 +55,7 @@
 
 # counters
 ../../rtl/arithmetic/counter_wrap.sv
-../../rtl/arithmetic/counter_last.sv
+../../rtl/arithmetic/counter_maximum.sv
 ../../rtl/arithmetic/counter_modulo.sv
 ../../rtl/arithmetic/counter_fractional.sv
 

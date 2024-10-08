@@ -24,7 +24,7 @@ TOPS+="\
 "
 
 # override to debug a single testcase
-TOPS="counter_modulo_tb"
+TOPS="counter_maximum_tb"
 
 CONF=" -Wno-INITIALDLY"
 CONF+=" -Wno-UNOPTFLAT"

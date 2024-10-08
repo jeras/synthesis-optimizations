@@ -7,7 +7,7 @@
 // Licensed under CERN-OHL-P v2 or later
 ///////////////////////////////////////////////////////////////////////////////
 
-module counter_last_tb #(
+module counter_maximum_tb #(
     // size parameters
     int unsigned WIDTH = 4
 );
@@ -129,7 +129,7 @@ module counter_last_tb #(
     for (genvar i=0; i<IMPLEMENTATIONS; i++) begin: imp
 
         // DUT RTL instance
-        counter_last #(
+        counter_maximum #(
             .WIDTH (WIDTH)
         ) dut (
             // system signals
@@ -152,9 +152,9 @@ module counter_last_tb #(
 `ifdef VERILATOR
     initial
     begin
-        $dumpfile("counter_last_tb.fst");
-        $dumpvars(0, counter_last_tb);
+        $dumpfile("counter_maximum_tb.fst");
+        $dumpvars(0, counter_maximum_tb);
     end
 `endif
 
-endmodule: counter_last_tb
+endmodule: counter_maximum_tb

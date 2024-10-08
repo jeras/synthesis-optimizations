@@ -7,7 +7,7 @@
 // Licensed under CERN-OHL-P v2 or later
 ///////////////////////////////////////////////////////////////////////////////
 
-module counter_last #(
+module counter_maximum #(
     // size parameters
     parameter  int unsigned WIDTH = 32,
     // implementation
@@ -59,4 +59,4 @@ module counter_last #(
     // pulse on wrap
     assign pls = ena & wrp;
 
-endmodule: counter_last
+endmodule: counter_maximum
