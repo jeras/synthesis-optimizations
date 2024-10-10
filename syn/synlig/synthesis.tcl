@@ -7,9 +7,11 @@ proc debug_show {filename} {
     write_verilog "$filename.v"
 }
 
+set DESIGN eql_cmp
+
 # read design
-read_systemverilog ../rtl/eql_cmp.sv
-hierarchy -check -top eql_cmp
+read_systemverilog ../rtl/$DESIGN.sv
+hierarchy -check -top $DESIGN
 
 # the high-level stuff
 # NOTE: `procs` is a TCL wrapper for yosys `proc`
