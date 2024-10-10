@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-// multiplexer with binary select (priority multipleser),
+// multiplexer with binary select (also called priority multiplexer),
 // testbench
 //
 // @author: Iztok Jeras <iztok.jeras@gmail.com>
