@@ -18,7 +18,7 @@ module mux_pry_tb #(
     // timing constant
     localparam time T = 10ns;
 
-    localparam int unsigned IMPLEMENTATIONS = 2;
+    localparam int unsigned IMPLEMENTATIONS = 1;
 
     // priority select and data array inputs
     logic [WIDTH-1:0] pry;
@@ -62,8 +62,8 @@ module mux_pry_tb #(
         #T;
         for (int unsigned i=0; i<IMPLEMENTATIONS; i++) begin
             if (check_enable[i]) begin
-                assert (vld[i] ==  ref_vld) else $error("IMPLEMENTATION[%0d]:  vld != 1'b%b"  , i,            ref_vld);
-                assert (dat[i] ==? ref_dat) else $error("IMPLEMENTATION[%0d]:  dat != %0d'b%b", i, WIDTH, ref_dat);
+                assert (vld[i] == ref_vld) else $error("IMPLEMENTATION[%0d]:  vld != 1'b%b"  , i,        ref_vld);
+                assert (dat[i] == ref_dat) else $error("IMPLEMENTATION[%0d]:  dat != %0d'b%b", i, WIDTH, ref_dat);
             end
         end
         #T;

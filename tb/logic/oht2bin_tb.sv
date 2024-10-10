@@ -65,8 +65,8 @@ module oht2bin_tb #(
         #T;
         for (int unsigned i=0; i<IMPLEMENTATIONS; i++) begin
             if (check_enable[i]) begin
-                assert (vld[i] ==  ref_vld) else $error("IMPLEMENTATION[%0d]:  vld != 1'b%b"  , i,            ref_vld);
-                assert (bin[i] ==? ref_bin) else $error("IMPLEMENTATION[%0d]:  bin != %0d'd%d", i, WIDTH_LOG, ref_bin);
+                assert (vld[i] == ref_vld) else $error("IMPLEMENTATION[%0d]:  vld != 1'b%b"  , i,            ref_vld);
+                assert (bin[i] == ref_bin) else $error("IMPLEMENTATION[%0d]:  bin != %0d'd%d", i, WIDTH_LOG, ref_bin);
             end
         end
         #T;
