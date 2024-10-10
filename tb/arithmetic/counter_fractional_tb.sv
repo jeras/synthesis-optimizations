@@ -27,18 +27,20 @@ module counter_fractional_tb #(
     // counter outputs
     /* verilator lint_off ASCRANGE */
     logic [WIDTH-1:0] cnt[0:IMPLEMENTATIONS-1];
-    logic             pls[0:IMPLEMENTATIONS-1];
+    logic             wrp[0:IMPLEMENTATIONS-1];
     /* verilator lint_on ASCRANGE */
     // reference signals
     integer       ref_cnt;
     integer       ref_nxt;
-    logic         ref_pls;
+    integer       ref_sub;
+    logic         ref_wrp;
 
     // control counter
     integer       ctl_cnt;
 
     // testcases
-    localparam logic [WIDTH-0:0] max_lst [4] = '{1, 2, 2**WIDTH-1, 2**WIDTH};
+    localparam logic [WIDTH-1:0] add_lst [4] = '{0, 1, 2**WIDTH-2, 2**WIDTH-1};
+    localparam logic [WIDTH-1:0] max_lst [4] = '{0, 1, 2**WIDTH-2, 2**WIDTH-1};
 
 ///////////////////////////////////////////////////////////////////////////////
 // reference calculation and checking of DUT outputs against reference
@@ -51,7 +53,7 @@ module counter_fractional_tb #(
             ref_cnt <= '0;
         end else begin
             if (ena) begin
-                if (ref_pls) begin
+                if (ref_wrp) begin
                     ref_cnt <= '0;
                 end else begin
                     ref_cnt <= ref_nxt;
@@ -61,13 +63,13 @@ module counter_fractional_tb #(
     end
 
     // reference next
-    assign ref_nxt = ref_cnt + add;
+    assign ref_nxt = ref_cnt + integer'(add) + 1;
 
-    // reference subtract
-    assign ref_sub = ref_nxt - max;
+    // subtraction
+    assign ref_sub = ref_nxt - integer'(max) - 1;
 
-    // reference pulse
-    assign ref_pls = ref_sub > 0;
+    // reference wrap
+    assign ref_wrp = ref_sub >= 0;
 
     // check enable depending on test
     /* verilator lint_off ASCRANGE */
@@ -79,7 +81,7 @@ module counter_fractional_tb #(
         for (int unsigned i=0; i<IMPLEMENTATIONS; i++) begin
             if (check_enable[i]) begin
                 assert (cnt[i] == ref_cnt[WIDTH-1:0]) else $error("IMPLEMENTATION[%0d]:  cnt != %d'b%x", i, WIDTH, ref_cnt[WIDTH-1:0]);
-                assert (pls[i] == ref_pls           ) else $error("IMPLEMENTATION[%0d]:  pls != 1'b%x" , i,        ref_pls           );
+                assert (wrp[i] == ref_wrp           ) else $error("IMPLEMENTATION[%0d]:  wrp != 1'b%x" , i,        ref_wrp           );
             end
         end
     endtask: check
@@ -98,32 +100,40 @@ module counter_fractional_tb #(
     // test sequence
     initial
     begin
+        // TODO
+        add = 0;
         // loop over fractional value choices
         foreach(max_lst[i])
-        begin: testcase
-            // reset sequence (asynchronous set, synchronous release)
-            ena = 1'b0;
-            rst = 1'b1;
-            repeat(4) @(posedge clk);
-            rst <= 1'b0;
-    
-            // set the conter wrap limit
-            @(posedge clk);
-            max <= max_lst[i];
-            // randomized enable
-            test_name = "randomized_enable";
-            ctl_cnt = 0;
-            do
-            begin: random
-                int unsigned rnd;
-                rnd = $urandom();
-                @(posedge clk);
-                ena <= rnd[0];
-                check;
-                if (rnd[0]) ctl_cnt++;
-            end: random
-            while (ctl_cnt < (2**WIDTH)+2);
-        end: testcase
+        begin: for_max
+            foreach(add_lst[i])
+            begin: for_add
+                if (add <= max)
+                begin: if_less
+                    // reset sequence (asynchronous set, synchronous release)
+                    ena = 1'b0;
+                    rst = 1'b1;
+                    repeat(4) @(posedge clk);
+                    rst <= 1'b0;
+            
+                    // set the conter wrap limit
+                    @(posedge clk);
+                    max <= max_lst[i];
+                    // randomized enable
+                    test_name = "randomized_enable";
+                    ctl_cnt = 0;
+                    do
+                    begin: random
+                        int unsigned rnd;
+                        rnd = $urandom();
+                        @(posedge clk);
+                        ena <= rnd[0];
+                        check;
+                        if (rnd[0]) ctl_cnt++;
+                    end: random
+                    while (ctl_cnt < (2**WIDTH)+2);
+                end: if_less
+            end: for_add
+        end: for_max
 
         repeat(4) @(posedge clk);
         $finish;
@@ -148,7 +158,7 @@ module counter_fractional_tb #(
             .add (add),
             .max (max),
             .cnt (cnt[i]),
-            .pls (pls[i])
+            .wrp (wrp[i])
         );
 
     end: imp

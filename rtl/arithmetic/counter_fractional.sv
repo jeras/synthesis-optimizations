@@ -23,8 +23,26 @@ module counter_fractional #(
     input  logic [WIDTH-1:0] add,   // addend value
     input  logic [WIDTH-1:0] max,   // maximum value
     output logic [WIDTH-1:0] cnt,   // counter
-    output logic             pls    // output pulse
+    output logic             wrp    // wrap status
 );
+
+            // local signals
+            logic unsigned [WIDTH-0:0] nxt;
+            logic   signed [WIDTH-0:0] rem;
+
+            // next
+            assign nxt = cnt + add + 1;
+            // reminder
+            assign rem = nxt - max - 1;
+            // wrap
+            assign wrp = rem >= 0;
+
+            always_ff @(posedge clk, posedge rst)
+            if (rst)  cnt <= '0;
+            else if (ena) begin
+                if (wrp)  cnt <= rem[WIDTH-1:0];
+                else      cnt <= nxt[WIDTH-1:0];
+            end
 
     generate
     case (IMPLEMENTATION)
@@ -34,27 +52,6 @@ module counter_fractional #(
         end
         1:  // multiplexer
         begin
-            // local signals
-            logic unsigned [WIDTH-0:0] nxt;
-            logic   signed [WIDTH-0:0] rem;
-            logic                      wrp;
-
-            // next
-            assign nxt = cnt + add;
-            // reminder
-            assign rem = nxt - max;
-            // wrap
-            assign wrp = nxt >= max;
-            assign wrp = rem >= 0;
-            // reminder
-            assign rem = nxt - max;
-
-            always_ff @(posedge clk, posedge rst)
-            if (rst)  cnt <= '0;
-            else if (ena) begin
-                if (wrp)  cnt <= rem;
-                else      cnt <= nxt;
-            end
         end
         default:  // parameter validation
             $fatal("Unsupported IMPLEMENTATION parameter value.");

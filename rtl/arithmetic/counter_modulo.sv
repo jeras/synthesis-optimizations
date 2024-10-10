@@ -22,11 +22,8 @@ module counter_modulo #(
     input  logic             ena,   // enable
     input  logic [WIDTH-0:0] mod,   // modulo value
     output logic [WIDTH-1:0] cnt,   // counter
-    output logic             pls    // last pulse
+    output logic             wrp    // wrap status
 );
-
-    // local signals
-    logic wrp;
 
 generate
     case (IMPLEMENTATION)
@@ -63,8 +60,5 @@ generate
             $fatal("Unsupported IMPLEMENTATION parameter value.");
     endcase
     endgenerate
-
-    // pulse on wrap
-    assign pls = ena & wrp;
 
 endmodule: counter_modulo

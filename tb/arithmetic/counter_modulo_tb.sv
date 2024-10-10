@@ -26,12 +26,12 @@ module counter_modulo_tb #(
     // counter outputs
     /* verilator lint_off ASCRANGE */
     logic [WIDTH-1:0] cnt[0:IMPLEMENTATIONS-1];
-    logic             pls[0:IMPLEMENTATIONS-1];
+    logic             wrp[0:IMPLEMENTATIONS-1];
     /* verilator lint_on ASCRANGE */
     // reference signals
     integer       ref_cnt;
     integer       ref_nxt;
-    logic         ref_pls;
+    logic         ref_wrp;
 
     // control counter
     integer       ctl_cnt;
@@ -50,7 +50,7 @@ module counter_modulo_tb #(
             ref_cnt <= '0;
         end else begin
             if (ena) begin
-                if (ref_pls) begin
+                if (ref_wrp) begin
                     ref_cnt <= '0;
                 end else begin
                     ref_cnt <= ref_nxt;
@@ -62,8 +62,8 @@ module counter_modulo_tb #(
     // reference next
     assign ref_nxt = ref_cnt + 1;
 
-    // reference pulse
-    assign ref_pls = ref_nxt[WIDTH-0:0] == mod;
+    // reference wrap
+    assign ref_wrp = ref_nxt[WIDTH-0:0] == mod;
 
     // check enable depending on test
     /* verilator lint_off ASCRANGE */
@@ -75,7 +75,7 @@ module counter_modulo_tb #(
         for (int unsigned i=0; i<IMPLEMENTATIONS; i++) begin
             if (check_enable[i]) begin
                 assert (cnt[i] == ref_cnt[WIDTH-1:0]) else $error("IMPLEMENTATION[%0d]:  cnt != %d'b%x", i, WIDTH, ref_cnt[WIDTH-1:0]);
-                assert (pls[i] == ref_pls           ) else $error("IMPLEMENTATION[%0d]:  pls != 1'b%x" , i,        ref_pls           );
+                assert (wrp[i] == ref_wrp           ) else $error("IMPLEMENTATION[%0d]:  wrp != 1'b%x" , i,        ref_wrp           );
             end
         end
     endtask: check
@@ -143,7 +143,7 @@ module counter_modulo_tb #(
             .ena (ena),
             .mod (mod),
             .cnt (cnt[i]),
-            .pls (pls[i])
+            .wrp (wrp[i])
         );
 
     end: imp

@@ -22,11 +22,8 @@ module counter_maximum #(
     input  logic             ena,   // enable
     input  logic [WIDTH-1:0] max,   // maximum value
     output logic [WIDTH-1:0] cnt,   // counter
-    output logic             pls    // last pulse
+    output logic             wrp    // wrap status
 );
-
-    // local signals
-    logic wrp;  // wrap condition
 
     // wrap on reaching maximum
     assign wrp = cnt == max;
@@ -55,8 +52,5 @@ module counter_maximum #(
             $fatal("Unsupported IMPLEMENTATION parameter value.");
     endcase
     endgenerate
-
-    // pulse on wrap
-    assign pls = ena & wrp;
 
 endmodule: counter_maximum
