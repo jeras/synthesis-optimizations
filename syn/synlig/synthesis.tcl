@@ -7,10 +7,10 @@ proc debug_show {filename} {
     write_verilog "$filename.v"
 }
 
-set DESIGN eql_cmp
+set DESIGN counter_wrap
 
 # read design
-read_systemverilog ../rtl/$DESIGN.sv
+read_systemverilog ../../rtl/arithmetic/$DESIGN.sv
 hierarchy -check -top $DESIGN
 
 # the high-level stuff
