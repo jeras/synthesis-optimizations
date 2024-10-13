@@ -1084,7 +1084,7 @@ https://vimeo.com/827700226
 
 ### Networks
 
-### Sorting and switching networks
+### Sorting and routing networks
 
 This wikipedia article introduces [sorting networks](https://en.wikipedia.org/wiki/Sorting_network).
 There are several methods to construct such networks,
@@ -1097,6 +1097,10 @@ There are several methods to construct such networks,
 Sorting networks and their applications
 by K. E. BATCHER
 https://www.cs.kent.edu/~batcher/sort.pdf
+
+Routing Partial Permutations in Interconnection Networks based on Radix Sorting
+Tripti Jain and Klaus Schneider
+https://es.cs.rptu.de/publications/datarsg/JaSc18c.pdf
 
 #### Crossbar
 

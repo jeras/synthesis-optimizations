@@ -9,7 +9,7 @@
 
 module counter_wrap #(
     // size parameters
-    parameter  int unsigned WIDTH = 32,
+    parameter  int unsigned WIDTH = 16,
     // implementation
     parameter  int unsigned IMPLEMENTATION = 0
     // 0 - carry in
