@@ -6,12 +6,21 @@
 
 ### Nomenclature
 
-### Half/Full adder
+### Arithmetic standard cells
 
 Half and full adder are single bit primitives used to primarily construct ripple-carry adders (RCA).
 
+#### Half adder
+
 A _half adder_ takes one data bit `A` from one operand and a cary bit `Ci` as inputs and
 outputs a sum `S` and a cary output `Co`.
+
+| `A` | `Ci` | `S` | `Co` |
+|-----|------|-----|------|
+| `0` | `0`  | `0` | `0`  |
+| `0` | `1`  | `1` | `0`  |
+| `1` | `0`  | `1` | `0`  |
+| `1` | `1`  | `0` | `1`  |
 
 ```SystemVerilog
 module HA (
@@ -25,8 +34,21 @@ module HA (
 endmodule: HA
 ```
 
+#### Full adder
+
 A _full adder_ takes two data bits `A`, `B` from two operands and a cary bit `Ci` as inputs and
 outputs a sum `S` and a cary output `Co`.
+
+| `A` | `B` | `Ci` | `S` | `Co` |
+|-----|-----|------|-----|------|
+| `0` | `0` | `0`  | `0` | `0`  |
+| `0` | `0` | `1`  | `1` | `0`  |
+| `0` | `1` | `0`  | `1` | `0`  |
+| `0` | `1` | `1`  | `0` | `1`  |
+| `1` | `0` | `0`  | `1` | `0`  |
+| `1` | `0` | `1`  | `0` | `1`  |
+| `1` | `1` | `0`  | `0` | `1`  |
+| `1` | `1` | `1`  | `1` | `1`  |
 
 ```SystemVerilog
 module FA (
@@ -41,10 +63,19 @@ module FA (
 endmodule: FA
 ```
 
-If one of the input operand is a constant (`B` for example),
-a full adder can be replaced with a half adder with inverted outputs.
+#### Constant input signals
 
-When `B=0`:
+If one of the input operand is a constant (`B` for example),
+a full adder can be replaced with a half adder.
+
+When `B=0`.
+
+| `A` | `B` | `Ci` | `S` | `Co` |
+|-----|-----|------|-----|------|
+| `0` | `0` | `0`  | `0` | `0`  |
+| `0` | `0` | `1`  | `1` | `0`  |
+| `1` | `0` | `0`  | `1` | `0`  |
+| `1` | `0` | `1`  | `0` | `1`  |
 
 ```SystemVerilog
     S = A ^ B ^ Ci = A ^ 1'b0 ^ Ci = A ^ Ci
@@ -53,10 +84,20 @@ When `B=0`:
 
 When `B=1`:
 
+| `A` | `B` | `Ci` | `S` | `Co` |
+|-----|-----|------|-----|------|
+| `0` | `1` | `0`  | `1` | `0`  |
+| `0` | `1` | `1`  | `0` | `1`  |
+| `1` | `1` | `0`  | `0` | `1`  |
+| `1` | `1` | `1`  | `1` | `1`  |
+
 ```SystemVerilog
     S = A ^ B ^ Ci = A ^ 1'b1 ^ Ci = ~(A ^ Ci)
-    Co = (A & B) | (Ci & (A ^ B)) = (A & 1'b1) | (Ci & (A ^ 1'b1)) = A | (Ci & ~A) = (A | Ci) & (A | ~A) = A | Ci = ~(A & Ci);
+    Co = (A & B) | (Ci & (A ^ B)) = (A & 1'b1) | (Ci & (A ^ 1'b1)) = A | (Ci & ~A) = (A | Ci) & (A | ~A) = A | Ci
 ```
+
+    Co = (Ci & A) | S;
+
 
 ## Components
 

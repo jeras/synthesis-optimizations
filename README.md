@@ -1102,6 +1102,8 @@ Routing Partial Permutations in Interconnection Networks based on Radix Sorting
 Tripti Jain and Klaus Schneider
 https://es.cs.rptu.de/publications/datarsg/JaSc18c.pdf
 
+https://github.com/bertdobbelaere/SorterHunter
+
 #### Crossbar
 
 https://en.wikipedia.org/wiki/Butterfly_network

@@ -1,4 +1,5 @@
 `define FA_CELL         sky130_fd_sc_hs__fa_1
+`define HA_CELL         sky130_fd_sc_hs__ha_1
 
 (* techmap_celltype = "$add" *)
 module sky130_rca (A, B, Y);
@@ -34,8 +35,36 @@ module sky130_rca (A, B, Y);
 
     generate
 		genvar i;
-		for(i=0; i<Y_WIDTH; i=i+1) begin: stage
-			`FA_CELL FA ( .COUT(CO[i]), .CIN(C[i]), .A(AA[i]), .B(BB[i]), .SUM(Y[i]) );
+		for (i=0; i<Y_WIDTH; i=i+1) begin: stage
+			if (_TECHMAP_CONSTMSK_A_[i] | _TECHMAP_CONSTMSK_B_[i]) begin
+				if (_TECHMAP_CONSTMSK_A_[i] & _TECHMAP_CONSTMSK_B_[i]) begin
+					// both inputs are constant
+					assign Y[i] = _TECHMAP_CONSTVAL_A_[i] ^ _TECHMAP_CONSTVAL_A_[i] ^ C[i];
+					assign CO[i] = (TECHMAP_CONSTVAL_A_[i] & _TECHMAP_CONSTVAL_A_[i]) | (Ci & (TECHMAP_CONSTVAL_A_[i] ^ _TECHMAP_CONSTVAL_A_[i]));
+				end else if (_TECHMAP_CONSTMSK_A_[i]) begin
+					// input A is constant
+					if (TECHMAP_CONSTVAL_A_[i]) begin
+						// A[i] == 1'b1
+						assign Y[i] = BB[i] ~^ C[i];
+						assign CO[i] = BB[i] | C[i];
+					end else begin
+						// A[i] == 1'b0
+						`HA_CELL HA ( .COUT(CO[i]), .A(AA[i]), .B(C[i]), .SUM(Y[i]) );
+					end
+				end else if (_TECHMAP_CONSTMSK_B_[i]) begin
+					// input B is constant
+					if (TECHMAP_CONSTVAL_B_[i]) begin
+						// B[i] == 1'b1
+						assign Y[i] = AA[i] ~^ C[i];
+						assign CO[i] = AA[i] | C[i];
+					end else begin
+						// B[i] == 1'b0
+						`HA_CELL HA ( .COUT(CO[i]), .A(C[i]), .B(BB[i]), .SUM(Y[i]) );
+					end
+				end
+			end else begin
+				`FA_CELL FA ( .COUT(CO[i]), .CIN(C[i]), .A(AA[i]), .B(BB[i]), .SUM(Y[i]) );
+			end
         end
 	endgenerate
 
