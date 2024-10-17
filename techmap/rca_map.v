@@ -9,6 +9,11 @@ module sky130_rca (A, B, Y);
 	parameter B_WIDTH = 1;
 	parameter Y_WIDTH = 1;
 
+	parameter _TECHMAP_CONSTMSK_A_ = 0;
+	parameter _TECHMAP_CONSTMSK_B_ = 0;
+	parameter _TECHMAP_CONSTVAL_A_ = 0;
+	parameter _TECHMAP_CONSTVAL_B_ = 0;
+
 	(* force_downto *)
 	input [A_WIDTH-1:0] A;
 	(* force_downto *)
