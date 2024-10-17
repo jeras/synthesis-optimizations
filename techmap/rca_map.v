@@ -40,10 +40,10 @@ module sky130_rca (A, B, Y);
 				if (_TECHMAP_CONSTMSK_A_[i] & _TECHMAP_CONSTMSK_B_[i]) begin
 					// both inputs are constant
 					assign Y[i] = _TECHMAP_CONSTVAL_A_[i] ^ _TECHMAP_CONSTVAL_A_[i] ^ C[i];
-					assign CO[i] = (TECHMAP_CONSTVAL_A_[i] & _TECHMAP_CONSTVAL_A_[i]) | (Ci & (TECHMAP_CONSTVAL_A_[i] ^ _TECHMAP_CONSTVAL_A_[i]));
+					assign CO[i] = (_TECHMAP_CONSTVAL_A_[i] & _TECHMAP_CONSTVAL_A_[i]) | (Ci & (_TECHMAP_CONSTVAL_A_[i] ^ _TECHMAP_CONSTVAL_A_[i]));
 				end else if (_TECHMAP_CONSTMSK_A_[i]) begin
 					// input A is constant
-					if (TECHMAP_CONSTVAL_A_[i]) begin
+					if (_TECHMAP_CONSTVAL_A_[i]) begin
 						// A[i] == 1'b1
 						assign Y[i] = BB[i] ~^ C[i];
 						assign CO[i] = BB[i] | C[i];
@@ -53,7 +53,7 @@ module sky130_rca (A, B, Y);
 					end
 				end else if (_TECHMAP_CONSTMSK_B_[i]) begin
 					// input B is constant
-					if (TECHMAP_CONSTVAL_B_[i]) begin
+					if (_TECHMAP_CONSTVAL_B_[i]) begin
 						// B[i] == 1'b1
 						assign Y[i] = AA[i] ~^ C[i];
 						assign CO[i] = AA[i] | C[i];
