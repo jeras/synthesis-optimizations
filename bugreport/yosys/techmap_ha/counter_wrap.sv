@@ -35,7 +35,7 @@ module counter_wrap #(
         begin
             always_ff @(posedge clk, posedge rst)
             if (rst)       cnt <= '0;
-            else if (ena)  cnt <= cnt + 1;
+            else if (ena)  cnt <= cnt + WIDTH'(1);
         end
         default:  // parameter validation
             $fatal("Unsupported IMPLEMENTATION parameter value.");
