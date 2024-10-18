@@ -3,10 +3,13 @@ yosys -import
 set PRJROOT ../..
 
 proc debug_show {filename} {
+    file mkdir out
+    cd out
     show -format svg -colors 1 -width -prefix "$filename"
     write_json "$filename.json"
     exec netlistsvg "$filename.json" -o "$filename.netlist.svg"
     write_verilog "$filename.v"
+    cd ..
 }
 
 set DESIGN counter_wrap
